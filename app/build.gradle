@@ -62,6 +62,8 @@ dependencies {
     def mvi_kotlin_extensions_coroutines = "mvikotlin-extensions-coroutines"
     def mvi_kotlin_extensions_coroutines_version = "3.2.1"
 
+    def nav_version = "2.6.0"
+
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.0')
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
@@ -78,6 +80,9 @@ dependencies {
     androidTestImplementation 'androidx.compose.ui:ui-test-junit4'
     debugImplementation 'androidx.compose.ui:ui-tooling'
     debugImplementation 'androidx.compose.ui:ui-test-manifest'
+
+//    Navigation
+    implementation ("androidx.navigation:navigation-common:$nav_version")
 
 //    Koin
     implementation "io.insert-koin:koin-android:$koin_version"
