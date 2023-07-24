@@ -50,9 +50,6 @@ dependencies {
     def koin_version = "3.4.2"
     def essenty_version = "1.1.0"
 
-    def decompose_version = "2.0.0"
-    def decompose_extension_version = "2.0.0"
-
     def mvi_kotlin = "mvikotlin"
     def mvi_kotlin_version = "3.2.1"
 
@@ -85,10 +82,6 @@ dependencies {
 //    Koin
     implementation "io.insert-koin:koin-android:$koin_version"
     implementation "com.arkivanov.essenty:lifecycle:$essenty_version"
-
-//    Decompose
-    implementation "com.arkivanov.decompose:decompose:$decompose_version"
-    implementation "com.arkivanov.decompose:extensions-compose-jetbrains:$decompose_extension_version"
 
 //    MVI Kotlin
     implementation "com.arkivanov.mvikotlin:$mvi_kotlin:$mvi_kotlin_version"
