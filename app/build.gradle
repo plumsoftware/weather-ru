@@ -86,13 +86,14 @@ dependencies {
 
 //    Koin
     implementation "io.insert-koin:koin-android:$koin_version"
-    implementation "com.arkivanov.essenty:lifecycle:$essenty_version"
+    implementation "io.insert-koin:koin-core:$koin_version"
 
 //    MVI Kotlin
     implementation "com.arkivanov.mvikotlin:$mvi_kotlin:$mvi_kotlin_version"
     implementation "com.arkivanov.mvikotlin:$mvi_kotlin_main:$mvi_kotlin_main_version"
     implementation "com.arkivanov.mvikotlin:$mvi_kotlin_extensions_coroutines:$mvi_kotlin_extensions_coroutines_version"
     implementation "com.arkivanov.mvikotlin:$mvi_kotlin_logging:$mvi_kotlin_logging_version"
+    implementation "com.arkivanov.essenty:lifecycle:$essenty_version"
 
 //    Modules
     implementation project(path: ":domain")
