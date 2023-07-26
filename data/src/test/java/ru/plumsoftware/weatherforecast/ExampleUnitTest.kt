@@ -1,4 +1,4 @@
-package ru.plumsoftware.data
+package ru.plumsoftware.weatherforecast
 
 import org.junit.Test
 
