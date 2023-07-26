@@ -93,4 +93,8 @@ dependencies {
     implementation "com.arkivanov.mvikotlin:$mvi_kotlin_main:$mvi_kotlin_main_version"
     implementation "com.arkivanov.mvikotlin:$mvi_kotlin_extensions_coroutines:$mvi_kotlin_extensions_coroutines_version"
     implementation "com.arkivanov.mvikotlin:$mvi_kotlin_logging:$mvi_kotlin_logging_version"
+
+//    Modules
+    implementation project(path: ":domain")
+    implementation project(path: ":data")
 }
