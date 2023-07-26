@@ -1,4 +1,4 @@
-package ru.plumsoftware.weatherforecast.material.materialui
+package ru.plumsoftware.weatherforecast.ui
 
 import androidx.compose.ui.graphics.Color
 
