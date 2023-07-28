@@ -1,4 +1,4 @@
-package ru.plumsoftware.weatherforecast.presentation.main
+package ru.plumsoftware.weatherforecast.presentation.main.presentation
 
 import android.os.Bundle
 import android.widget.Toast
@@ -21,18 +21,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             WeatherAppTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    AuthorizationScreen(
-                        component = AuthorizationComponent(
-                            storeFactory = DefaultStoreFactory(),
-                            output = ::authOutput
-                        )
+                AuthorizationScreen(
+                    component = AuthorizationComponent(
+                        storeFactory = DefaultStoreFactory(),
+                        output = ::authOutput
                     )
-                }
+                )
             }
         }
     }
@@ -46,20 +40,9 @@ class MainActivity : ComponentActivity() {
             ).show()
         }
     }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    @Composable
+    private fun MainContent(){
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    WeatherAppTheme {
-        Greeting("Android")
     }
 }
