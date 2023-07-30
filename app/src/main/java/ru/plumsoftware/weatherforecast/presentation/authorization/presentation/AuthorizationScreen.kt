@@ -1,6 +1,6 @@
 package ru.plumsoftware.weatherforecast.presentation.authorization.presentation
 
-import android.provider.Settings.Global.getString
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,28 +9,34 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Icon
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.presentation.authorization.component.AuthorizationComponent
 import ru.plumsoftware.weatherforecast.presentation.authorization.store.AuthorizationStore
 
 @Composable
 fun AuthorizationScreen(component: AuthorizationComponent) {
+
+    val state by component.state.collectAsState()
 
     LaunchedEffect(component) {
         component.label.collect { label ->
@@ -40,15 +46,25 @@ fun AuthorizationScreen(component: AuthorizationComponent) {
                         AuthorizationComponent.Output.OpenLocationScreen
                     )
                 }
+
+                is AuthorizationStore.Label.ThemeChanged -> {
+                    component.onOutput(AuthorizationComponent.Output.ChangeTheme(isDarkTheme = label.value))
+                }
             }
         }
     }
 
-    AuthorizationScreen(event = component::onEvent)
+    AuthorizationScreen(
+        event = component::onEvent,
+        state = state
+    )
 }
 
 @Composable
-private fun AuthorizationScreen(event: (AuthorizationStore.Intent) -> Unit) {
+private fun AuthorizationScreen(
+    event: (AuthorizationStore.Intent) -> Unit,
+    state: AuthorizationStore.State
+) {
     with(ExtensionPaddingValues) {
         Column(
             verticalArrangement = Arrangement.SpaceEvenly,
@@ -61,9 +77,11 @@ private fun AuthorizationScreen(event: (AuthorizationStore.Intent) -> Unit) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = ""
+                Image(
+                    painter = painterResource(id = R.drawable.weather_logo),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .size(64.dp)
                 )
                 Text(
                     text = "Погода",
@@ -81,7 +99,7 @@ private fun AuthorizationScreen(event: (AuthorizationStore.Intent) -> Unit) {
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.large)
+                        .clip(MaterialTheme.shapes.extraLarge)
                         .background(
                             brush = Brush.linearGradient(
                                 colors = listOf(
@@ -105,7 +123,18 @@ private fun AuthorizationScreen(event: (AuthorizationStore.Intent) -> Unit) {
                     horizontalArrangement = Arrangement.spacedBy(_8dp, Alignment.Start),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Checkbox(checked = true, onCheckedChange = {})
+                    with(ExtensionPaddingValues) {
+                        Checkbox(
+                            checked = state.checkBoxValue,
+                            onCheckedChange = { value ->
+                                event(AuthorizationStore.Intent.CheckBoxChanged(value))
+                            },
+                            modifier = Modifier.clip(MaterialTheme.shapes.extraSmall),
+                            colors = CheckboxDefaults.colors(
+                                uncheckedColor = Color(0xFFA098AE)
+                            )
+                        )
+                    }
                     Text(
                         text = "Тёмная тема",
                         style = MaterialTheme.typography.labelMedium.copy(color = Color(0xFFA098AE)),
