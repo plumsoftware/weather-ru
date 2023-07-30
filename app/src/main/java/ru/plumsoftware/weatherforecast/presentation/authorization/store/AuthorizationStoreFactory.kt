@@ -8,20 +8,27 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 
 internal class AuthorizationStoreFactory(
-    private val storeFactory: StoreFactory
+    private val storeFactory: StoreFactory,
+    private val isDarkTheme: Boolean
 ) {
 
     @OptIn(ExperimentalMviKotlinApi::class)
     fun create(): AuthorizationStore =
         object : AuthorizationStore,
             Store<AuthorizationStore.Intent, AuthorizationStore.State, AuthorizationStore.Label> by storeFactory.create(
-                name = "Authorization phone",
+                name = "Authorization",
                 initialState = AuthorizationStore.State(),
-                bootstrapper = coroutineBootstrapper {},
+                bootstrapper = coroutineBootstrapper {
+                    dispatch(AuthorizationStoreFactory.Action.Theme(value = isDarkTheme))
+                },
                 reducer = ReducerImpl,
                 executorFactory = ::ExecutorImpl
             ) {
         }
+
+    sealed interface Action {
+        data class Theme(val value: Boolean) : Action
+    }
 
     sealed interface Msg {
         data class Data(
@@ -40,7 +47,7 @@ internal class AuthorizationStoreFactory(
     }
 
     private inner class ExecutorImpl :
-        CoroutineExecutor<AuthorizationStore.Intent, Nothing, AuthorizationStore.State, AuthorizationStoreFactory.Msg, AuthorizationStore.Label>() {
+        CoroutineExecutor<AuthorizationStore.Intent, AuthorizationStoreFactory.Action, AuthorizationStore.State, AuthorizationStoreFactory.Msg, AuthorizationStore.Label>() {
 
         override fun executeIntent(
             intent: AuthorizationStore.Intent,
@@ -48,17 +55,22 @@ internal class AuthorizationStoreFactory(
         ) =
             when (intent) {
                 is AuthorizationStore.Intent.CheckBoxChanged -> {
-                    with(intent.value) {
-                        publish(AuthorizationStore.Label.ThemeChanged(this@with))
-                        dispatch(
-                            AuthorizationStoreFactory.Msg.Data(
-                                value = this@with
-                            )
+                    dispatch(
+                        AuthorizationStoreFactory.Msg.Data(
+                            value = intent.value
                         )
-                    }
+                    )
+                    publish(AuthorizationStore.Label.ThemeChanged(intent.value))
                 }
 
                 AuthorizationStore.Intent.ContinueButtonClicked -> publish(AuthorizationStore.Label.AuthorizationSuccess)
+            }
+
+        override fun executeAction(action: Action, getState: () -> AuthorizationStore.State) =
+            when (action) {
+                is Action.Theme -> {
+                    dispatch(AuthorizationStoreFactory.Msg.Data(value = action.value))
+                }
             }
     }
 

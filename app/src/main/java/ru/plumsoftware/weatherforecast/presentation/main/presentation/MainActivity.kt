@@ -1,7 +1,6 @@
 package ru.plumsoftware.weatherforecast.presentation.main.presentation
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -9,6 +8,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
@@ -17,11 +17,12 @@ import ru.plumsoftware.weatherforecast.presentation.authorization.component.Auth
 import ru.plumsoftware.weatherforecast.ui.WeatherAppTheme
 
 class MainActivity : ComponentActivity() {
-    var isDarkTheme: MutableState<Boolean> = mutableStateOf(false)
+    private var isDarkTheme: MutableState<Boolean> = mutableStateOf(false)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainContent()
+            isDarkTheme = remember { mutableStateOf(true) }
+            MainContent(isDarkTheme.value)
         }
     }
 
@@ -32,30 +33,20 @@ class MainActivity : ComponentActivity() {
             }
 
             is AuthorizationComponent.Output.ChangeTheme -> {
-
+                isDarkTheme.value = output.value
             }
         }
     }
 
-
-    private fun changeTheme(themeValue: Boolean) {
-        isDarkTheme.value = themeValue
-    }
-
     @Composable
-    internal fun MainContent() {
-        val darkTheme: Boolean = isSystemInDarkTheme()
-
-        isDarkTheme = remember {
-            mutableStateOf(darkTheme)
-        }
-
-        WeatherAppTheme(darkTheme = isDarkTheme.value) {
+    internal fun MainContent(isDarkTheme: Boolean) {
+        WeatherAppTheme(darkTheme = isDarkTheme) {
             Surface {
                 AuthorizationScreen(
                     component = AuthorizationComponent(
                         storeFactory = DefaultStoreFactory(),
-                        output = ::authorizationOutput
+                        output = ::authorizationOutput,
+                        theme = isDarkTheme
                     )
                 )
             }

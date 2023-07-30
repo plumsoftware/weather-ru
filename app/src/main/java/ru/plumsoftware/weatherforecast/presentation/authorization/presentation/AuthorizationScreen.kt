@@ -48,7 +48,9 @@ fun AuthorizationScreen(component: AuthorizationComponent) {
                 }
 
                 is AuthorizationStore.Label.ThemeChanged -> {
-                    component.onOutput(AuthorizationComponent.Output.ChangeTheme(isDarkTheme = label.value))
+                    component.onOutput(
+                        AuthorizationComponent.Output.ChangeTheme(state.checkBoxValue)
+                    )
                 }
             }
         }
@@ -123,18 +125,16 @@ private fun AuthorizationScreen(
                     horizontalArrangement = Arrangement.spacedBy(_8dp, Alignment.Start),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    with(ExtensionPaddingValues) {
-                        Checkbox(
-                            checked = state.checkBoxValue,
-                            onCheckedChange = { value ->
-                                event(AuthorizationStore.Intent.CheckBoxChanged(value))
-                            },
-                            modifier = Modifier.clip(MaterialTheme.shapes.extraSmall),
-                            colors = CheckboxDefaults.colors(
-                                uncheckedColor = Color(0xFFA098AE)
-                            )
+                    Checkbox(
+                        checked = state.checkBoxValue,
+                        onCheckedChange = { value ->
+                            event(AuthorizationStore.Intent.CheckBoxChanged(value))
+                        },
+                        modifier = Modifier.clip(MaterialTheme.shapes.extraSmall),
+                        colors = CheckboxDefaults.colors(
+                            uncheckedColor = Color(0xFFA098AE)
                         )
-                    }
+                    )
                     Text(
                         text = "Тёмная тема",
                         style = MaterialTheme.typography.labelMedium.copy(color = Color(0xFFA098AE)),
