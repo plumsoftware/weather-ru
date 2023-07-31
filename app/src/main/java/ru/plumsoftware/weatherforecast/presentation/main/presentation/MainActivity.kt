@@ -15,19 +15,21 @@ import ru.plumsoftware.weatherforecast.presentation.main.viewmodel.MainViewModel
 import ru.plumsoftware.weatherforecast.ui.WeatherAppTheme
 
 class MainActivity : ComponentActivity() {
-    //    region::Variables
-    private var isDarkTheme: MutableState<Boolean> = mutableStateOf(false)
+    //    region::View model
+    private val mainViewModel: MainViewModel = MainViewModel(context = this)
 //    endregion
 
-    //    region::View model
-    private val mainViewModel: MainViewModel = MainViewModel()
+    //    region::Variables
+    private var isDarkTheme: MutableState<Boolean> = mutableStateOf(value = false)
 //    endregion
+
 
     //    region::Functions
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            isDarkTheme = remember { mutableStateOf(true) }
+            isDarkTheme =
+                remember { mutableStateOf(value = mainViewModel.getThemeFromSharedPreferences()) }
             MainContent(isDarkTheme.value)
         }
     }
@@ -41,7 +43,7 @@ class MainActivity : ComponentActivity() {
             is AuthorizationComponent.Output.ChangeTheme -> {
                 with(output.value) {
                     isDarkTheme.value = this@with
-                    mainViewModel.saveTheme(this@with)
+                    mainViewModel.saveThemeInSharedPreferences(this@with)
                 }
             }
         }
