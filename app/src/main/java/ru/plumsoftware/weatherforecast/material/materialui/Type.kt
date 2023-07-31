@@ -7,7 +7,7 @@ import ru.plumsoftware.weatherforecast.material.extensions.ExtensionTypography
 
 internal val Typography = Typography(
     titleLarge = TextStyle(
-        fontFamily = getBoldFont(),
+        fontFamily = getSemiBoldFont(),
         fontWeight = ExtensionTypography.TypographyWeight.bold,
         fontSize = ExtensionTypography.TypographySize._24sp,
         lineHeight = ExtensionTypography.LineHeight.lineHeight,
