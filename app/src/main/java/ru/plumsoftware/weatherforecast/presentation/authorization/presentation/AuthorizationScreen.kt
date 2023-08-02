@@ -34,21 +34,21 @@ import ru.plumsoftware.weatherforecast.presentation.authorization.model.Authoriz
 import ru.plumsoftware.weatherforecast.presentation.authorization.store.AuthorizationStore
 
 @Composable
-fun AuthorizationScreen(component: AuthorizationModel) {
+fun AuthorizationScreen(authorizationModel: AuthorizationModel) {
 
-    val state by component.state.collectAsState()
+    val state by authorizationModel.state.collectAsState()
 
-    LaunchedEffect(component) {
-        component.label.collect { label ->
+    LaunchedEffect(authorizationModel) {
+        authorizationModel.label.collect { label ->
             when (label) {
                 AuthorizationStore.Label.AuthorizationSuccess -> {
-                    component.onOutput(
+                    authorizationModel.onOutput(
                         AuthorizationModel.Output.OpenLocationScreen
                     )
                 }
 
                 is AuthorizationStore.Label.ThemeChanged -> {
-                    component.onOutput(
+                    authorizationModel.onOutput(
                         AuthorizationModel.Output.ChangeTheme(state.checkBoxValue)
                     )
                 }
@@ -57,7 +57,7 @@ fun AuthorizationScreen(component: AuthorizationModel) {
     }
 
     AuthorizationScreen(
-        event = component::onEvent,
+        event = authorizationModel::onEvent,
         state = state
     )
 }
