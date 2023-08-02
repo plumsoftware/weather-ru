@@ -49,5 +49,13 @@ internal val Typography = Typography(
         fontSize = ExtensionTypography.TypographySize._12sp,
         lineHeight = ExtensionTypography.LineHeight.lineHeight,
         letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing,
+    ),
+
+    bodyMedium = TextStyle(
+        fontFamily = getRegularFont(),
+        fontWeight = ExtensionTypography.TypographyWeight.regular,
+        fontSize = ExtensionTypography.TypographySize._14sp,
+        lineHeight = ExtensionTypography.LineHeight.lineHeight,
+        letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing,
     )
 )

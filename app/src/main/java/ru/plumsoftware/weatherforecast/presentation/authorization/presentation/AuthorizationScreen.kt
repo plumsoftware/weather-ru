@@ -30,11 +30,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
-import ru.plumsoftware.weatherforecast.presentation.authorization.component.AuthorizationComponent
+import ru.plumsoftware.weatherforecast.presentation.authorization.model.AuthorizationModel
 import ru.plumsoftware.weatherforecast.presentation.authorization.store.AuthorizationStore
 
 @Composable
-fun AuthorizationScreen(component: AuthorizationComponent) {
+fun AuthorizationScreen(component: AuthorizationModel) {
 
     val state by component.state.collectAsState()
 
@@ -43,13 +43,13 @@ fun AuthorizationScreen(component: AuthorizationComponent) {
             when (label) {
                 AuthorizationStore.Label.AuthorizationSuccess -> {
                     component.onOutput(
-                        AuthorizationComponent.Output.OpenLocationScreen
+                        AuthorizationModel.Output.OpenLocationScreen
                     )
                 }
 
                 is AuthorizationStore.Label.ThemeChanged -> {
                     component.onOutput(
-                        AuthorizationComponent.Output.ChangeTheme(state.checkBoxValue)
+                        AuthorizationModel.Output.ChangeTheme(state.checkBoxValue)
                     )
                 }
             }

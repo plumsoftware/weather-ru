@@ -10,7 +10,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import ru.plumsoftware.weatherforecast.presentation.authorization.presentation.AuthorizationScreen
-import ru.plumsoftware.weatherforecast.presentation.authorization.component.AuthorizationComponent
+import ru.plumsoftware.weatherforecast.presentation.authorization.model.AuthorizationModel
+import ru.plumsoftware.weatherforecast.presentation.location.LocationScreen
 import ru.plumsoftware.weatherforecast.presentation.main.viewmodel.MainViewModel
 import ru.plumsoftware.weatherforecast.ui.WeatherAppTheme
 
@@ -34,13 +35,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun authorizationOutput(output: AuthorizationComponent.Output) {
+    private fun authorizationOutput(output: AuthorizationModel.Output) {
         when (output) {
-            AuthorizationComponent.Output.OpenLocationScreen -> {
+            AuthorizationModel.Output.OpenLocationScreen -> {
 
             }
 
-            is AuthorizationComponent.Output.ChangeTheme -> {
+            is AuthorizationModel.Output.ChangeTheme -> {
                 with(output.value) {
                     isDarkTheme.value = this@with
                     mainViewModel.saveThemeInSharedPreferences(this@with)
@@ -54,7 +55,7 @@ class MainActivity : ComponentActivity() {
         WeatherAppTheme(darkTheme = isDarkTheme) {
             Surface {
                 AuthorizationScreen(
-                    component = AuthorizationComponent(
+                    component = AuthorizationModel(
                         storeFactory = DefaultStoreFactory(),
                         output = ::authorizationOutput,
                         theme = isDarkTheme

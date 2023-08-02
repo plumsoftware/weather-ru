@@ -1,4 +1,4 @@
-package ru.plumsoftware.weatherforecast.presentation.authorization.component
+package ru.plumsoftware.weatherforecast.presentation.authorization.model
 
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import kotlinx.coroutines.flow.Flow
@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import ru.plumsoftware.weatherforecast.presentation.authorization.store.AuthorizationStore
 import ru.plumsoftware.weatherforecast.presentation.authorization.store.AuthorizationStoreFactory
 
-class AuthorizationComponent(
+class AuthorizationModel(
     private val storeFactory: StoreFactory,
     private val output: (Output) -> Unit,
     private val theme: Boolean
