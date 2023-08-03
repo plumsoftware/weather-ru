@@ -1,19 +1,47 @@
 package ru.plumsoftware.weatherforecast.presentation.main.viewmodel
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.lifecycle.ViewModel
+import com.arkivanov.mvikotlin.core.store.StoreFactory
+import com.arkivanov.mvikotlin.extensions.coroutines.labels
+import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
+import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.data.constants.Constants
 import ru.plumsoftware.weatherforecast.data.utilities.logd
+import ru.plumsoftware.weatherforecast.presentation.main.store.MainStore
+import ru.plumsoftware.weatherforecast.presentation.main.store.MainStoreFactory
 
-class MainViewModel(@SuppressLint("StaticFieldLeak") private val context: Context) : ViewModel() {
-
+class MainViewModel(
+    storeFactory: StoreFactory,
+    private val output: (MainViewModel.Output) -> Unit,
+) {
+    //    region::Variables
+    private val mainStore = MainStoreFactory(
+        storeFactory = storeFactory
+    ).create()
     private val sharedPreferences: SharedPreferences by lazy {
-        context.getSharedPreferences(
+        App.INSTANCE.getSharedPreferences(
             Constants.SharedPreferences.SHARED_PREF_NAME,
             Context.MODE_PRIVATE
         )
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val state: StateFlow<MainStore.State> = mainStore.stateFlow
+
+    val label: Flow<MainStore.Label> = mainStore.labels
+//    endregion
+
+    //    region::Functions
+    fun onEvent(event: MainStore.Intent) {
+        mainStore.accept(event)
+    }
+
+    fun onOutput(output: Output) {
+        output(output)
     }
 
     fun saveThemeInSharedPreferences(theme: Boolean) {
@@ -23,7 +51,7 @@ class MainViewModel(@SuppressLint("StaticFieldLeak") private val context: Contex
     }
 
     fun getThemeFromSharedPreferences(): Boolean {
-        val sharedPreferences: SharedPreferences = context.getSharedPreferences(
+        val sharedPreferences: SharedPreferences = App.INSTANCE.getSharedPreferences(
             Constants.SharedPreferences.SHARED_PREF_NAME,
             Context.MODE_PRIVATE
         )
@@ -31,5 +59,12 @@ class MainViewModel(@SuppressLint("StaticFieldLeak") private val context: Contex
             sharedPreferences.getBoolean(Constants.SharedPreferences.SHARED_PREF_THEME, false)
         logd("application theme: " + if (theme) "DARK" else "LIGHT")
         return theme
+    }
+//    endregion
+
+    sealed class Output {
+        data class ChangeTheme(val isDarkTheme: Boolean) : Output()
+
+        object OpenAuthorizationScreen : Output()
     }
 }

@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import ru.plumsoftware.weatherforecast.presentation.authorization.store.AuthorizationStore
 import ru.plumsoftware.weatherforecast.presentation.authorization.store.AuthorizationStoreFactory
 
-class AuthorizationModel(
+class AuthorizationViewModel(
     private val storeFactory: StoreFactory,
     private val output: (Output) -> Unit,
     private val theme: Boolean

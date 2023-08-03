@@ -6,6 +6,7 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
+import kotlinx.coroutines.launch
 
 class MainStoreFactory(
     private val storeFactory: StoreFactory
@@ -14,10 +15,10 @@ class MainStoreFactory(
     fun create(): MainStore =
         object : MainStore,
             Store<MainStore.Intent, MainStore.State, MainStore.Label> by storeFactory.create(
-                name = "Location",
+                name = "Main",
                 initialState = MainStore.State(),
                 bootstrapper = coroutineBootstrapper {
-                    dispatch(MainStoreFactory.Action.Init)
+                    launch { dispatch(MainStoreFactory.Action.Init) }
                 },
                 reducer = MainStoreFactory.ReducerImpl,
                 executorFactory = ::ExecutorImpl
@@ -29,14 +30,16 @@ class MainStoreFactory(
     }
 
     sealed interface Msg {
-        data class Test(val value: Int) : Msg
+        data class Theme(val isDarkTheme: Boolean) : Msg
     }
 
     private object ReducerImpl : Reducer<MainStore.State, MainStoreFactory.Msg> {
 
         override fun MainStore.State.reduce(msg: MainStoreFactory.Msg): MainStore.State =
             when (msg) {
-                is Msg.Test -> TODO()
+                is Msg.Theme -> copy(
+                    isDarkTheme = msg.isDarkTheme
+                )
             }
     }
 
@@ -48,14 +51,24 @@ class MainStoreFactory(
             getState: () -> MainStore.State
         ) =
             when (intent) {
-                MainStore.Intent.Test -> TODO()
-            }
-
-        override fun executeAction(action: Action, getState: () -> MainStore.State) =
-            when (action) {
-                Action.Init -> {
-                    TODO()
+                is MainStore.Intent.ChangeTheme -> {
+                    dispatch(Msg.Theme(isDarkTheme = intent.isDarkTheme))
+                    publish(MainStore.Label.ChangeTheme(isDarkTheme = intent.isDarkTheme))
                 }
             }
+
+        override fun executeAction(
+            action: MainStoreFactory.Action,
+            getState: () -> MainStore.State
+        ) =
+            when (action) {
+                is Action.Init -> init()
+            }
+
+        private fun init() {
+            scope.launch {
+                publish(MainStore.Label.OpenAuthorization)
+            }
+        }
     }
 }

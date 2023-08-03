@@ -13,10 +13,10 @@ import androidx.navigation.compose.rememberNavController
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import ru.plumsoftware.weatherforecast.application.Screens
 import ru.plumsoftware.weatherforecast.presentation.authorization.presentation.AuthorizationScreen
-import ru.plumsoftware.weatherforecast.presentation.authorization.model.AuthorizationModel
+import ru.plumsoftware.weatherforecast.presentation.authorization.model.AuthorizationViewModel
 import ru.plumsoftware.weatherforecast.presentation.location.presentation.LocationScreen
 import ru.plumsoftware.weatherforecast.presentation.location.viewmodel.LocationViewModel
-import ru.plumsoftware.weatherforecast.presentation.main.viewmodel.MainViewModel
+import ru.plumsoftware.weatherforecast.presentation.main.MainViewModel
 import ru.plumsoftware.weatherforecast.ui.WeatherAppTheme
 
 class MainActivity : ComponentActivity() {
@@ -46,15 +46,15 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable(route = Screens.Authorization) {
                             AuthorizationScreen(
-                                authorizationModel = AuthorizationModel(
+                                authorizationViewModel = AuthorizationViewModel(
                                     storeFactory = DefaultStoreFactory(),
                                     output = { output ->
                                         when (output) {
-                                            AuthorizationModel.Output.OpenLocationScreen -> {
+                                            AuthorizationViewModel.Output.OpenLocationScreen -> {
                                                 navController.navigate(route = Screens.Location)
                                             }
 
-                                            is AuthorizationModel.Output.ChangeTheme -> {
+                                            is AuthorizationViewModel.Output.ChangeTheme -> {
                                                 with(output.value) {
                                                     isDarkTheme.value = this@with
                                                     mainViewModel.saveThemeInSharedPreferences(this@with)

@@ -6,6 +6,7 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
+import kotlinx.coroutines.launch
 
 internal class AuthorizationStoreFactory(
     private val storeFactory: StoreFactory,
@@ -19,7 +20,7 @@ internal class AuthorizationStoreFactory(
                 name = "Authorization",
                 initialState = AuthorizationStore.State(),
                 bootstrapper = coroutineBootstrapper {
-                    dispatch(AuthorizationStoreFactory.Action.Theme(value = isDarkTheme))
+                    launch { dispatch(AuthorizationStoreFactory.Action.Theme(value = isDarkTheme)) }
                 },
                 reducer = ReducerImpl,
                 executorFactory = ::ExecutorImpl
@@ -68,10 +69,14 @@ internal class AuthorizationStoreFactory(
 
         override fun executeAction(action: Action, getState: () -> AuthorizationStore.State) =
             when (action) {
-                is Action.Theme -> {
-                    dispatch(AuthorizationStoreFactory.Msg.Data(value = action.value))
-                }
+                is Action.Theme -> initTheme(value = action.value)
             }
+
+        private fun initTheme(value: Boolean) {
+            scope.launch {
+                dispatch(AuthorizationStoreFactory.Msg.Data(value = !value))
+            }
+        }
     }
 
 }

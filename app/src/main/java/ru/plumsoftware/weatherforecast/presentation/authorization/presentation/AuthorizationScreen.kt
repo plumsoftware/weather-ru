@@ -30,26 +30,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
-import ru.plumsoftware.weatherforecast.presentation.authorization.model.AuthorizationModel
+import ru.plumsoftware.weatherforecast.presentation.authorization.model.AuthorizationViewModel
 import ru.plumsoftware.weatherforecast.presentation.authorization.store.AuthorizationStore
 
 @Composable
-fun AuthorizationScreen(authorizationModel: AuthorizationModel) {
+fun AuthorizationScreen(authorizationViewModel: AuthorizationViewModel) {
 
-    val state by authorizationModel.state.collectAsState()
+    val state by authorizationViewModel.state.collectAsState()
 
-    LaunchedEffect(authorizationModel) {
-        authorizationModel.label.collect { label ->
+    LaunchedEffect(authorizationViewModel) {
+        authorizationViewModel.label.collect { label ->
             when (label) {
                 AuthorizationStore.Label.AuthorizationSuccess -> {
-                    authorizationModel.onOutput(
-                        AuthorizationModel.Output.OpenLocationScreen
+                    authorizationViewModel.onOutput(
+                        AuthorizationViewModel.Output.OpenLocationScreen
                     )
                 }
 
                 is AuthorizationStore.Label.ThemeChanged -> {
-                    authorizationModel.onOutput(
-                        AuthorizationModel.Output.ChangeTheme(state.checkBoxValue)
+                    authorizationViewModel.onOutput(
+                        AuthorizationViewModel.Output.ChangeTheme(state.checkBoxValue)
                     )
                 }
             }
@@ -57,7 +57,7 @@ fun AuthorizationScreen(authorizationModel: AuthorizationModel) {
     }
 
     AuthorizationScreen(
-        event = authorizationModel::onEvent,
+        event = authorizationViewModel::onEvent,
         state = state
     )
 }
