@@ -1,4 +1,4 @@
-package ru.plumsoftware.weatherforecast.presentation.location.components
+package ru.plumsoftware.weatherforecast.presentation.location.presentation.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

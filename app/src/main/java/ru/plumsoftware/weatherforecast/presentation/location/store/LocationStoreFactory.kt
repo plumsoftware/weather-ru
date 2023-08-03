@@ -6,6 +6,7 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
+import ru.plumsoftware.weatherforecast.data.utilities.logd
 
 internal class LocationStoreFactory(
     private val storeFactory: StoreFactory
@@ -26,12 +27,20 @@ internal class LocationStoreFactory(
         }
 
     sealed interface Action {
-        data class Theme(val value: Boolean) : Action
+        object InitLocations : Action
     }
 
     sealed interface Msg {
         data class Data(
             val value: String
+        ) : Msg
+
+        data class Error(
+            val value: Boolean = false
+        ) : Msg
+
+        data class CloseIcon(
+            val isVisibleCloseIcon: Boolean = false
         ) : Msg
     }
 
@@ -41,6 +50,14 @@ internal class LocationStoreFactory(
             when (msg) {
                 is Msg.Data -> copy(
                     city = msg.value,
+                )
+
+                is Msg.Error -> copy(
+                    isSyntaxError = msg.value
+                )
+
+                is Msg.CloseIcon -> copy(
+                    isVisibleCloseIcon = msg.isVisibleCloseIcon
                 )
             }
     }
@@ -53,12 +70,24 @@ internal class LocationStoreFactory(
             getState: () -> LocationStore.State
         ) =
             when (intent) {
-                is LocationStore.Intent.ConfirmLocation -> {
-                    TODO()
+                is LocationStore.Intent.ConfirmLocation -> TODO()
+
+                LocationStore.Intent.ContinueButtonClicked -> TODO()
+
+                is LocationStore.Intent.BackButtonClicked -> {
+                    publish(LocationStore.Label.BackButtonClicked)
                 }
 
-                LocationStore.Intent.ContinueButtonClicked -> {
-                    TODO()
+                is LocationStore.Intent.TextChange -> {
+                    dispatch(Msg.Data(value = intent.text))
+                }
+
+                is LocationStore.Intent.TextError -> {
+                    dispatch(Msg.Error(value = intent.isSyntaxError))
+                }
+
+                is LocationStore.Intent.CloseIconChange -> {
+                    dispatch(Msg.CloseIcon(isVisibleCloseIcon = intent.isVisibleCloseIcon))
                 }
             }
     }

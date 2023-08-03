@@ -31,7 +31,8 @@ class LocationViewModel(
     }
 
     sealed class Output {
-        object OpenContentScreen : Output()
+        data class OpenContentScreen(val city: String) : Output()
+        object OpenAuthorizationScreen : Output()
     }
 
 }
