@@ -6,6 +6,7 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
+import kotlinx.coroutines.launch
 
 internal class LocationStoreFactory(
     private val storeFactory: StoreFactory
@@ -18,7 +19,10 @@ internal class LocationStoreFactory(
                 name = "Location",
                 initialState = LocationStore.State(),
                 bootstrapper = coroutineBootstrapper {
-
+                    launch {
+                        dispatch(LocationStoreFactory.Action.InitLocations)
+                        dispatch(LocationStoreFactory.Action.InitLocation)
+                    }
                 },
                 reducer = ReducerImpl,
                 executorFactory = ::ExecutorImpl
@@ -27,6 +31,7 @@ internal class LocationStoreFactory(
 
     sealed interface Action {
         object InitLocations : Action
+        object InitLocation : Action
     }
 
     sealed interface Msg {
@@ -91,6 +96,28 @@ internal class LocationStoreFactory(
                     dispatch(Msg.CloseIcon(isVisibleCloseIcon = intent.isVisibleCloseIcon))
                 }
             }
-    }
 
+        override fun executeAction(action: Action, getState: () -> LocationStore.State) =
+            when (action) {
+                Action.InitLocation -> {
+                    initLocation()
+                }
+
+                Action.InitLocations -> {
+                    initLocations()
+                }
+            }
+
+        private fun initLocations() {
+            scope.launch {
+
+            }
+        }
+
+        private fun initLocation() {
+            scope.launch {
+                dispatch(LocationStoreFactory.Msg.Data(value = "Омск"))
+            }
+        }
+    }
 }

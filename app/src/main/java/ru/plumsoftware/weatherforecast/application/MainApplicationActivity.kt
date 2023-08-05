@@ -67,7 +67,10 @@ class MainApplicationActivity : ComponentActivity() {
                 storeFactory = DefaultStoreFactory(),
                 output = { output ->
                     when (output) {
-                        LocationViewModel.Output.OpenAuthorizationScreen -> TODO()
+                        LocationViewModel.Output.OpenAuthorizationScreen -> {
+                            navController.navigate(route = Screens.Authorization)
+                        }
+
                         is LocationViewModel.Output.OpenContentScreen -> {
                             navController.navigate(route = Screens.Main)
                         }
