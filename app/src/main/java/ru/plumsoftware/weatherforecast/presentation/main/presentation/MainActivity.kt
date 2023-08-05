@@ -13,7 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import ru.plumsoftware.weatherforecast.application.Screens
 import ru.plumsoftware.weatherforecast.presentation.authorization.presentation.AuthorizationScreen
-import ru.plumsoftware.weatherforecast.presentation.authorization.model.AuthorizationViewModel
+import ru.plumsoftware.weatherforecast.presentation.authorization.viewmodel.AuthorizationViewModel
 import ru.plumsoftware.weatherforecast.presentation.location.presentation.LocationScreen
 import ru.plumsoftware.weatherforecast.presentation.location.viewmodel.LocationViewModel
 import ru.plumsoftware.weatherforecast.presentation.main.MainViewModel

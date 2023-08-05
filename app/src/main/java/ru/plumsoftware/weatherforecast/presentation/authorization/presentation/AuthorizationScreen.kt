@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
-import ru.plumsoftware.weatherforecast.presentation.authorization.model.AuthorizationViewModel
+import ru.plumsoftware.weatherforecast.presentation.authorization.viewmodel.AuthorizationViewModel
 import ru.plumsoftware.weatherforecast.presentation.authorization.store.AuthorizationStore
 
 @Composable

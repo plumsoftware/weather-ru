@@ -11,7 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
-import ru.plumsoftware.weatherforecast.presentation.authorization.model.AuthorizationViewModel
+import ru.plumsoftware.weatherforecast.presentation.authorization.viewmodel.AuthorizationViewModel
 import ru.plumsoftware.weatherforecast.presentation.authorization.presentation.AuthorizationScreen
 import ru.plumsoftware.weatherforecast.presentation.location.presentation.LocationScreen
 import ru.plumsoftware.weatherforecast.presentation.location.viewmodel.LocationViewModel
@@ -54,7 +54,9 @@ class MainApplicationActivity : ComponentActivity() {
                             }
                         }
 
-                        AuthorizationViewModel.Output.OpenLocationScreen -> TODO()
+                        AuthorizationViewModel.Output.OpenLocationScreen -> {
+                            navController.navigate(route = Screens.Location)
+                        }
                     }
                 },
                 theme = isDarkTheme.value
@@ -66,7 +68,9 @@ class MainApplicationActivity : ComponentActivity() {
                 output = { output ->
                     when (output) {
                         LocationViewModel.Output.OpenAuthorizationScreen -> TODO()
-                        is LocationViewModel.Output.OpenContentScreen -> TODO()
+                        is LocationViewModel.Output.OpenContentScreen -> {
+                            navController.navigate(route = Screens.Main)
+                        }
                     }
                 }
             )

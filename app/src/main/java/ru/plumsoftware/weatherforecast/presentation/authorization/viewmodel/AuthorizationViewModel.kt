@@ -1,4 +1,4 @@
-package ru.plumsoftware.weatherforecast.presentation.authorization.model
+package ru.plumsoftware.weatherforecast.presentation.authorization.viewmodel
 
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import kotlinx.coroutines.flow.Flow

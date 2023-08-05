@@ -6,7 +6,7 @@ interface LocationStore :
     Store<LocationStore.Intent, LocationStore.State, LocationStore.Label> {
 
     sealed interface Intent {
-        object ContinueButtonClicked : Intent
+        data class SearchButtonClicked(val city: String) : Intent
 
         object BackButtonClicked : Intent
 

@@ -6,7 +6,6 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
-import ru.plumsoftware.weatherforecast.data.utilities.logd
 
 internal class LocationStoreFactory(
     private val storeFactory: StoreFactory
@@ -72,7 +71,9 @@ internal class LocationStoreFactory(
             when (intent) {
                 is LocationStore.Intent.ConfirmLocation -> TODO()
 
-                LocationStore.Intent.ContinueButtonClicked -> TODO()
+                is LocationStore.Intent.SearchButtonClicked -> {
+                    publish(LocationStore.Label.ConfirmLocation(intent.city))
+                }
 
                 is LocationStore.Intent.BackButtonClicked -> {
                     publish(LocationStore.Label.BackButtonClicked)
