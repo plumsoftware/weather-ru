@@ -1,6 +1,5 @@
 package ru.plumsoftware.weatherforecast.presentation.location.presentation
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -95,7 +94,6 @@ private fun LocationScreen(
                 BackArrowButton(
                     modifier = Modifier,
                     onClick = {
-                        Log.d("WEATHER_DEBUG", "BACK")
                         event(LocationStore.Intent.BackButtonClicked)
                     })
                 Text(

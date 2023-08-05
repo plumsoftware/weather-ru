@@ -7,9 +7,11 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
+import ru.plumsoftware.weatherforecast.data.location.LocationHelper
 
 internal class LocationStoreFactory(
-    private val storeFactory: StoreFactory
+    private val storeFactory: StoreFactory,
+    private val locationHelper: LocationHelper
 ) {
 
     @OptIn(ExperimentalMviKotlinApi::class)
@@ -99,13 +101,9 @@ internal class LocationStoreFactory(
 
         override fun executeAction(action: Action, getState: () -> LocationStore.State) =
             when (action) {
-                Action.InitLocation -> {
-                    initLocation()
-                }
+                Action.InitLocation -> initLocation()
 
-                Action.InitLocations -> {
-                    initLocations()
-                }
+                Action.InitLocations -> initLocations()
             }
 
         private fun initLocations() {
@@ -116,7 +114,19 @@ internal class LocationStoreFactory(
 
         private fun initLocation() {
             scope.launch {
-                dispatch(LocationStoreFactory.Msg.Data(value = "Омск"))
+                if (locationHelper.isLocationEnabled()) {
+                    if (!locationHelper.isLocationPermissionGranted()) {
+
+                    } else {
+                        if (locationHelper.isLocationPermissionGranted() && locationHelper.isLocationEnabled()) {
+                            locationHelper.getCurrentLocation { latitude, longitude ->
+
+                            }
+                        } else {
+                            dispatch(LocationStoreFactory.Msg.Data(value = "Омск"))
+                        }
+                    }
+                }
             }
         }
     }
