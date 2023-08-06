@@ -31,9 +31,7 @@ class MainApplicationActivity : ComponentActivity() {
     private var isDarkTheme = mutableStateOf(false)
     private lateinit var navController: NavHostController
     private val PERMISSION_REQUEST_CODE = 1
-    private val permission = Manifest.permission.ACCESS_FINE_LOCATION
-    private val permissionGranted = ContextCompat.checkSelfPermission(App.INSTANCE, permission)
-    val activity = MainApplicationActivity@ this
+    private val activity = MainApplicationActivity@ this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,10 +67,14 @@ class MainApplicationActivity : ComponentActivity() {
                     }
 
                     AuthorizationViewModel.Output.OpenLocationScreen -> {
-                        if (permissionGranted != PackageManager.PERMISSION_GRANTED) {
+                        if (ContextCompat.checkSelfPermission(
+                                App.INSTANCE,
+                                Manifest.permission.ACCESS_FINE_LOCATION
+                            ) != PackageManager.PERMISSION_GRANTED
+                        ) {
                             ActivityCompat.requestPermissions(
                                 activity,
-                                arrayOf(permission),
+                                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                                 PERMISSION_REQUEST_CODE
                             )
                         } else {

@@ -16,11 +16,8 @@ class LocationViewModel(
     private val output: (LocationViewModel.Output) -> Unit,
 ) {
 
-    private val locationHelper = LocationHelper(App.INSTANCE)
-
     private val locationStore = LocationStoreFactory(
-        storeFactory = storeFactory,
-        locationHelper = locationHelper
+        storeFactory = storeFactory
     ).create()
 
     @OptIn(ExperimentalCoroutinesApi::class)

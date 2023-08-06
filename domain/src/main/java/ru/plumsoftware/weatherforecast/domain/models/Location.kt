@@ -1,4 +1,4 @@
-package ru.plumsoftware.weatherforecast.data.models
+package ru.plumsoftware.weatherforecast.domain.models
 
 data class Location(
     val city: String,

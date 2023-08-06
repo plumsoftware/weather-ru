@@ -1,5 +1,6 @@
 package ru.plumsoftware.weatherforecast.presentation.location.store
 
+import androidx.compose.ui.focus.FocusRequester
 import com.arkivanov.mvikotlin.core.store.Store
 
 interface LocationStore :
@@ -22,7 +23,8 @@ interface LocationStore :
     data class State(
         val city: String = "",
         val isSyntaxError: Boolean = false,
-        val isVisibleCloseIcon: Boolean = false
+        val isVisibleCloseIcon: Boolean = false,
+        val focusRequester: FocusRequester = FocusRequester()
     )
 
     sealed interface Label {
