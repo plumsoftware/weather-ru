@@ -1,4 +1,4 @@
-package ru.plumsoftware.weatherforecast.domain.usecase
+package ru.plumsoftware.weatherforecast.domain.usecase.location
 
 import ru.plumsoftware.weatherforecast.domain.models.Location
 import ru.plumsoftware.weatherforecast.domain.repository.LocationRepository

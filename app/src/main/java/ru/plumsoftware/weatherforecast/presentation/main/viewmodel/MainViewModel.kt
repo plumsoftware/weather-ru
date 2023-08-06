@@ -35,30 +35,13 @@ class MainViewModel(
     val label: Flow<MainStore.Label> = mainStore.labels
 //    endregion
 
-    //    region::Functions
+//    region::Functions
     fun onEvent(event: MainStore.Intent) {
         mainStore.accept(event)
     }
 
     fun onOutput(output: Output) {
         output(output)
-    }
-
-    fun saveThemeInSharedPreferences(theme: Boolean) {
-        logd("application theme: " + if (theme) "DARK" else "LIGHT")
-        sharedPreferences.edit().putBoolean(Constants.SharedPreferences.SHARED_PREF_THEME, theme)
-            .apply()
-    }
-
-    fun getThemeFromSharedPreferences(): Boolean {
-        val sharedPreferences: SharedPreferences = App.INSTANCE.getSharedPreferences(
-            Constants.SharedPreferences.SHARED_PREF_NAME,
-            Context.MODE_PRIVATE
-        )
-        val theme =
-            sharedPreferences.getBoolean(Constants.SharedPreferences.SHARED_PREF_THEME, false)
-        logd("application theme: " + if (theme) "DARK" else "LIGHT")
-        return theme
     }
 //    endregion
 

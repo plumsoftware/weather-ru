@@ -20,7 +20,7 @@ internal class AuthorizationStoreFactory(
                 name = "Authorization",
                 initialState = AuthorizationStore.State(),
                 bootstrapper = coroutineBootstrapper {
-                    launch { dispatch(AuthorizationStoreFactory.Action.Theme(value = isDarkTheme)) }
+                    launch { dispatch(Action.Theme(value = isDarkTheme)) }
                 },
                 reducer = ReducerImpl,
                 executorFactory = ::ExecutorImpl
@@ -48,7 +48,7 @@ internal class AuthorizationStoreFactory(
     }
 
     private inner class ExecutorImpl :
-        CoroutineExecutor<AuthorizationStore.Intent, AuthorizationStoreFactory.Action, AuthorizationStore.State, AuthorizationStoreFactory.Msg, AuthorizationStore.Label>() {
+        CoroutineExecutor<AuthorizationStore.Intent, Action, AuthorizationStore.State, Msg, AuthorizationStore.Label>() {
 
         override fun executeIntent(
             intent: AuthorizationStore.Intent,
@@ -57,7 +57,7 @@ internal class AuthorizationStoreFactory(
             when (intent) {
                 is AuthorizationStore.Intent.CheckBoxChanged -> {
                     dispatch(
-                        AuthorizationStoreFactory.Msg.Data(
+                        Msg.Data(
                             value = intent.value
                         )
                     )
@@ -74,7 +74,7 @@ internal class AuthorizationStoreFactory(
 
         private fun initTheme(value: Boolean) {
             scope.launch {
-                dispatch(AuthorizationStoreFactory.Msg.Data(value = !value))
+                dispatch(Msg.Data(value = !value))
             }
         }
     }
