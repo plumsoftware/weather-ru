@@ -17,10 +17,12 @@ import ru.plumsoftware.weatherforecast.presentation.main.store.MainStoreFactory
 class MainViewModel(
     storeFactory: StoreFactory,
     private val output: (MainViewModel.Output) -> Unit,
+    city: String
 ) {
     //    region::Variables
     private val mainStore = MainStoreFactory(
-        storeFactory = storeFactory
+        storeFactory = storeFactory,
+        city = city
     ).create()
     private val sharedPreferences: SharedPreferences by lazy {
         App.INSTANCE.getSharedPreferences(
@@ -35,7 +37,7 @@ class MainViewModel(
     val label: Flow<MainStore.Label> = mainStore.labels
 //    endregion
 
-//    region::Functions
+    //    region::Functions
     fun onEvent(event: MainStore.Intent) {
         mainStore.accept(event)
     }
@@ -49,5 +51,7 @@ class MainViewModel(
         data class ChangeTheme(val isDarkTheme: Boolean) : Output()
 
         object OpenAuthorizationScreen : Output()
+
+        data class OpenContentScreen(val city: String) : Output()
     }
 }

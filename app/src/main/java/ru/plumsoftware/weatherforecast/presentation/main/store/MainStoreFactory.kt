@@ -7,9 +7,11 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
+import ru.plumsoftware.weatherforecast.data.utilities.logd
 
 class MainStoreFactory(
-    private val storeFactory: StoreFactory
+    private val storeFactory: StoreFactory,
+    private val city: String?
 ) {
     @OptIn(ExperimentalMviKotlinApi::class)
     fun create(): MainStore =
@@ -67,7 +69,12 @@ class MainStoreFactory(
 
         private fun init() {
             scope.launch {
-                publish(MainStore.Label.OpenAuthorization)
+                if (city!!.isEmpty()) {
+                    logd("EXECUTE get city")
+                    publish(MainStore.Label.OpenAuthorization)
+                }
+                else
+                    publish(MainStore.Label.SkipAuthorization(city = city))
             }
         }
     }

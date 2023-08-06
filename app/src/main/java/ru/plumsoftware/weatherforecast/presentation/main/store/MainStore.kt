@@ -19,5 +19,7 @@ interface MainStore :
         data class ChangeTheme(val isDarkTheme: Boolean) : Label
 
         object OpenAuthorization : Label
+
+        data class SkipAuthorization(val city: String?) : Label
     }
 }

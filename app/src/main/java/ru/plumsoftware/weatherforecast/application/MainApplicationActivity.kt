@@ -56,8 +56,13 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                         MainViewModel.Output.OpenAuthorizationScreen -> {
                             navController.navigate(route = Screens.Authorization)
                         }
+
+                        is MainViewModel.Output.OpenContentScreen -> {
+                            navController.navigate(route = Screens.Content)
+                        }
                     }
-                }
+                },
+                city = sharedPreferencesStorage.get().city!!
             )
 
         val authorizationViewModel = AuthorizationViewModel(
@@ -119,20 +124,23 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                             )
                         }
                         composable(route = Screens.Location) {
-                            LocationScreen(locationViewModel = LocationViewModel(
-                                storeFactory = DefaultStoreFactory(),
-                                output = { output ->
-                                    when (output) {
-                                        LocationViewModel.Output.OpenAuthorizationScreen -> {
-                                            navController.navigate(route = Screens.Authorization)
-                                        }
+                            LocationScreen(
+                                locationViewModel = LocationViewModel(
+                                    storeFactory = DefaultStoreFactory(),
+                                    output = { output ->
+                                        when (output) {
+                                            LocationViewModel.Output.OpenAuthorizationScreen -> {
+                                                navController.navigate(route = Screens.Authorization)
+                                            }
 
-                                        is LocationViewModel.Output.OpenContentScreen -> {
-                                            navController.navigate(route = Screens.Main)
+                                            is LocationViewModel.Output.OpenContentScreen -> {
+                                                navController.navigate(route = Screens.Main)
+                                            }
                                         }
-                                    }
-                                }
-                            ))
+                                    },
+                                    sharedPreferencesStorage = sharedPreferencesStorage
+                                )
+                            )
                         }
                         composable(route = Screens.Content) {
 

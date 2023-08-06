@@ -28,6 +28,10 @@ fun MainScreen(mainViewModel: MainViewModel) {
                 is MainStore.Label.OpenAuthorization -> {
                     mainViewModel.onOutput(MainViewModel.Output.OpenAuthorizationScreen)
                 }
+
+                is MainStore.Label.SkipAuthorization -> {
+                    mainViewModel.onOutput(MainViewModel.Output.OpenContentScreen(city = label.city!!))
+                }
             }
         }
     }

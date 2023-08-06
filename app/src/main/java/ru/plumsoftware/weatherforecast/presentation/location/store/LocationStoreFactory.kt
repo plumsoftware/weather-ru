@@ -14,11 +14,14 @@ import ru.plumsoftware.weatherforecast.data.location.LocationHelper
 import ru.plumsoftware.weatherforecast.data.utilities.logd
 import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.domain.models.Location
+import ru.plumsoftware.weatherforecast.domain.models.UserSettings
 import ru.plumsoftware.weatherforecast.domain.repository.LocationRepository
 import ru.plumsoftware.weatherforecast.domain.storage.LocationStorage
+import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 
 internal class LocationStoreFactory(
-    private val storeFactory: StoreFactory
+    private val storeFactory: StoreFactory,
+    private val sharedPreferencesStorage: SharedPreferencesStorage
 ) : KoinComponent {
 
     private val locationStorage by inject<LocationStorage>()
@@ -88,7 +91,16 @@ internal class LocationStoreFactory(
                 is LocationStore.Intent.ConfirmLocation -> TODO()
 
                 is LocationStore.Intent.SearchButtonClicked -> {
-                    publish(LocationStore.Label.ConfirmLocation(intent.city))
+                    with(intent.city) {
+                        logd("CITY: $this")
+                        sharedPreferencesStorage.save(
+                            userSettings = UserSettings(
+                                isDarkTheme = sharedPreferencesStorage.get().isDarkTheme,
+                                city = this@with
+                            )
+                        )
+                        publish(LocationStore.Label.ConfirmLocation(value = this@with))
+                    }
                 }
 
                 is LocationStore.Intent.BackButtonClicked -> {
@@ -124,7 +136,9 @@ internal class LocationStoreFactory(
         private fun initLocation() {
             scope.launch {
                 val currentLocation: Location = locationStorage.get()
-                dispatch(LocationStoreFactory.Msg.Data(value = currentLocation.city))
+                with(currentLocation.city) {
+                    dispatch(LocationStoreFactory.Msg.Data(value = this@with))
+                }
             }
         }
     }

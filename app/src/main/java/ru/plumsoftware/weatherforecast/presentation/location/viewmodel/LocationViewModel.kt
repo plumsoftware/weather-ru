@@ -8,16 +8,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.data.location.LocationHelper
+import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecast.presentation.location.store.LocationStore
 import ru.plumsoftware.weatherforecast.presentation.location.store.LocationStoreFactory
 
 class LocationViewModel(
     storeFactory: StoreFactory,
+    sharedPreferencesStorage: SharedPreferencesStorage,
     private val output: (LocationViewModel.Output) -> Unit,
 ) {
 
     private val locationStore = LocationStoreFactory(
-        storeFactory = storeFactory
+        storeFactory = storeFactory,
+        sharedPreferencesStorage = sharedPreferencesStorage
     ).create()
 
     @OptIn(ExperimentalCoroutinesApi::class)

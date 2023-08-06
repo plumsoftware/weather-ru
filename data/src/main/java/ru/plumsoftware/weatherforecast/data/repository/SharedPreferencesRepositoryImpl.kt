@@ -17,16 +17,18 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
     }
 
     override fun saveUserSettings(userSettings: UserSettings) {
-        logd("application theme: " + if (userSettings.isDarkTheme) "DARK" else "LIGHT")
         sharedPreferences.edit()
             .putBoolean(Constants.SharedPreferences.SHARED_PREF_THEME, userSettings.isDarkTheme)
+            .putString(Constants.SharedPreferences.SHARED_PREF_CITY, userSettings.city)
             .apply()
     }
 
     override fun getUserSettings(): UserSettings {
         val theme =
             sharedPreferences.getBoolean(Constants.SharedPreferences.SHARED_PREF_THEME, false)
+        val city = sharedPreferences.getString(Constants.SharedPreferences.SHARED_PREF_CITY, "")
         logd("application theme: " + if (theme) "DARK" else "LIGHT")
-        return UserSettings(isDarkTheme = theme)
+        logd("base city: $city")
+        return UserSettings(isDarkTheme = theme, city = city)
     }
 }
