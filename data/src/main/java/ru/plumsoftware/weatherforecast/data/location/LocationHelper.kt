@@ -3,9 +3,12 @@ package ru.plumsoftware.weatherforecast.data.location
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.location.LocationManager
 import androidx.core.app.ActivityCompat
 import ru.plumsoftware.weatherforecast.data.utilities.logd
+import java.io.IOException
+import java.util.Locale
 
 class LocationHelper(private val context: Context) {
 
@@ -35,7 +38,7 @@ class LocationHelper(private val context: Context) {
         return result
     }
 
-    fun getCurrentLocation(onSuccess: (latitude: Double, longitude: Double) -> Unit) {
+    fun getCurrentLocation(onSuccess: (latitude: Double, longitude: Double, city: String?, country: String?) -> Unit) {
         val location =
             if (ActivityCompat.checkSelfPermission(
                     context,
@@ -58,7 +61,29 @@ class LocationHelper(private val context: Context) {
                     ?: locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
             }
         location?.let {
-            onSuccess(it.latitude, it.longitude)
+            val cityAndCountry = getCityAndCountry(it.latitude, it.longitude)
+            onSuccess(it.latitude, it.longitude, cityAndCountry.first, cityAndCountry.second)
         }
+    }
+
+    private fun getCityAndCountry(latitude: Double, longitude: Double): Pair<String?, String?> {
+        val geocoder = Geocoder(context, Locale.getDefault())
+        var city: String? = null
+        var country: String? = null
+
+        try {
+            val addresses = geocoder.getFromLocation(latitude, longitude, 1)
+            if (addresses!!.isNotEmpty()) {
+                city = addresses[0].locality
+                country = addresses[0].countryName
+
+                logd("CITY: ${city}")
+                logd("COUNTRY: ${country}")
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        return Pair(city, country)
     }
 }

@@ -32,11 +32,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ru.plumsoftware.weatherforecast.data.utilities.logd
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.presentation.location.presentation.components.BackArrowButton
 import ru.plumsoftware.weatherforecast.presentation.location.store.LocationStore
@@ -119,7 +121,13 @@ private fun LocationScreen(
                 textStyle = MaterialTheme.typography.labelMedium,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight(),
+                    .wrapContentHeight()
+                    .onFocusChanged {
+                        if (it.isFocused) {
+                            if (state.city.isNotEmpty())
+                                event(LocationStore.Intent.CloseIconChange(isVisibleCloseIcon = true))
+                        }
+                    },
                 onValueChange = {
                     with(it) {
                         event(LocationStore.Intent.TextChange(text = this@with))

@@ -12,7 +12,7 @@ import ru.plumsoftware.weatherforecast.presentation.location.store.LocationStore
 import ru.plumsoftware.weatherforecast.presentation.location.store.LocationStoreFactory
 
 class LocationViewModel(
-    private val storeFactory: StoreFactory,
+    storeFactory: StoreFactory,
     private val output: (LocationViewModel.Output) -> Unit,
 ) {
 

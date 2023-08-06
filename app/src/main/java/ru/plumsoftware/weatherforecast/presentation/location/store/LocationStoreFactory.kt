@@ -7,7 +7,10 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
+import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.data.location.LocationHelper
+import ru.plumsoftware.weatherforecast.data.utilities.logd
+import ru.plumsoftware.weatherforecast.data.utilities.showToast
 
 internal class LocationStoreFactory(
     private val storeFactory: StoreFactory,
@@ -22,7 +25,7 @@ internal class LocationStoreFactory(
                 initialState = LocationStore.State(),
                 bootstrapper = coroutineBootstrapper {
                     launch {
-                        dispatch(LocationStoreFactory.Action.InitLocations)
+//                        dispatch(LocationStoreFactory.Action.InitLocations)
                         dispatch(LocationStoreFactory.Action.InitLocation)
                     }
                 },
@@ -115,17 +118,15 @@ internal class LocationStoreFactory(
         private fun initLocation() {
             scope.launch {
                 if (locationHelper.isLocationEnabled()) {
-                    if (!locationHelper.isLocationPermissionGranted()) {
-
-                    } else {
-                        if (locationHelper.isLocationPermissionGranted() && locationHelper.isLocationEnabled()) {
-                            locationHelper.getCurrentLocation { latitude, longitude ->
-
-                            }
-                        } else {
-                            dispatch(LocationStoreFactory.Msg.Data(value = "Омск"))
-                        }
+                    locationHelper.getCurrentLocation { latitude, longitude, city, country ->
+                        logd("LOC")
+                        dispatch(LocationStoreFactory.Msg.Data(value = city!!))
                     }
+                } else {
+                    showToast(
+                        App.INSTANCE,
+                        "Определение местоположения не доступно на вашем устройстве"
+                    )
                 }
             }
         }

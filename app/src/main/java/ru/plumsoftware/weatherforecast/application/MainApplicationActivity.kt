@@ -15,10 +15,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
+import ru.plumsoftware.weatherforecast.data.location.LocationHelper
 import ru.plumsoftware.weatherforecast.data.utilities.logd
+import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.presentation.authorization.viewmodel.AuthorizationViewModel
 import ru.plumsoftware.weatherforecast.presentation.authorization.presentation.AuthorizationScreen
 import ru.plumsoftware.weatherforecast.presentation.location.presentation.LocationScreen
+import ru.plumsoftware.weatherforecast.presentation.location.store.LocationStoreFactory
 import ru.plumsoftware.weatherforecast.presentation.location.viewmodel.LocationViewModel
 import ru.plumsoftware.weatherforecast.presentation.main.presentation.MainScreen
 import ru.plumsoftware.weatherforecast.presentation.main.viewmodel.MainViewModel
@@ -30,11 +33,12 @@ class MainApplicationActivity : ComponentActivity() {
     private val PERMISSION_REQUEST_CODE = 1
     private val permission = Manifest.permission.ACCESS_FINE_LOCATION
     private val permissionGranted = ContextCompat.checkSelfPermission(App.INSTANCE, permission)
+    val activity = MainApplicationActivity@ this
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        region::View models
+//        region::View model
         val mainViewModel =
             MainViewModel(
                 storeFactory = DefaultStoreFactory(),
@@ -51,49 +55,34 @@ class MainApplicationActivity : ComponentActivity() {
                 }
             )
 
-        val authorizationModel =
-            AuthorizationViewModel(
-                storeFactory = DefaultStoreFactory(),
-                output = { output ->
-                    when (output) {
-                        is AuthorizationViewModel.Output.ChangeTheme -> {
-                            with(output) {
-                                isDarkTheme.value = value
-                                mainViewModel.saveThemeInSharedPreferences(theme = value)
-                            }
-                        }
-
-                        AuthorizationViewModel.Output.OpenLocationScreen -> {
-                            if (permissionGranted != PackageManager.PERMISSION_GRANTED) {
-                                ActivityCompat.requestPermissions(
-                                    MainActivity@ this,
-                                    arrayOf(permission),
-                                    PERMISSION_REQUEST_CODE
-                                )
-                            } else {
-                                navController.navigate(route = Screens.Location)
-                            }
+        val authorizationViewModel = AuthorizationViewModel(
+            storeFactory = DefaultStoreFactory(),
+            output = { output ->
+                when (output) {
+                    is AuthorizationViewModel.Output.ChangeTheme -> {
+                        with(output) {
+                            isDarkTheme.value = value
+                            mainViewModel.saveThemeInSharedPreferences(
+                                theme = value
+                            )
                         }
                     }
-                },
-                theme = isDarkTheme.value
-            )
 
-        val locationViewModel =
-            LocationViewModel(
-                storeFactory = DefaultStoreFactory(),
-                output = { output ->
-                    when (output) {
-                        LocationViewModel.Output.OpenAuthorizationScreen -> {
-                            navController.navigate(route = Screens.Authorization)
-                        }
-
-                        is LocationViewModel.Output.OpenContentScreen -> {
-                            navController.navigate(route = Screens.Main)
+                    AuthorizationViewModel.Output.OpenLocationScreen -> {
+                        if (permissionGranted != PackageManager.PERMISSION_GRANTED) {
+                            ActivityCompat.requestPermissions(
+                                activity,
+                                arrayOf(permission),
+                                PERMISSION_REQUEST_CODE
+                            )
+                        } else {
+                            navController.navigate(route = Screens.Location)
                         }
                     }
                 }
-            )
+            },
+            theme = isDarkTheme.value
+        )
 //        endregion
 
         setContent {
@@ -114,10 +103,28 @@ class MainApplicationActivity : ComponentActivity() {
                             MainScreen(mainViewModel = mainViewModel)
                         }
                         composable(route = Screens.Authorization) {
-                            AuthorizationScreen(authorizationViewModel = authorizationModel)
+                            AuthorizationScreen(
+                                authorizationViewModel = authorizationViewModel
+                            )
                         }
                         composable(route = Screens.Location) {
-                            LocationScreen(locationViewModel = locationViewModel)
+                            LocationScreen(locationViewModel = LocationViewModel(
+                                storeFactory = DefaultStoreFactory(),
+                                output = { output ->
+                                    when (output) {
+                                        LocationViewModel.Output.OpenAuthorizationScreen -> {
+                                            navController.navigate(route = Screens.Authorization)
+                                        }
+
+                                        is LocationViewModel.Output.OpenContentScreen -> {
+                                            navController.navigate(route = Screens.Main)
+                                        }
+                                    }
+                                }
+                            ))
+                        }
+                        composable(route = Screens.Content) {
+
                         }
                     }
                 }
