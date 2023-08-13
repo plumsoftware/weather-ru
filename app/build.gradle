@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace 'ru.plumsoftware.weatherforecast'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         applicationId "ru.plumsoftware.weatherforecast"
         minSdk 24
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -62,7 +62,9 @@ dependencies {
     def mvi_kotlin_extensions_coroutines = "mvikotlin-extensions-coroutines"
     def mvi_kotlin_extensions_coroutines_version = "3.2.1"
 
-    def nav_version = "2.6.0"
+    def nav_version = "2.7.0"
+
+    def ui_controller = "0.30.1"
 
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.0')
@@ -94,6 +96,9 @@ dependencies {
     implementation "com.arkivanov.mvikotlin:$mvi_kotlin_extensions_coroutines:$mvi_kotlin_extensions_coroutines_version"
     implementation "com.arkivanov.mvikotlin:$mvi_kotlin_logging:$mvi_kotlin_logging_version"
     implementation "com.arkivanov.essenty:lifecycle:$essenty_version"
+
+//    UI controller
+    implementation "com.google.accompanist:accompanist-systemuicontroller:$ui_controller"
 
 //    Modules
     implementation project(path: ":domain")

@@ -33,6 +33,7 @@ import ru.plumsoftware.weatherforecast.presentation.location.store.LocationStore
 import ru.plumsoftware.weatherforecast.presentation.location.viewmodel.LocationViewModel
 import ru.plumsoftware.weatherforecast.presentation.main.presentation.MainScreen
 import ru.plumsoftware.weatherforecast.presentation.main.viewmodel.MainViewModel
+import ru.plumsoftware.weatherforecast.ui.SetupUIController
 import ru.plumsoftware.weatherforecast.ui.WeatherAppTheme
 
 class MainApplicationActivity : ComponentActivity(), KoinComponent {
@@ -111,6 +112,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
             navController = rememberNavController()
 
             WeatherAppTheme(darkTheme = isDarkTheme.value) {
+                SetupUIController()
                 Surface {
                     NavHost(
                         navController = navController,

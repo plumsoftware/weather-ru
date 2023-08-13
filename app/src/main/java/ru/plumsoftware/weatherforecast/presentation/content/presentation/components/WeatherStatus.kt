@@ -1,8 +1,6 @@
 package ru.plumsoftware.weatherforecast.presentation.content.presentation.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,12 +11,12 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionSize
 
@@ -31,11 +29,11 @@ fun WeatherStatus() {
             .fillMaxWidth(fraction = 1.0f)
             .wrapContentHeight()
     ) {
-        Spacer(modifier = Modifier.height(height = ExtensionPaddingValues._24dp))
+        Spacer(modifier = Modifier.height(height = ExtensionPaddingValues._14dp))
         Icon(
             imageVector = Icons.Rounded.Person,
             contentDescription = "weather status logo",
-            tint = Color.White,
+            tint = LocalContentColor.current,
             modifier = Modifier.size(size = ExtensionSize.IconSize._64dp)
         )
         Spacer(modifier = Modifier.height(height = ExtensionPaddingValues._24dp))
@@ -50,11 +48,11 @@ fun WeatherStatus() {
         ) {
             Text(
                 text = "Солнечно",
-                style = MaterialTheme.typography.titleLarge.copy(color = Color.White)
+                style = MaterialTheme.typography.titleLarge
             )
             Text(
                 text = "Пятница, 21 июля 2023",
-                style = MaterialTheme.typography.labelMedium.copy(color = Color.White)
+                style = MaterialTheme.typography.labelMedium
             )
         }
     }
