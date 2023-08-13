@@ -6,5 +6,10 @@ object ExtensionSize {
     object IconSize {
         val _20dp = 20.dp
         val _24dp = 24.dp
+        val _64dp = 64.dp
+    }
+
+    object Corners {
+        val _24dp = 24.dp
     }
 }

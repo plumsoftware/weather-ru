@@ -27,6 +27,7 @@ import ru.plumsoftware.weatherforecast.domain.models.UserSettings
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecast.presentation.authorization.viewmodel.AuthorizationViewModel
 import ru.plumsoftware.weatherforecast.presentation.authorization.presentation.AuthorizationScreen
+import ru.plumsoftware.weatherforecast.presentation.content.presentation.ContentScreen
 import ru.plumsoftware.weatherforecast.presentation.location.presentation.LocationScreen
 import ru.plumsoftware.weatherforecast.presentation.location.store.LocationStoreFactory
 import ru.plumsoftware.weatherforecast.presentation.location.viewmodel.LocationViewModel
@@ -143,7 +144,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                             )
                         }
                         composable(route = Screens.Content) {
-
+                            ContentScreen()
                         }
                     }
                 }
