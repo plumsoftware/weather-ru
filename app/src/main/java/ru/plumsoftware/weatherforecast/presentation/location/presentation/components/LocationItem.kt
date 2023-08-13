@@ -19,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import ru.plumsoftware.weatherforecast.R
+import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionSize
 
@@ -45,7 +47,7 @@ internal fun LocationItem(city: String, country: String, onClick: () -> Unit) {
             ) {
                 Image(
                     imageVector = Icons.Rounded.LocationOn,
-                    contentDescription = "image description", //TODO: Replace with string resources
+                    contentDescription = App.INSTANCE.getString(R.string.location_icon_description),
                     contentScale = ContentScale.None,
                     modifier = Modifier.size(size = ExtensionSize.IconSize._24dp),
                     colorFilter = ColorFilter.tint(colorScheme.primary)

@@ -30,10 +30,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
@@ -41,7 +39,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import ru.plumsoftware.weatherforecast.data.utilities.logd
+import ru.plumsoftware.weatherforecast.R
+import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.presentation.location.presentation.components.BackArrowButton
 import ru.plumsoftware.weatherforecast.presentation.location.store.LocationStore
@@ -102,7 +101,7 @@ private fun LocationScreen(
                         event(LocationStore.Intent.BackButtonClicked)
                     })
                 Text(
-                    text = "Местоположение", // TODO: Replace with string resources
+                    text = App.INSTANCE.getString(R.string.location),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -162,13 +161,13 @@ private fun LocationScreen(
                 leadingIcon = {
                     Icon(
                         imageVector = Icons.Rounded.Search,
-                        contentDescription = "search", //TODO: replace with string resources
+                        contentDescription = App.INSTANCE.getString(R.string.search_icon_description),
                         tint = if (state.isSyntaxError) MaterialTheme.colorScheme.error else LocalContentColor.current
                     )
                 },
                 placeholder = {
                     Text(
-                        text = "Введите город", //TODO: replace with string resources
+                        text = App.INSTANCE.getString(R.string.location_text_hint),
                         style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.secondary),
                     )
                 },
@@ -180,7 +179,7 @@ private fun LocationScreen(
                         }) {
                             Icon(
                                 imageVector = Icons.Rounded.Close,
-                                contentDescription = "clear text field", //TODO: replace with string resources
+                                contentDescription = App.INSTANCE.getString(R.string.clear_icon_description),
                             )
                         }
                     }

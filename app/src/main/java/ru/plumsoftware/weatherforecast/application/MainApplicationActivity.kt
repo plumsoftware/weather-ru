@@ -28,6 +28,7 @@ import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecast.presentation.authorization.viewmodel.AuthorizationViewModel
 import ru.plumsoftware.weatherforecast.presentation.authorization.presentation.AuthorizationScreen
 import ru.plumsoftware.weatherforecast.presentation.content.presentation.ContentScreen
+import ru.plumsoftware.weatherforecast.presentation.content.viewmodel.ContentViewModel
 import ru.plumsoftware.weatherforecast.presentation.location.presentation.LocationScreen
 import ru.plumsoftware.weatherforecast.presentation.location.store.LocationStoreFactory
 import ru.plumsoftware.weatherforecast.presentation.location.viewmodel.LocationViewModel
@@ -137,7 +138,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                             }
 
                                             is LocationViewModel.Output.OpenContentScreen -> {
-                                                navController.navigate(route = Screens.Main)
+                                                navController.navigate(route = Screens.Content)
                                             }
                                         }
                                     },
@@ -146,7 +147,16 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                             )
                         }
                         composable(route = Screens.Content) {
-                            ContentScreen()
+                            ContentScreen(
+                                contentViewModel = ContentViewModel(
+                                    storeFactory = DefaultStoreFactory(),
+                                    output = { output ->
+                                        when (output) {
+                                            ContentViewModel.Output.OpenLocationScreen -> TODO()
+                                        }
+                                    }
+                                )
+                            )
                         }
                     }
                 }

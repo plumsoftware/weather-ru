@@ -11,6 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import ru.plumsoftware.weatherforecast.R
+import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionSize
 
 @Composable
@@ -29,7 +31,7 @@ fun BackArrowButton(modifier: Modifier, onClick: () -> Unit) {
             Icon(
                 modifier = Modifier,
                 imageVector = Icons.Rounded.ArrowBack,
-                contentDescription = "arrow back" //TODO: replace with string resources
+                contentDescription = App.INSTANCE.getString(R.string.back_arrow_icon_description)
             )
         }
     }

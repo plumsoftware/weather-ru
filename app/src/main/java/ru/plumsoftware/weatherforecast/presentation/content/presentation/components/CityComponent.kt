@@ -19,6 +19,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
+import ru.plumsoftware.weatherforecast.R
+import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionSize
 
@@ -52,7 +54,7 @@ fun CityComponent() {
                     modifier = Modifier.size(size = ExtensionSize.IconSize._20dp),
                     imageVector = Icons.Rounded.MoreVert,
                     tint = Color.Transparent,
-                    contentDescription = "more" //TODO: replace with string resources
+                    contentDescription = ""
                 )
             }
         }
@@ -77,7 +79,7 @@ fun CityComponent() {
                 Icon(
                     modifier = Modifier.size(size = ExtensionSize.IconSize._20dp),
                     imageVector = Icons.Rounded.MoreVert,
-                    contentDescription = "more" //TODO: replace with string resources
+                    contentDescription = App.INSTANCE.getString(R.string.more_icon_dewscription)
                 )
             }
         }

@@ -1,3 +1,19 @@
 <resources>
     <string name="app_name">Погода</string>
+
+    <!--    Authorization-->
+    <string name="weather_logo_description">Иконка приложения</string>
+    <string name="get_started">Начать</string>
+    <string name="dark_theme">Тёмная тема</string>
+
+    <!--    Location-->
+    <string name="location">Местоположение</string>
+    <string name="search_icon_description">Иконка поиска</string>
+    <string name="location_text_hint">Введите город</string>
+    <string name="clear_icon_description">Очистить введённый текст</string>
+    <string name="back_arrow_icon_description">Кнопка назад</string>
+    <string name="location_icon_description">Иконка местоположения</string>
+
+    <!--    Content-->
+    <string name="more_icon_dewscription">Кнопка с выподающим меню</string>
 </resources>

@@ -29,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ru.plumsoftware.weatherforecast.R
+import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.presentation.authorization.viewmodel.AuthorizationViewModel
 import ru.plumsoftware.weatherforecast.presentation.authorization.store.AuthorizationStore
@@ -81,12 +82,12 @@ private fun AuthorizationScreen(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.weather_logo),
-                    contentDescription = "",
+                    contentDescription = App.INSTANCE.getString(R.string.weather_logo_description),
                     modifier = Modifier
                         .size(64.dp)
                 )
                 Text(
-                    text = "Погода",
+                    text = App.INSTANCE.getString(R.string.app_name),
                     style = MaterialTheme.typography.titleLarge
                 )
             }
@@ -117,7 +118,7 @@ private fun AuthorizationScreen(
                     )
                 ) {
                     Text(
-                        text = "Начать",
+                        text = App.INSTANCE.getString(R.string.get_started),
                         style = MaterialTheme.typography.titleSmall.copy(color = Color.White),
                     )
                 }
@@ -136,7 +137,7 @@ private fun AuthorizationScreen(
                         )
                     )
                     Text(
-                        text = "Тёмная тема",
+                        text = App.INSTANCE.getString(R.string.dark_theme),
                         style = MaterialTheme.typography.labelMedium.copy(color = Color(0xFFA098AE)),
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Start
