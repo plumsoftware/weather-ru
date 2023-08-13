@@ -23,9 +23,10 @@ import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionSize
+import ru.plumsoftware.weatherforecast.presentation.content.store.ContentStore
 
 @Composable
-fun CityComponent() {
+fun CityComponent(state: ContentStore.State) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
@@ -59,7 +60,7 @@ fun CityComponent() {
             }
         }
         Text(
-            text = "Омск, Россия",
+            text = with(state) {"$city, $country"},
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier
                 .wrapContentSize()

@@ -41,6 +41,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.application.App
+import ru.plumsoftware.weatherforecast.domain.models.Location
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.presentation.location.presentation.components.BackArrowButton
 import ru.plumsoftware.weatherforecast.presentation.location.store.LocationStore
@@ -53,9 +54,15 @@ fun LocationScreen(locationViewModel: LocationViewModel) {
     LaunchedEffect(locationViewModel) {
         locationViewModel.label.collect { label ->
             when (label) {
-                LocationStore.Label.AuthorizationSuccess -> TODO()
                 is LocationStore.Label.ConfirmLocation -> {
-                    locationViewModel.onOutput(LocationViewModel.Output.OpenContentScreen(city = label.value))
+                    locationViewModel.onOutput(
+                        LocationViewModel.Output.OpenContentScreen(
+                            location = Location(
+                                city = label.city,
+                                country = label.country
+                            )
+                        )
+                    )
                 }
 
                 LocationStore.Label.BackButtonClicked -> {

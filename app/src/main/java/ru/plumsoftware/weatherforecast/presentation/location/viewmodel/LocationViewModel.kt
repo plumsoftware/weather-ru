@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.data.location.LocationHelper
+import ru.plumsoftware.weatherforecast.domain.models.Location
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecast.presentation.location.store.LocationStore
 import ru.plumsoftware.weatherforecast.presentation.location.store.LocationStoreFactory
@@ -37,7 +38,7 @@ class LocationViewModel(
     }
 
     sealed class Output {
-        data class OpenContentScreen(val city: String) : Output()
+        data class OpenContentScreen(val location: Location) : Output()
         object OpenAuthorizationScreen : Output()
     }
 

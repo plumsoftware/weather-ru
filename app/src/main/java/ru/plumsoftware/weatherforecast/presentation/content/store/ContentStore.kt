@@ -11,7 +11,8 @@ interface ContentStore :
     }
 
     data class State(
-        val todo: Boolean = false
+        val city: String = "",
+        val country: String = ""
     )
 
     sealed interface Label {

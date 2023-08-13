@@ -7,17 +7,24 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
+import ru.plumsoftware.weatherforecast.data.utilities.logd
+import ru.plumsoftware.weatherforecast.domain.models.Location
+import ru.plumsoftware.weatherforecast.domain.models.UserSettings
+import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 
-class ContentStoreFactory(private val storeFactory: StoreFactory) {
+class ContentStoreFactory(
+    private val storeFactory: StoreFactory,
+    private val sharedPreferencesStorage: SharedPreferencesStorage
+) {
 
     @OptIn(ExperimentalMviKotlinApi::class)
     fun create(): ContentStore =
         object : ContentStore,
             Store<ContentStore.Intent, ContentStore.State, ContentStore.Label> by storeFactory.create(
-                name = "Authorization",
+                name = "Content",
                 initialState = ContentStore.State(),
                 bootstrapper = coroutineBootstrapper {
-                    launch { }
+                    launch { dispatch(ContentStoreFactory.Action.InitLocation) }
                 },
                 reducer = ContentStoreFactory.ReducerImpl,
                 executorFactory = ::ExecutorImpl
@@ -25,12 +32,13 @@ class ContentStoreFactory(private val storeFactory: StoreFactory) {
         }
 
     sealed interface Action {
-
+        object InitLocation : Action
     }
 
     sealed interface Msg {
-        data class Todo(
-            val value: Boolean
+        data class LocationData(
+            val city: String,
+            val country: String
         ) : Msg
     }
 
@@ -38,8 +46,9 @@ class ContentStoreFactory(private val storeFactory: StoreFactory) {
 
         override fun ContentStore.State.reduce(msg: Msg): ContentStore.State =
             when (msg) {
-                is Msg.Todo -> copy(
-                    todo = msg.value,
+                is Msg.LocationData -> copy(
+                    city = msg.city,
+                    country = msg.country
                 )
             }
     }
@@ -52,18 +61,26 @@ class ContentStoreFactory(private val storeFactory: StoreFactory) {
             getState: () -> ContentStore.State
         ) =
             when (intent) {
-                is ContentStore.Intent.Todo -> {
-                    dispatch(
-                        Msg.Todo(
-                            value = false
-                        )
-                    )
-                }
+                is ContentStore.Intent.Todo -> {}
             }
 
         override fun executeAction(action: Action, getState: () -> ContentStore.State) =
             when (action) {
-                else -> {}
+                is Action.InitLocation -> initLocation()
             }
+
+        private fun initLocation() {
+            scope.launch {
+                val userSettings: UserSettings = sharedPreferencesStorage.get()
+                with(userSettings) {
+                    dispatch(
+                        ContentStoreFactory.Msg.LocationData(
+                            city = city!!,
+                            country = country!!
+                        )
+                    )
+                }
+            }
+        }
     }
 }

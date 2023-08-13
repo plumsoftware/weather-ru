@@ -3,6 +3,7 @@ package ru.plumsoftware.weatherforecast.presentation.main.presentation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -52,8 +53,9 @@ private fun MainScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Switch(checked = state.isDarkTheme, onCheckedChange = { value ->
-            event(MainStore.Intent.ChangeTheme(isDarkTheme = value))
-        })
+        CircularProgressIndicator()
+//        Switch(checked = state.isDarkTheme, onCheckedChange = { value ->
+//            event(MainStore.Intent.ChangeTheme(isDarkTheme = value))
+//        })
     }
 }

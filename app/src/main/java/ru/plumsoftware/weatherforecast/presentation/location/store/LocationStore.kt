@@ -22,17 +22,16 @@ interface LocationStore :
 
     data class State(
         val city: String = "",
+        val country: String = "",
         val isSyntaxError: Boolean = false,
         val isVisibleCloseIcon: Boolean = false,
         val focusRequester: FocusRequester = FocusRequester()
     )
 
     sealed interface Label {
-        object AuthorizationSuccess : Label
-
         object BackButtonClicked : Label
 
-        data class ConfirmLocation(val value: String) : Label
+        data class ConfirmLocation(val city: String, val country: String) : Label
 
     }
 }

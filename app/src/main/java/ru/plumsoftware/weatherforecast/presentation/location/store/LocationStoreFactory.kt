@@ -9,13 +9,9 @@ import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import ru.plumsoftware.weatherforecast.application.App
-import ru.plumsoftware.weatherforecast.data.location.LocationHelper
 import ru.plumsoftware.weatherforecast.data.utilities.logd
-import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.domain.models.Location
 import ru.plumsoftware.weatherforecast.domain.models.UserSettings
-import ru.plumsoftware.weatherforecast.domain.repository.LocationRepository
 import ru.plumsoftware.weatherforecast.domain.storage.LocationStorage
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 
@@ -50,8 +46,10 @@ internal class LocationStoreFactory(
 
     sealed interface Msg {
         data class Data(
-            val value: String
+            val city: String
         ) : Msg
+
+        data class Country(val county: String) : Msg
 
         data class Error(
             val value: Boolean = false
@@ -67,7 +65,7 @@ internal class LocationStoreFactory(
         override fun LocationStore.State.reduce(msg: Msg): LocationStore.State =
             when (msg) {
                 is Msg.Data -> copy(
-                    city = msg.value,
+                    city = msg.city
                 )
 
                 is Msg.Error -> copy(
@@ -76,6 +74,10 @@ internal class LocationStoreFactory(
 
                 is Msg.CloseIcon -> copy(
                     isVisibleCloseIcon = msg.isVisibleCloseIcon
+                )
+
+                is Msg.Country -> copy(
+                    country = msg.county
                 )
             }
     }
@@ -96,10 +98,16 @@ internal class LocationStoreFactory(
                         sharedPreferencesStorage.save(
                             userSettings = UserSettings(
                                 isDarkTheme = sharedPreferencesStorage.get().isDarkTheme,
-                                city = this@with
+                                city = this@with,
+                                country = getState().country
                             )
                         )
-                        publish(LocationStore.Label.ConfirmLocation(value = this@with))
+                        publish(
+                            LocationStore.Label.ConfirmLocation(
+                                city = this@with,
+                                country = getState().country
+                            )
+                        )
                     }
                 }
 
@@ -108,7 +116,7 @@ internal class LocationStoreFactory(
                 }
 
                 is LocationStore.Intent.TextChange -> {
-                    dispatch(Msg.Data(value = intent.text))
+                    dispatch(Msg.Data(city = intent.text))
                 }
 
                 is LocationStore.Intent.TextError -> {
@@ -136,8 +144,9 @@ internal class LocationStoreFactory(
         private fun initLocation() {
             scope.launch {
                 val currentLocation: Location = locationStorage.get()
-                with(currentLocation.city) {
-                    dispatch(LocationStoreFactory.Msg.Data(value = this@with))
+                with(currentLocation) {
+                    dispatch(LocationStoreFactory.Msg.Data(city = city))
+                    dispatch(LocationStoreFactory.Msg.Country(county = country))
                 }
             }
         }
