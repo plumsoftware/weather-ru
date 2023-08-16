@@ -59,7 +59,7 @@ class ContentStoreFactory(
                     country = msg.country
                 )
 
-                is Msg.CheckBoxValue -> copy(checkBoxState = !msg.value)
+                is Msg.CheckBoxValue -> copy(checkBoxState = msg.value)
                 is Msg.DropDownMenu -> copy(dropDownState = !msg.value)
             }
     }
@@ -80,7 +80,7 @@ class ContentStoreFactory(
                             isDarkTheme = sharedPreferencesStorage.get().isDarkTheme,
                             city = sharedPreferencesStorage.get().city,
                             country = sharedPreferencesStorage.get().country,
-                            showTips = !intent.value
+                            showTips = intent.value
                         )
                     )
                 }

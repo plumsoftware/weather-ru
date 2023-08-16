@@ -5,10 +5,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -146,28 +148,27 @@ fun CityComponent(
                         )
                     }, onClick = { /*TODO*/ })
 
-//                    Divider(modifier = Modifier.height(height = ExtensionSize.Divider.height))
-//
-//                    Row(
-//                        horizontalArrangement = Arrangement.spacedBy(
-//                            ExtensionPaddingValues._10dp,
-//                            Alignment.Start
-//                        ),
-//                        verticalAlignment = Alignment.CenterVertically,
-//                    ) {
-//                        Checkbox(
-//                            checked = checkBoxValue,
-//                            onCheckedChange = onCheckedChange
-//                        )
-//                        Text(
-//                            text = "Показывать посказки",
-//                            style = MaterialTheme.typography.labelMedium,
-//                            modifier = Modifier
-//                                .padding(end = ExtensionPaddingValues._10dp)
-//                                .fillMaxWidth(),
-//                            textAlign = TextAlign.Start
-//                        )
-//                    }
+                    Divider(modifier = Modifier.height(height = ExtensionSize.Divider.height))
+                    DropdownMenuItem(text = {
+                        Row(
+                            horizontalArrangement = Arrangement.Start,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Checkbox(
+                                checked = checkBoxValue,
+                                onCheckedChange = onCheckedChange
+                            )
+                            Spacer(modifier = Modifier.width(width = ExtensionPaddingValues._10dp))
+                            Text(
+                                text = "Показывать посказки",
+                                style = MaterialTheme.typography.labelMedium,
+                                modifier = Modifier
+                                    .padding(end = ExtensionPaddingValues._10dp)
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.Start
+                            )
+                        }
+                    }, onClick = { /*TODO*/ })
                 }
             }
         }
