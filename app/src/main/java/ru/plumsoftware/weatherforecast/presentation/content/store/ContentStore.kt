@@ -7,16 +7,23 @@ interface ContentStore :
     Store<ContentStore.Intent, ContentStore.State, ContentStore.Label> {
 
     sealed interface Intent {
-        data class OpenDropDownMenu(val dropDownExpand: Boolean) : Intent
+//        region::Drop down menu
+        data class DropDownMenuChange(val value: Boolean) : Intent
+//        endregion
+
+//        region::Check box
+        data class CheckBoxChange(val value: Boolean) : Intent
+//        endregion
     }
 
     data class State(
         val city: String = "",
         val country: String = "",
-        val dropDownExpand: Boolean = false
+        val dropDownState: Boolean = false,
+        val checkBoxState: Boolean = true
     )
 
     sealed interface Label {
-        object TodoLabel : Label
+
     }
 }

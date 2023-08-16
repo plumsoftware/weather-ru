@@ -8,8 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import ru.plumsoftware.weatherforecast.application.App
+import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.domain.models.Location
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.presentation.content.presentation.components.CityComponent
@@ -20,21 +24,33 @@ import ru.plumsoftware.weatherforecast.presentation.content.viewmodel.ContentVie
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun ContentScreen(contentViewModel: ContentViewModel) {
-    val state by contentViewModel.state.collectAsState()
 
+//    region::States
+    val state by contentViewModel.state.collectAsState()
+//    endregion
+
+//    region::Labels
     LaunchedEffect(Unit) {
         contentViewModel.label.collect { label ->
             when (label) {
-                ContentStore.Label.TodoLabel -> TODO()
+
+                else -> {}
             }
         }
     }
+//    endregion
 
-    ContentScreen(state = state, contentViewModel = contentViewModel)
+    ContentScreen(
+        state = state,
+        contentViewModel = contentViewModel,
+    )
 }
 
 @Composable
-private fun ContentScreen(state: ContentStore.State, contentViewModel: ContentViewModel) {
+private fun ContentScreen(
+    state: ContentStore.State,
+    contentViewModel: ContentViewModel
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(
             space = ExtensionPaddingValues._24dp,
@@ -45,14 +61,30 @@ private fun ContentScreen(state: ContentStore.State, contentViewModel: ContentVi
     ) {
         CityComponent(
             Location(city = state.city, country = state.country),
-            dropDownMenuExpanded = state.dropDownExpand,
+            dropDownMenuExpanded = state.dropDownState,
             onCLickMoreVert = {
                 contentViewModel.onEvent(
-                    event = ContentStore.Intent.OpenDropDownMenu(
-                        dropDownExpand = state.dropDownExpand
+                    event = ContentStore.Intent.DropDownMenuChange(
+                        value = state.dropDownState
                     )
                 )
-            })
+            },
+            onCloseDropDownMenu = {
+                contentViewModel.onEvent(
+                    event = ContentStore.Intent.DropDownMenuChange(
+                        value = state.dropDownState
+                    )
+                )
+            },
+            checkBoxValue = state.checkBoxState,
+            onCheckedChange = { value ->
+                contentViewModel.onEvent(
+                    event = ContentStore.Intent.CheckBoxChange(
+                        value = value
+                    )
+                )
+            }
+        )
         WeatherStatus()
     }
 }

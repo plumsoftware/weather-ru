@@ -21,6 +21,7 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
             .putBoolean(Constants.SharedPreferences.SHARED_PREF_THEME, userSettings.isDarkTheme)
             .putString(Constants.SharedPreferences.SHARED_PREF_CITY, userSettings.city)
             .putString(Constants.SharedPreferences.SHARED_PREF_COUNTRY, userSettings.country)
+            .putBoolean(Constants.SharedPreferences.SHARED_PREF_SHOW_TIPS, userSettings.showTips)
             .apply()
     }
 
@@ -30,9 +31,17 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
         val city = sharedPreferences.getString(Constants.SharedPreferences.SHARED_PREF_CITY, "")
         val country =
             sharedPreferences.getString(Constants.SharedPreferences.SHARED_PREF_COUNTRY, "")
+        val showTips =
+            sharedPreferences.getBoolean(Constants.SharedPreferences.SHARED_PREF_SHOW_TIPS, true)
         logd("application theme: " + if (theme) "DARK" else "LIGHT")
         logd("base city: $city")
         logd("base country: $country")
-        return UserSettings(isDarkTheme = theme, city = city, country = country)
+        logd("show tips: $showTips")
+        return UserSettings(
+            isDarkTheme = theme,
+            city = city,
+            country = country,
+            showTips = showTips
+        )
     }
 }

@@ -12,4 +12,8 @@ object ExtensionSize {
     object Corners {
         val _24dp = 24.dp
     }
+
+    object Divider {
+        val height = 1.dp
+    }
 }

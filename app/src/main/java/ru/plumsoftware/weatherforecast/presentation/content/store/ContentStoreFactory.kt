@@ -7,6 +7,8 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
+import ru.plumsoftware.weatherforecast.application.App
+import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.domain.models.UserSettings
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 
@@ -22,7 +24,10 @@ class ContentStoreFactory(
                 name = "Content",
                 initialState = ContentStore.State(),
                 bootstrapper = coroutineBootstrapper {
-                    launch { dispatch(ContentStoreFactory.Action.InitLocation) }
+                    launch {
+                        dispatch(ContentStoreFactory.Action.InitLocation)
+                        dispatch(ContentStoreFactory.Action.InitTips)
+                    }
                 },
                 reducer = ContentStoreFactory.ReducerImpl,
                 executorFactory = ::ExecutorImpl
@@ -31,6 +36,7 @@ class ContentStoreFactory(
 
     sealed interface Action {
         object InitLocation : Action
+        object InitTips : Action
     }
 
     sealed interface Msg {
@@ -39,7 +45,9 @@ class ContentStoreFactory(
             val country: String
         ) : Msg
 
-        data class DropDownExpand(val dropDownMenuExpanded: Boolean) : Msg
+        data class DropDownMenu(val value: Boolean) : Msg
+
+        data class CheckBoxValue(val value: Boolean) : Msg
     }
 
     private object ReducerImpl : Reducer<ContentStore.State, Msg> {
@@ -51,7 +59,8 @@ class ContentStoreFactory(
                     country = msg.country
                 )
 
-                is Msg.DropDownExpand -> copy(dropDownExpand = !msg.dropDownMenuExpanded)
+                is Msg.CheckBoxValue -> copy(checkBoxState = !msg.value)
+                is Msg.DropDownMenu -> copy(dropDownState = !msg.value)
             }
     }
 
@@ -63,15 +72,40 @@ class ContentStoreFactory(
             getState: () -> ContentStore.State
         ) =
             when (intent) {
-                is ContentStore.Intent.OpenDropDownMenu -> {
-                    dispatch(ContentStoreFactory.Msg.DropDownExpand(dropDownMenuExpanded = intent.dropDownExpand))
+
+                is ContentStore.Intent.CheckBoxChange -> {
+                    dispatch(ContentStoreFactory.Msg.CheckBoxValue(value = intent.value))
+                    sharedPreferencesStorage.save(
+                        userSettings = UserSettings(
+                            isDarkTheme = sharedPreferencesStorage.get().isDarkTheme,
+                            city = sharedPreferencesStorage.get().city,
+                            country = sharedPreferencesStorage.get().country,
+                            showTips = !intent.value
+                        )
+                    )
+                }
+
+                is ContentStore.Intent.DropDownMenuChange -> {
+                    dispatch(ContentStoreFactory.Msg.DropDownMenu(value = intent.value))
                 }
             }
 
         override fun executeAction(action: Action, getState: () -> ContentStore.State) =
             when (action) {
                 is Action.InitLocation -> initLocation()
+                is Action.InitTips -> initTips()
             }
+
+        private fun initTips() {
+            scope.launch {
+                val userSettings: UserSettings = sharedPreferencesStorage.get()
+                dispatch(
+                    ContentStoreFactory.Msg.CheckBoxValue(
+                        value = userSettings.showTips
+                    )
+                )
+            }
+        }
 
         private fun initLocation() {
             scope.launch {
