@@ -14,7 +14,7 @@ import ru.plumsoftware.weatherforecast.presentation.content.store.ContentStoreFa
 class ContentViewModel(
     storeFactory: StoreFactory,
     sharedPreferencesStorage: SharedPreferencesStorage,
-    private val output: (ContentViewModel.Output) -> Unit,
+    private val output: (Output) -> Unit,
 ) {
     private val contentStore = ContentStoreFactory(
         storeFactory = storeFactory,

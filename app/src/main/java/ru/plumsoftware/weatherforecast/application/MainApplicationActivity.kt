@@ -163,7 +163,9 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                     sharedPreferencesStorage = sharedPreferencesStorage,
                                     output = { output ->
                                         when (output) {
-                                            ContentViewModel.Output.OpenLocationScreen -> TODO()
+                                            is ContentViewModel.Output.OpenLocationScreen -> {
+                                                navController.navigate(route = Screens.Location)
+                                            }
                                         }
                                     }
                                 )

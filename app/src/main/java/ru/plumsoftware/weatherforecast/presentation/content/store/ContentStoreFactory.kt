@@ -74,7 +74,7 @@ class ContentStoreFactory(
             when (intent) {
 
                 is ContentStore.Intent.CheckBoxChange -> {
-                    dispatch(ContentStoreFactory.Msg.CheckBoxValue(value = intent.value))
+                    dispatch(Msg.CheckBoxValue(value = intent.value))
                     sharedPreferencesStorage.save(
                         userSettings = UserSettings(
                             isDarkTheme = sharedPreferencesStorage.get().isDarkTheme,
@@ -86,7 +86,11 @@ class ContentStoreFactory(
                 }
 
                 is ContentStore.Intent.DropDownMenuChange -> {
-                    dispatch(ContentStoreFactory.Msg.DropDownMenu(value = intent.value))
+                    dispatch(Msg.DropDownMenu(value = intent.value))
+                }
+
+                is ContentStore.Intent.OpenLocation -> {
+                    publish(ContentStore.Label.OpenLocation)
                 }
             }
 

@@ -14,6 +14,10 @@ interface ContentStore :
 //        region::Check box
         data class CheckBoxChange(val value: Boolean) : Intent
 //        endregion
+
+//        region::Navigation
+        object OpenLocation : Intent
+//        endregion
     }
 
     data class State(
@@ -24,6 +28,8 @@ interface ContentStore :
     )
 
     sealed interface Label {
-
+//        region::Navigation
+        object OpenLocation : Label
+//        endregion
     }
 }
