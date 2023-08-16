@@ -7,8 +7,6 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
-import ru.plumsoftware.weatherforecast.data.utilities.logd
-import ru.plumsoftware.weatherforecast.domain.models.Location
 import ru.plumsoftware.weatherforecast.domain.models.UserSettings
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 
@@ -40,6 +38,8 @@ class ContentStoreFactory(
             val city: String,
             val country: String
         ) : Msg
+
+        data class DropDownExpand(val dropDownMenuExpanded: Boolean) : Msg
     }
 
     private object ReducerImpl : Reducer<ContentStore.State, Msg> {
@@ -50,6 +50,8 @@ class ContentStoreFactory(
                     city = msg.city,
                     country = msg.country
                 )
+
+                is Msg.DropDownExpand -> copy(dropDownExpand = !msg.dropDownMenuExpanded)
             }
     }
 
@@ -61,7 +63,9 @@ class ContentStoreFactory(
             getState: () -> ContentStore.State
         ) =
             when (intent) {
-                is ContentStore.Intent.Todo -> {}
+                is ContentStore.Intent.OpenDropDownMenu -> {
+                    dispatch(ContentStoreFactory.Msg.DropDownExpand(dropDownMenuExpanded = intent.dropDownExpand))
+                }
             }
 
         override fun executeAction(action: Action, getState: () -> ContentStore.State) =

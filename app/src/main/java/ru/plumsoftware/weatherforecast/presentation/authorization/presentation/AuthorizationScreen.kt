@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
+import ru.plumsoftware.weatherforecast.presentation.authorization.presentation.components.PrimaryGradientButton
 import ru.plumsoftware.weatherforecast.presentation.authorization.viewmodel.AuthorizationViewModel
 import ru.plumsoftware.weatherforecast.presentation.authorization.store.AuthorizationStore
 
@@ -96,27 +97,7 @@ private fun AuthorizationScreen(
                 verticalArrangement = Arrangement.spacedBy(_24dp, Alignment.Top),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Button(
-                    onClick = {
-                        event(AuthorizationStore.Intent.ContinueButtonClicked)
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.extraLarge)
-                        .background(
-                            brush = Brush.linearGradient(
-                                colors = listOf(
-                                    Color(0xFFED3B9B),
-                                    Color(0xFFA8C0FF),
-                                    Color(0xFFC071FF)
-                                )
-                            )
-                        ),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent,
-                        contentColor = Color.White
-                    )
-                ) {
+                PrimaryGradientButton(onClick = { event(AuthorizationStore.Intent.ContinueButtonClicked) }) {
                     Text(
                         text = App.INSTANCE.getString(R.string.get_started),
                         style = MaterialTheme.typography.titleSmall.copy(color = Color.White),

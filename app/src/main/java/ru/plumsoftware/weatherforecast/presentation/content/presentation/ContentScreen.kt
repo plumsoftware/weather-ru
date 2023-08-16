@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import ru.plumsoftware.weatherforecast.domain.models.Location
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.presentation.content.presentation.components.CityComponent
 import ru.plumsoftware.weatherforecast.presentation.content.presentation.components.WeatherStatus
@@ -29,11 +30,11 @@ fun ContentScreen(contentViewModel: ContentViewModel) {
         }
     }
 
-    ContentScreen(state = state)
+    ContentScreen(state = state, contentViewModel = contentViewModel)
 }
 
 @Composable
-private fun ContentScreen(state: ContentStore.State) {
+private fun ContentScreen(state: ContentStore.State, contentViewModel: ContentViewModel) {
     Column(
         verticalArrangement = Arrangement.spacedBy(
             space = ExtensionPaddingValues._24dp,
@@ -42,7 +43,16 @@ private fun ContentScreen(state: ContentStore.State) {
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxSize()
     ) {
-        CityComponent(state)
+        CityComponent(
+            Location(city = state.city, country = state.country),
+            dropDownMenuExpanded = state.dropDownExpand,
+            onCLickMoreVert = {
+                contentViewModel.onEvent(
+                    event = ContentStore.Intent.OpenDropDownMenu(
+                        dropDownExpand = state.dropDownExpand
+                    )
+                )
+            })
         WeatherStatus()
     }
 }

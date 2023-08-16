@@ -1,6 +1,7 @@
 package ru.plumsoftware.weatherforecast.presentation.content.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -21,12 +23,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.application.App
+import ru.plumsoftware.weatherforecast.domain.models.Location
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionSize
 import ru.plumsoftware.weatherforecast.presentation.content.store.ContentStore
 
 @Composable
-fun CityComponent(state: ContentStore.State) {
+fun CityComponent(location: Location, dropDownMenuExpanded: Boolean, onCLickMoreVert: () -> Unit) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
@@ -58,30 +61,37 @@ fun CityComponent(state: ContentStore.State) {
                     contentDescription = ""
                 )
             }
-        }
-        Text(
-            text = with(state) {"$city, $country"},
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier
-                .wrapContentSize()
-                .weight(1f),
-            textAlign = TextAlign.Center
-        )
-        with(MaterialTheme) {
-            IconButton(
+            Text(
+                text = with(location) { "$city, $country" },
+                style = typography.titleMedium,
                 modifier = Modifier
                     .wrapContentSize()
-                    .clip(shape = shapes.extraLarge),
-                colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = Color.Transparent
-                ),
-                onClick = { }
-            ) {
-                Icon(
-                    modifier = Modifier.size(size = ExtensionSize.IconSize._20dp),
-                    imageVector = Icons.Rounded.MoreVert,
-                    contentDescription = App.INSTANCE.getString(R.string.more_icon_dewscription)
-                )
+                    .weight(1f),
+                textAlign = TextAlign.Center
+            )
+            Box {
+                IconButton(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .clip(shape = shapes.extraLarge),
+                    colors = IconButtonDefaults.filledIconButtonColors(
+                        containerColor = Color.Transparent
+                    ),
+                    onClick = onCLickMoreVert
+                ) {
+                    Icon(
+                        modifier = Modifier.size(size = ExtensionSize.IconSize._20dp),
+                        imageVector = Icons.Rounded.MoreVert,
+                        contentDescription = App.INSTANCE.getString(R.string.more_icon_dewscription)
+                    )
+                }
+
+                DropdownMenu(
+                    expanded = dropDownMenuExpanded,
+                    onDismissRequest = { /*TODO*/ }
+                ) {
+
+                }
             }
         }
     }
