@@ -44,7 +44,8 @@ fun CityComponent(
 //    region::Check box
     checkBoxValue: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    onClickOpenLocation: () -> Unit
+    onClickOpenLocation: () -> Unit,
+    onClickOpenSettings: () -> Unit
 //    endregion
 ) {
     Row(
@@ -130,7 +131,10 @@ fun CityComponent(
                                 .padding(horizontal = ExtensionPaddingValues._10dp),
                             textAlign = TextAlign.Start
                         )
-                    }, onClick = { onCloseDropDownMenu() })
+                    }, onClick = {
+                        onClickOpenSettings()
+                        onCloseDropDownMenu()
+                    })
 
                     DropdownMenuItem(text = {
                         Text(

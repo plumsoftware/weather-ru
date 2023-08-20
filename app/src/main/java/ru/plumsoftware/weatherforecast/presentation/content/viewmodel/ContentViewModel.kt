@@ -1,5 +1,6 @@
 package ru.plumsoftware.weatherforecast.presentation.content.viewmodel
 
+import androidx.lifecycle.ViewModel
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
@@ -15,7 +16,7 @@ class ContentViewModel(
     storeFactory: StoreFactory,
     sharedPreferencesStorage: SharedPreferencesStorage,
     private val output: (Output) -> Unit,
-) {
+) : ViewModel() {
     private val contentStore = ContentStoreFactory(
         storeFactory = storeFactory,
         sharedPreferencesStorage = sharedPreferencesStorage
@@ -36,5 +37,6 @@ class ContentViewModel(
 
     sealed class Output {
         object OpenLocationScreen : Output()
+        object OpenSettingsScreen : Output()
     }
 }

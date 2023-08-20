@@ -10,8 +10,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import ru.plumsoftware.weatherforecast.application.App
-import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.domain.models.Location
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.presentation.content.presentation.components.CityComponent
@@ -33,6 +31,10 @@ fun ContentScreen(contentViewModel: ContentViewModel) {
             when (label) {
                 is ContentStore.Label.OpenLocation -> {
                     contentViewModel.onOutput(ContentViewModel.Output.OpenLocationScreen)
+                }
+
+                ContentStore.Label.OpenSettings -> {
+                    contentViewModel.onOutput(ContentViewModel.Output.OpenSettingsScreen)
                 }
             }
         }
@@ -86,6 +88,11 @@ private fun ContentScreen(
             onClickOpenLocation = {
                 contentViewModel.onEvent(
                     event = ContentStore.Intent.OpenLocation
+                )
+            },
+            onClickOpenSettings = {
+                contentViewModel.onEvent(
+                    event = ContentStore.Intent.OpenSettings
                 )
             }
         )

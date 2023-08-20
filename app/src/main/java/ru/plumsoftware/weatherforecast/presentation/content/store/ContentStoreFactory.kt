@@ -92,6 +92,10 @@ class ContentStoreFactory(
                 is ContentStore.Intent.OpenLocation -> {
                     publish(ContentStore.Label.OpenLocation)
                 }
+
+                ContentStore.Intent.OpenSettings -> {
+                    publish(ContentStore.Label.OpenSettings)
+                }
             }
 
         override fun executeAction(action: Action, getState: () -> ContentStore.State) =

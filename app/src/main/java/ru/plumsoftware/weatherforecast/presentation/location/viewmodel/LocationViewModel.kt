@@ -1,13 +1,12 @@
 package ru.plumsoftware.weatherforecast.presentation.location.viewmodel
 
+import androidx.lifecycle.ViewModel
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import ru.plumsoftware.weatherforecast.application.App
-import ru.plumsoftware.weatherforecast.data.location.LocationHelper
 import ru.plumsoftware.weatherforecast.domain.models.Location
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecast.presentation.location.store.LocationStore
@@ -17,7 +16,7 @@ class LocationViewModel(
     storeFactory: StoreFactory,
     sharedPreferencesStorage: SharedPreferencesStorage,
     private val output: (LocationViewModel.Output) -> Unit,
-) {
+) : ViewModel() {
 
     private val locationStore = LocationStoreFactory(
         storeFactory = storeFactory,
@@ -39,7 +38,7 @@ class LocationViewModel(
 
     sealed class Output {
         data class OpenContentScreen(val location: Location) : Output()
-        object OpenAuthorizationScreen : Output()
+        object BackStackClicked : Output()
     }
 
 }

@@ -16,4 +16,7 @@
 
     <!--    Content-->
     <string name="more_icon_dewscription">Кнопка с выподающим меню</string>
+
+    <!--    Settings-->
+    <string name="settings">Настройки</string>
 </resources>

@@ -54,8 +54,5 @@ private fun MainScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         CircularProgressIndicator()
-//        Switch(checked = state.isDarkTheme, onCheckedChange = { value ->
-//            event(MainStore.Intent.ChangeTheme(isDarkTheme = value))
-//        })
     }
 }

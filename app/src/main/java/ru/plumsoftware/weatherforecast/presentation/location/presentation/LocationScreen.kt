@@ -66,7 +66,7 @@ fun LocationScreen(locationViewModel: LocationViewModel) {
                 }
 
                 LocationStore.Label.BackButtonClicked -> {
-                    locationViewModel.onOutput(LocationViewModel.Output.OpenAuthorizationScreen)
+                    locationViewModel.onOutput(LocationViewModel.Output.BackStackClicked)
                 }
             }
         }

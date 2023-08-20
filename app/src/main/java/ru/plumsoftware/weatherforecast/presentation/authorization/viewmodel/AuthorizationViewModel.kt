@@ -1,5 +1,6 @@
 package ru.plumsoftware.weatherforecast.presentation.authorization.viewmodel
 
+import androidx.lifecycle.ViewModel
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import kotlinx.coroutines.flow.Flow
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
@@ -13,7 +14,7 @@ class AuthorizationViewModel(
     private val storeFactory: StoreFactory,
     private val output: (Output) -> Unit,
     private val theme: Boolean
-) {
+) : ViewModel() {
 
     private val authorizationStore = AuthorizationStoreFactory(
         storeFactory = storeFactory,

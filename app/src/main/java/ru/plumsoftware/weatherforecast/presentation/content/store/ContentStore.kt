@@ -17,6 +17,7 @@ interface ContentStore :
 
 //        region::Navigation
         object OpenLocation : Intent
+        object OpenSettings : Intent
 //        endregion
     }
 
@@ -30,6 +31,7 @@ interface ContentStore :
     sealed interface Label {
 //        region::Navigation
         object OpenLocation : Label
+        object OpenSettings : Label
 //        endregion
     }
 }

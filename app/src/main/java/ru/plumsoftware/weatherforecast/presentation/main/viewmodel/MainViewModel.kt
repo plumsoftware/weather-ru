@@ -2,6 +2,7 @@ package ru.plumsoftware.weatherforecast.presentation.main.viewmodel
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.lifecycle.ViewModel
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
@@ -9,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import ru.plumsoftware.weatherforecast.application.App
+import ru.plumsoftware.weatherforecast.application.MainApplicationActivity
 import ru.plumsoftware.weatherforecast.data.constants.Constants
 import ru.plumsoftware.weatherforecast.data.utilities.logd
 import ru.plumsoftware.weatherforecast.presentation.main.store.MainStore
@@ -18,7 +20,7 @@ class MainViewModel(
     storeFactory: StoreFactory,
     private val output: (MainViewModel.Output) -> Unit,
     city: String
-) {
+) : ViewModel() {
     //    region::Variables
     private val mainStore = MainStoreFactory(
         storeFactory = storeFactory,
