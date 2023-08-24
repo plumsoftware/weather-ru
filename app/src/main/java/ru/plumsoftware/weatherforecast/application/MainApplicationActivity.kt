@@ -80,11 +80,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                         is AuthorizationViewModel.Output.ChangeTheme -> {
                             with(output) {
                                 isDarkTheme.value = value
-                                sharedPreferencesStorage.save(
-                                    userSettings = UserSettings(
-                                        isDarkTheme = value
-                                    )
-                                )
+                                sharedPreferencesStorage.save(applicationTheme = isDarkTheme.value)
                             }
                         }
 

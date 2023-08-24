@@ -95,4 +95,10 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
             )
         }
     }
+
+    override fun saveUserSettingsAppTheme(appTheme: Boolean) {
+        sharedPreferences.edit()
+            .putBoolean(Constants.SharedPreferences.SHARED_PREF_THEME, appTheme)
+            .apply()
+    }
 }

@@ -9,6 +9,7 @@ import ru.plumsoftware.weatherforecast.domain.storage.LocationStorage
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecast.domain.usecase.location.GetLastKnownLocationUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.GetUserSettingsUseCase
+import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsAppThemeUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsUseCase
 
 internal val domainModuleDI = module {
@@ -25,7 +26,8 @@ internal val domainModuleDI = module {
     single<SharedPreferencesStorage> {
         SharedPreferencesStorage(
             getUserSettingsUseCase = GetUserSettingsUseCase(sharedPreferencesRepository = get()),
-            saveUserSettingsUseCase = SaveUserSettingsUseCase(sharedPreferencesRepository = get())
+            saveUserSettingsUseCase = SaveUserSettingsUseCase(sharedPreferencesRepository = get()),
+            saveUserSettingsAppThemeUseCase = SaveUserSettingsAppThemeUseCase(sharedPreferencesRepository = get())
         )
     }
 }

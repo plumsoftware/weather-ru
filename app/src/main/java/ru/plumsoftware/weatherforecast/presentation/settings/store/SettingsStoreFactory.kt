@@ -85,26 +85,14 @@ class SettingsStoreFactory(
 
         private fun initSettings(sharedPreferencesStorage: SharedPreferencesStorage) {
             scope.launch {
-                with(sharedPreferencesStorage.get()){
+                with(sharedPreferencesStorage.get()) {
                     dispatch(Msg.CheckBoxValue(value = isDarkTheme))
                 }
             }
         }
 
         private fun saveTheme(sharedPreferencesStorage: SharedPreferencesStorage, value: Boolean) {
-            with(sharedPreferencesStorage.get()) {
-                sharedPreferencesStorage.save(
-                    userSettings =
-                    UserSettings(
-                        isDarkTheme = value,
-                        city = city,
-                        country = country,
-                        showTips = showTips,
-                        weatherUnits = weatherUnits,
-                        windSpeed = windSpeed
-                    )
-                )
-            }
+            sharedPreferencesStorage.save(applicationTheme = value)
         }
     }
 }
