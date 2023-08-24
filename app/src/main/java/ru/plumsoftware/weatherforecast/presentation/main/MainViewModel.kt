@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.ViewModel
-import ru.plumsoftware.weatherforecast.data.constants.Constants
+import ru.plumsoftware.weatherforecast.domain.constants.Constants
 import ru.plumsoftware.weatherforecast.data.utilities.logd
 
 class MainViewModel(@SuppressLint("StaticFieldLeak") private val context: Context) : ViewModel() {

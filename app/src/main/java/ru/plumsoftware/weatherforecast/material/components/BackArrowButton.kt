@@ -1,4 +1,4 @@
-package ru.plumsoftware.weatherforecast.presentation.location.presentation.components
+package ru.plumsoftware.weatherforecast.material.components
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -16,7 +16,7 @@ import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionSize
 
 @Composable
-fun BackArrowButton(modifier: Modifier, onClick: () -> Unit) {
+fun BackArrowButton(modifier: Modifier, enabled: Boolean = true, onClick: () -> Unit) {
     with(MaterialTheme) {
         IconButton(
             modifier = Modifier
@@ -26,7 +26,8 @@ fun BackArrowButton(modifier: Modifier, onClick: () -> Unit) {
             colors = IconButtonDefaults.filledIconButtonColors(
                 containerColor = Color.Transparent
             ),
-            onClick = onClick
+            onClick = onClick,
+            enabled = enabled
         ) {
             Icon(
                 modifier = Modifier,

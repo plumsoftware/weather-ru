@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.application.MainApplicationActivity
-import ru.plumsoftware.weatherforecast.data.constants.Constants
+import ru.plumsoftware.weatherforecast.domain.constants.Constants
 import ru.plumsoftware.weatherforecast.data.utilities.logd
 import ru.plumsoftware.weatherforecast.presentation.main.store.MainStore
 import ru.plumsoftware.weatherforecast.presentation.main.store.MainStoreFactory

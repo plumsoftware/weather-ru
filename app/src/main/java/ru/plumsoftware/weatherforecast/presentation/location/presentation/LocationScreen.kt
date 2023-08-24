@@ -43,7 +43,8 @@ import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.domain.models.Location
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
-import ru.plumsoftware.weatherforecast.presentation.location.presentation.components.BackArrowButton
+import ru.plumsoftware.weatherforecast.material.components.BackArrowButton
+import ru.plumsoftware.weatherforecast.material.components.TopBar
 import ru.plumsoftware.weatherforecast.presentation.location.store.LocationStore
 import ru.plumsoftware.weatherforecast.presentation.location.viewmodel.LocationViewModel
 
@@ -92,38 +93,9 @@ private fun LocationScreen(
             .padding(all = ExtensionPaddingValues._24dp)
     ) {
         with(ExtensionPaddingValues) {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(
-                        bottom = _34dp,
-                        top = _14dp
-                    )
-                    .fillMaxWidth()
-            ) {
-                BackArrowButton(
-                    modifier = Modifier,
-                    onClick = {
-                        event(LocationStore.Intent.BackButtonClicked)
-                    })
-                Text(
-                    text = App.INSTANCE.getString(R.string.location),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = _10dp),
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.width(width = 8.dp))
-                BackArrowButton(
-                    modifier = Modifier
-                        .background(Color.Transparent),
-                    onClick = {
-
-                    })
-                Spacer(modifier = Modifier.width(width = 8.dp))
-            }
+            TopBar(
+                textResId = R.string.location,
+                onBackClick = { event(LocationStore.Intent.BackButtonClicked) })
             Spacer(modifier = Modifier.height(height = _10dp))
             OutlinedTextField(
                 value = state.city,

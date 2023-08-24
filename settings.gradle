@@ -16,3 +16,4 @@ rootProject.name = "Погода"
 include ':app'
 include ':data'
 include ':domain'
+include ':uicomponents'

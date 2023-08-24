@@ -18,6 +18,7 @@ import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.context.stopKoin
+import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.domain.models.UserSettings
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecast.presentation.authorization.viewmodel.AuthorizationViewModel
@@ -167,9 +168,21 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                             )
                         }
                         composable(route = Screens.Settings) {
-                            SettingsScreen(
-                                settingsViewModel = SettingsViewModel()
-                            )
+                            SettingsScreen(settingsViewModel = SettingsViewModel(
+                                storeFactory = DefaultStoreFactory(),
+                                sharedPreferencesStorage = sharedPreferencesStorage,
+                                output = { output ->
+                                    when (output) {
+                                        is SettingsViewModel.Output.BackStackClicked -> {
+                                            navController.popBackStack()
+                                        }
+
+                                        is SettingsViewModel.Output.ChangedTheme -> {
+                                            isDarkTheme.value = output.value
+                                        }
+                                    }
+                                }
+                            ))
                         }
                     }
                 }
@@ -197,7 +210,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
 
     override fun onBackPressed() {
         super.onBackPressed()
-        when (navController.currentDestination!!.route){
+        when (navController.currentDestination!!.route) {
             Screens.Main -> {
                 finish()
             }

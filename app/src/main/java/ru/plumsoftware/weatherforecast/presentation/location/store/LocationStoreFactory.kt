@@ -30,7 +30,7 @@ internal class LocationStoreFactory(
                 initialState = LocationStore.State(),
                 bootstrapper = coroutineBootstrapper {
                     launch {
-//                        dispatch(LocationStoreFactory.Action.InitLocations)
+//                        dispatch(LocationStoreFactory.Action.InitLocations) TODO(add later)
                         dispatch(LocationStoreFactory.Action.InitLocation)
                     }
                 },

@@ -2,9 +2,11 @@ package ru.plumsoftware.weatherforecast.data.repository
 
 import android.content.Context
 import android.content.SharedPreferences
-import ru.plumsoftware.weatherforecast.data.constants.Constants
+import ru.plumsoftware.weatherforecast.domain.constants.Constants
 import ru.plumsoftware.weatherforecast.data.utilities.logd
 import ru.plumsoftware.weatherforecast.domain.models.UserSettings
+import ru.plumsoftware.weatherforecast.domain.models.weathermodels.WeatherUnits
+import ru.plumsoftware.weatherforecast.domain.models.weathermodels.WindSpeed
 import ru.plumsoftware.weatherforecast.domain.repository.SharedPreferencesRepository
 
 class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPreferencesRepository {
@@ -22,26 +24,75 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
             .putString(Constants.SharedPreferences.SHARED_PREF_CITY, userSettings.city)
             .putString(Constants.SharedPreferences.SHARED_PREF_COUNTRY, userSettings.country)
             .putBoolean(Constants.SharedPreferences.SHARED_PREF_SHOW_TIPS, userSettings.showTips)
+//            region::Weather
+            .putString(
+                Constants.SharedPreferences.SHARED_PREF_WEATHER_UNITS_PRESENTATION,
+                userSettings.weatherUnits.unitsPresentation
+            )
+            .putString(
+                Constants.SharedPreferences.SHARED_PREF_WEATHER_UNITS_VALUE,
+                userSettings.weatherUnits.unitsValue
+            )
+            .putString(
+                Constants.SharedPreferences.SHARED_PREF_WIND_SPEED_PRESENTATION,
+                userSettings.windSpeed.windPresentation
+            )
+            .putFloat(
+                Constants.SharedPreferences.SHARED_PREF_WIND_SPEED_VALUE,
+                userSettings.windSpeed.windValue
+            )
+//            endregion
             .apply()
     }
 
     override fun getUserSettings(): UserSettings {
-        val theme =
-            sharedPreferences.getBoolean(Constants.SharedPreferences.SHARED_PREF_THEME, false)
-        val city = sharedPreferences.getString(Constants.SharedPreferences.SHARED_PREF_CITY, "")
-        val country =
-            sharedPreferences.getString(Constants.SharedPreferences.SHARED_PREF_COUNTRY, "")
-        val showTips =
-            sharedPreferences.getBoolean(Constants.SharedPreferences.SHARED_PREF_SHOW_TIPS, true)
-        logd("application theme: " + if (theme) "DARK" else "LIGHT")
-        logd("base city: $city")
-        logd("base country: $country")
-        logd("show tips: $showTips")
-        return UserSettings(
-            isDarkTheme = theme,
-            city = city,
-            country = country,
-            showTips = showTips
-        )
+        with(sharedPreferences) {
+            val theme =
+                getBoolean(Constants.SharedPreferences.SHARED_PREF_THEME, false)
+            val city = getString(Constants.SharedPreferences.SHARED_PREF_CITY, "")
+            val country =
+                getString(Constants.SharedPreferences.SHARED_PREF_COUNTRY, "")
+            val showTips =
+                getBoolean(
+                    Constants.SharedPreferences.SHARED_PREF_SHOW_TIPS,
+                    true
+                )
+
+            val weatherUnits: WeatherUnits = WeatherUnits(
+                unitsPresentation = getString(
+                    Constants.SharedPreferences.SHARED_PREF_WIND_SPEED_PRESENTATION,
+                    Constants.Settings.METRIC.second
+                )!!,
+                unitsValue = getString(
+                    Constants.SharedPreferences.SHARED_PREF_WEATHER_UNITS_VALUE,
+                    Constants.Settings.METRIC.first
+                )!!
+            )
+
+            val windSpeed: WindSpeed = WindSpeed(
+                windPresentation = getString(
+                    Constants.SharedPreferences.SHARED_PREF_WIND_SPEED_PRESENTATION,
+                    Constants.Settings.M_S.first
+                )!!,
+                windValue = getFloat(
+                    Constants.SharedPreferences.SHARED_PREF_WIND_SPEED_VALUE,
+                    Constants.Settings.M_S.second
+                )
+            )
+
+            logd("application theme: " + if (theme) "DARK" else "LIGHT")
+            logd("base city: $city")
+            logd("base country: $country")
+            logd("show tips: $showTips")
+
+            return UserSettings(
+                isDarkTheme = theme,
+                city = city,
+                country = country,
+                showTips = showTips,
+                weatherUnits = weatherUnits,
+                windSpeed = windSpeed
+            )
+        }
     }
 }
