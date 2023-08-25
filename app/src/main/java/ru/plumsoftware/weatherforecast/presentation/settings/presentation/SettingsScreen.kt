@@ -160,10 +160,12 @@ private fun SettingsScreen(
                                     modifier = Modifier.weight(weight = 1.0f)
                                 )
                                 Button(
-                                    onClick = { /*TODO*/ }
+                                    onClick = {
+                                        event(SettingsStore.Intent.ChangeWeatherUnits)
+                                    }
                                 ) {
                                     Text(
-                                        text = "c".uppercase()
+                                        text = state.weatherUnit.unitsPresentation.uppercase()
                                     )
                                 }
                             }

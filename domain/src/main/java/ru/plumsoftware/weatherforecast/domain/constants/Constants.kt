@@ -18,8 +18,8 @@ sealed class Constants {
 
     object Settings {
         val METRIC = Pair<String, String>("metric", "c")
-        val IMPERIAL = Pair<String, String>("imperial", "c")
-        val DEFAULT = Pair<String, String>("", "f")
+        val IMPERIAL = Pair<String, String>("imperial", "f")
+        val DEFAULT = Pair<String, String>("", "k")
         val M_S = Pair<String, Float>("м/c", 1.0f)
         val MI_H = Pair<String, Float>("миль/час", 2.23f)
     }

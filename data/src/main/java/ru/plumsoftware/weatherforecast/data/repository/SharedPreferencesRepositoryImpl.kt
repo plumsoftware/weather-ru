@@ -60,7 +60,7 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
 
             val weatherUnits: WeatherUnits = WeatherUnits(
                 unitsPresentation = getString(
-                    Constants.SharedPreferences.SHARED_PREF_WIND_SPEED_PRESENTATION,
+                    Constants.SharedPreferences.SHARED_PREF_WEATHER_UNITS_PRESENTATION,
                     Constants.Settings.METRIC.second
                 )!!,
                 unitsValue = getString(
@@ -115,5 +115,20 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
         sharedPreferences.edit()
             .putBoolean(Constants.SharedPreferences.SHARED_PREF_SHOW_TIPS, showTips)
             .apply()
+    }
+
+    override fun saveUserSettingsWeatherUnits(weatherUnits: WeatherUnits) {
+        with(weatherUnits) {
+            sharedPreferences.edit()
+                .putString(
+                    Constants.SharedPreferences.SHARED_PREF_WEATHER_UNITS_PRESENTATION,
+                    unitsPresentation
+                )
+                .putString(
+                    Constants.SharedPreferences.SHARED_PREF_WEATHER_UNITS_VALUE,
+                    unitsValue
+                )
+                .apply()
+        }
     }
 }

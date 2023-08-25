@@ -1,6 +1,7 @@
 package ru.plumsoftware.weatherforecast.presentation.settings.store
 
 import com.arkivanov.mvikotlin.core.store.Store
+import ru.plumsoftware.weatherforecast.domain.models.weathermodels.WeatherUnits
 
 interface SettingsStore :
     Store<SettingsStore.Intent, SettingsStore.State, SettingsStore.Label> {
@@ -18,7 +19,11 @@ interface SettingsStore :
     }
 
     data class State(
-        val checkBoxValue: Boolean = false
+        val checkBoxValue: Boolean = false,
+        val weatherUnit: WeatherUnits = WeatherUnits(
+            unitsPresentation = "",
+            unitsValue = ""
+        )
     )
 
     sealed interface Label {

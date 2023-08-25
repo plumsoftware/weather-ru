@@ -1,26 +1,31 @@
 package ru.plumsoftware.weatherforecast.domain.storage
 
 import ru.plumsoftware.weatherforecast.domain.models.UserSettings
+import ru.plumsoftware.weatherforecast.domain.models.weathermodels.WeatherUnits
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.GetUserSettingsShowTipsUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.GetUserSettingsUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsAppThemeUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsShowTipsUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsUseCase
+import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsWeatherUnitsUseCase
 
 class SharedPreferencesStorage
     (
     private val getUserSettingsUseCase: GetUserSettingsUseCase,
     private val getUserSettingsShowTipsUseCase: GetUserSettingsShowTipsUseCase,
+
     private val saveUserSettingsUseCase: SaveUserSettingsUseCase,
     private val saveUserSettingsAppThemeUseCase: SaveUserSettingsAppThemeUseCase,
-    private val saveUserSettingsShowTipsUseCase: SaveUserSettingsShowTipsUseCase
+    private val saveUserSettingsShowTipsUseCase: SaveUserSettingsShowTipsUseCase,
+
+    private val saveUserSettingsWeatherUnitsUseCase: SaveUserSettingsWeatherUnitsUseCase
 ) {
     fun get(): UserSettings {
         val execute = getUserSettingsUseCase.execute()
         return execute
     }
 
-    fun getShowTips() : Boolean {
+    fun getShowTips(): Boolean {
         val execute = getUserSettingsShowTipsUseCase.execute()
         return execute
     }
@@ -35,5 +40,9 @@ class SharedPreferencesStorage
 
     fun saveShowTips(showTips: Boolean) {
         saveUserSettingsShowTipsUseCase.execute(showTips = showTips)
+    }
+
+    fun saveWeatherUnits(weatherUnits: WeatherUnits) {
+        saveUserSettingsWeatherUnitsUseCase.execute(weatherUnits = weatherUnits)
     }
 }
