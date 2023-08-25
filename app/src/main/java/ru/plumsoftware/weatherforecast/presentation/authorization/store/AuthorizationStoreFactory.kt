@@ -7,6 +7,8 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
+import ru.plumsoftware.weatherforecast.application.App
+import ru.plumsoftware.weatherforecast.data.utilities.showToast
 
 internal class AuthorizationStoreFactory(
     private val storeFactory: StoreFactory,
@@ -74,7 +76,7 @@ internal class AuthorizationStoreFactory(
 
         private fun initTheme(value: Boolean) {
             scope.launch {
-                dispatch(Msg.Data(value = !value))
+                dispatch(Msg.Data(value = value))
             }
         }
     }

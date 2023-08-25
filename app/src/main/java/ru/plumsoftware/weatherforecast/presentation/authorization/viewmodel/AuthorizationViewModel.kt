@@ -11,9 +11,9 @@ import ru.plumsoftware.weatherforecast.presentation.authorization.store.Authoriz
 import ru.plumsoftware.weatherforecast.presentation.authorization.store.AuthorizationStoreFactory
 
 class AuthorizationViewModel(
-    private val storeFactory: StoreFactory,
+    storeFactory: StoreFactory,
     private val output: (Output) -> Unit,
-    private val theme: Boolean
+    theme: Boolean
 ) : ViewModel() {
 
     private val authorizationStore = AuthorizationStoreFactory(
