@@ -27,7 +27,7 @@ interface SettingsStore :
         ),
         val windSpeed: WindSpeed = WindSpeed(
             windPresentation = "",
-            windValue = 1.0f
+            windValue = 0.0f
         )
     )
 

@@ -88,11 +88,17 @@ class SettingsStoreFactory(
                 }
 
                 SettingsStore.Intent.ChangeWindUnits -> {
+
+                    val windPresentation =
+                        if (getState().windSpeed.windPresentation == Constants.Settings.M_S.first)
+                            Constants.Settings.MI_H.first else Constants.Settings.M_S.first
+
+                    val windValue = if (getState().windSpeed.windValue == Constants.Settings.M_S.second)
+                        Constants.Settings.MI_H.second else Constants.Settings.M_S.second
+
                     val windSpeed = WindSpeed(
-                        windPresentation = if (getState().windSpeed.windPresentation == Constants.Settings.M_S.first)
-                            Constants.Settings.MI_H.first else Constants.Settings.M_S.first,
-                        windValue = if (getState().windSpeed.windValue == Constants.Settings.M_S.second)
-                            Constants.Settings.MI_H.second else Constants.Settings.M_S.second
+                        windPresentation = windPresentation,
+                        windValue = windValue
                     )
 
                     dispatch(Msg.WindUnit(value = windSpeed))
