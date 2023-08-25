@@ -7,9 +7,6 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
-import ru.plumsoftware.weatherforecast.application.App
-import ru.plumsoftware.weatherforecast.data.utilities.showToast
-import ru.plumsoftware.weatherforecast.domain.models.UserSettings
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 
 class SettingsStoreFactory(
@@ -92,7 +89,7 @@ class SettingsStoreFactory(
         }
 
         private fun saveTheme(sharedPreferencesStorage: SharedPreferencesStorage, value: Boolean) {
-            sharedPreferencesStorage.save(applicationTheme = value)
+            sharedPreferencesStorage.saveAppTheme(applicationTheme = value)
         }
     }
 }

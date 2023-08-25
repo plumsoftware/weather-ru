@@ -4,7 +4,9 @@ import ru.plumsoftware.weatherforecast.domain.models.UserSettings
 
 interface SharedPreferencesRepository {
     fun saveUserSettings(userSettings: UserSettings)
-    fun getUserSettings() : UserSettings
+    fun getUserSettings(): UserSettings
+    fun getShowTips() : Boolean
 
     fun saveUserSettingsAppTheme(appTheme: Boolean)
+    fun saveUserSettingsShowTips(showTips: Boolean)
 }

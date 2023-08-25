@@ -7,8 +7,6 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
-import ru.plumsoftware.weatherforecast.application.App
-import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.domain.models.UserSettings
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 
@@ -75,14 +73,7 @@ class ContentStoreFactory(
 
                 is ContentStore.Intent.CheckBoxChange -> {
                     dispatch(Msg.CheckBoxValue(value = intent.value))
-                    sharedPreferencesStorage.save(
-                        userSettings = UserSettings(
-                            isDarkTheme = sharedPreferencesStorage.get().isDarkTheme,
-                            city = sharedPreferencesStorage.get().city,
-                            country = sharedPreferencesStorage.get().country,
-                            showTips = intent.value
-                        )
-                    )
+                    sharedPreferencesStorage.saveShowTips(showTips = intent.value)
                 }
 
                 is ContentStore.Intent.DropDownMenuChange -> {
@@ -106,10 +97,10 @@ class ContentStoreFactory(
 
         private fun initTips() {
             scope.launch {
-                val userSettings: UserSettings = sharedPreferencesStorage.get()
+                val showTips: Boolean = sharedPreferencesStorage.getShowTips()
                 dispatch(
                     ContentStoreFactory.Msg.CheckBoxValue(
-                        value = userSettings.showTips
+                        value = showTips
                     )
                 )
             }

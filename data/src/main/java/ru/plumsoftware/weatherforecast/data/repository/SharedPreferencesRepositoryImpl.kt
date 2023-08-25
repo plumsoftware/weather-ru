@@ -96,9 +96,24 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
         }
     }
 
+    override fun getShowTips(): Boolean {
+        val showTips =
+            sharedPreferences.getBoolean(
+                Constants.SharedPreferences.SHARED_PREF_SHOW_TIPS,
+                true
+            )
+        return showTips
+    }
+
     override fun saveUserSettingsAppTheme(appTheme: Boolean) {
         sharedPreferences.edit()
             .putBoolean(Constants.SharedPreferences.SHARED_PREF_THEME, appTheme)
+            .apply()
+    }
+
+    override fun saveUserSettingsShowTips(showTips: Boolean) {
+        sharedPreferences.edit()
+            .putBoolean(Constants.SharedPreferences.SHARED_PREF_SHOW_TIPS, showTips)
             .apply()
     }
 }

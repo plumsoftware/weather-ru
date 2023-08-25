@@ -18,8 +18,6 @@ import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.context.stopKoin
-import ru.plumsoftware.weatherforecast.data.utilities.showToast
-import ru.plumsoftware.weatherforecast.domain.models.UserSettings
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecast.presentation.authorization.viewmodel.AuthorizationViewModel
 import ru.plumsoftware.weatherforecast.presentation.authorization.presentation.AuthorizationScreen
@@ -80,7 +78,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                         is AuthorizationViewModel.Output.ChangeTheme -> {
                             with(output) {
                                 isDarkTheme.value = value
-                                sharedPreferencesStorage.save(applicationTheme = isDarkTheme.value)
+                                sharedPreferencesStorage.saveAppTheme(applicationTheme = isDarkTheme.value)
                             }
                         }
 
