@@ -1,8 +1,6 @@
-package ru.plumsoftware.weatherforecast.domain.models
+package ru.plumsoftware.weatherforecast.domain.models.settings
 
-import ru.plumsoftware.weatherforecast.domain.models.weathermodels.WeatherUnits
 import ru.plumsoftware.weatherforecast.domain.constants.Constants
-import ru.plumsoftware.weatherforecast.domain.models.weathermodels.WindSpeed
 
 data class UserSettings(
     val isDarkTheme: Boolean,

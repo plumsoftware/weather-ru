@@ -7,7 +7,7 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
-import ru.plumsoftware.weatherforecast.domain.models.UserSettings
+import ru.plumsoftware.weatherforecast.domain.models.settings.UserSettings
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 
 class ContentStoreFactory(

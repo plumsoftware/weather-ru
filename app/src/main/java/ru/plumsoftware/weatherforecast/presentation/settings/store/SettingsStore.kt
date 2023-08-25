@@ -1,8 +1,8 @@
 package ru.plumsoftware.weatherforecast.presentation.settings.store
 
 import com.arkivanov.mvikotlin.core.store.Store
-import ru.plumsoftware.weatherforecast.domain.models.weathermodels.WeatherUnits
-import ru.plumsoftware.weatherforecast.domain.models.weathermodels.WindSpeed
+import ru.plumsoftware.weatherforecast.domain.models.settings.WeatherUnits
+import ru.plumsoftware.weatherforecast.domain.models.settings.WindSpeed
 
 interface SettingsStore :
     Store<SettingsStore.Intent, SettingsStore.State, SettingsStore.Label> {

@@ -1,8 +1,8 @@
 package ru.plumsoftware.weatherforecast.domain.storage
 
-import ru.plumsoftware.weatherforecast.domain.models.UserSettings
-import ru.plumsoftware.weatherforecast.domain.models.weathermodels.WeatherUnits
-import ru.plumsoftware.weatherforecast.domain.models.weathermodels.WindSpeed
+import ru.plumsoftware.weatherforecast.domain.models.settings.UserSettings
+import ru.plumsoftware.weatherforecast.domain.models.settings.WeatherUnits
+import ru.plumsoftware.weatherforecast.domain.models.settings.WindSpeed
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.GetUserSettingsShowTipsUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.GetUserSettingsUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsAppThemeUseCase

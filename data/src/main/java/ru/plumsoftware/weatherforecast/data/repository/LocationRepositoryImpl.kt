@@ -2,8 +2,8 @@ package ru.plumsoftware.weatherforecast.data.repository
 
 import android.content.Context
 import ru.plumsoftware.weatherforecast.data.location.LocationHelper
-import ru.plumsoftware.weatherforecast.domain.models.Location
-import ru.plumsoftware.weatherforecast.domain.models.LocationCoords
+import ru.plumsoftware.weatherforecast.domain.models.location.Location
+import ru.plumsoftware.weatherforecast.domain.models.location.LocationCoords
 import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.domain.repository.LocationRepository
 

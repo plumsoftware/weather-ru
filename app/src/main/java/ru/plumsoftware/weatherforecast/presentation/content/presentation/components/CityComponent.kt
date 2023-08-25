@@ -29,7 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.application.App
-import ru.plumsoftware.weatherforecast.domain.models.Location
+import ru.plumsoftware.weatherforecast.domain.models.location.Location
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionSize
 

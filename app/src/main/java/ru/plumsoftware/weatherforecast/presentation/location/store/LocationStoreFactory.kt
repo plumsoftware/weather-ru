@@ -10,8 +10,8 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import ru.plumsoftware.weatherforecast.data.utilities.logd
-import ru.plumsoftware.weatherforecast.domain.models.Location
-import ru.plumsoftware.weatherforecast.domain.models.UserSettings
+import ru.plumsoftware.weatherforecast.domain.models.location.Location
+import ru.plumsoftware.weatherforecast.domain.models.settings.UserSettings
 import ru.plumsoftware.weatherforecast.domain.storage.LocationStorage
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 

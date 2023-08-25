@@ -7,7 +7,6 @@ import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import ru.plumsoftware.weatherforecast.domain.models.Location
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecast.presentation.content.store.ContentStore
 import ru.plumsoftware.weatherforecast.presentation.content.store.ContentStoreFactory

@@ -1,4 +1,4 @@
-package ru.plumsoftware.weatherforecast.domain.models.weathermodels
+package ru.plumsoftware.weatherforecast.domain.models.settings
 
 data class WeatherUnits(
     val unitsPresentation: String,

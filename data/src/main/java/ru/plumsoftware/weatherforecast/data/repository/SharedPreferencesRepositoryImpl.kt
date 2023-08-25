@@ -4,9 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import ru.plumsoftware.weatherforecast.domain.constants.Constants
 import ru.plumsoftware.weatherforecast.data.utilities.logd
-import ru.plumsoftware.weatherforecast.domain.models.UserSettings
-import ru.plumsoftware.weatherforecast.domain.models.weathermodels.WeatherUnits
-import ru.plumsoftware.weatherforecast.domain.models.weathermodels.WindSpeed
+import ru.plumsoftware.weatherforecast.domain.models.settings.UserSettings
+import ru.plumsoftware.weatherforecast.domain.models.settings.WeatherUnits
+import ru.plumsoftware.weatherforecast.domain.models.settings.WindSpeed
 import ru.plumsoftware.weatherforecast.domain.repository.SharedPreferencesRepository
 
 class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPreferencesRepository {

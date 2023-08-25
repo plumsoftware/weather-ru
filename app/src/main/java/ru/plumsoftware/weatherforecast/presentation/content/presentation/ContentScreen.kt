@@ -10,7 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import ru.plumsoftware.weatherforecast.domain.models.Location
+import ru.plumsoftware.weatherforecast.domain.models.location.Location
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.presentation.content.presentation.components.CityComponent
 import ru.plumsoftware.weatherforecast.presentation.content.presentation.components.WeatherStatus
