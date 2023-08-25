@@ -67,9 +67,6 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel) {
                         SettingsViewModel.Output.BackStackClicked
                     )
                 }
-
-                SettingsStore.Label.ChangeWeatherUnits -> {}
-                SettingsStore.Label.ChangeWindUnits -> {}
                 SettingsStore.Label.LeaveFeedBack -> {}
                 SettingsStore.Label.Share -> {}
                 is SettingsStore.Label.ChangeTheme -> {
@@ -185,10 +182,12 @@ private fun SettingsScreen(
                                     modifier = Modifier.weight(weight = 1.0f)
                                 )
                                 Button(
-                                    onClick = { /*TODO*/ }
+                                    onClick = {
+                                        event(SettingsStore.Intent.ChangeWindUnits)
+                                    }
                                 ) {
                                     Text(
-                                        text = "м/с".uppercase()
+                                        text = state.windSpeed.windPresentation.uppercase()
                                     )
                                 }
                             }

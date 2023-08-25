@@ -131,4 +131,19 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
                 .apply()
         }
     }
+
+    override fun saveUserSettingsWindSpeed(windSpeed: WindSpeed) {
+        with(windSpeed) {
+            sharedPreferences.edit()
+                .putString(
+                    Constants.SharedPreferences.SHARED_PREF_WIND_SPEED_PRESENTATION,
+                    windPresentation
+                )
+                .putFloat(
+                    Constants.SharedPreferences.SHARED_PREF_WIND_SPEED_VALUE,
+                    windValue
+                )
+                .apply()
+        }
+    }
 }

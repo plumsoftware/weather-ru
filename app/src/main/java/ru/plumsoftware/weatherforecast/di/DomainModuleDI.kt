@@ -14,6 +14,7 @@ import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsA
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsShowTipsUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsWeatherUnitsUseCase
+import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsWindUnitsUseCase
 
 internal val domainModuleDI = module {
     single<LocationRepository> { LocationRepositoryImpl(context = get()) }
@@ -40,6 +41,9 @@ internal val domainModuleDI = module {
                 sharedPreferencesRepository = get()
             ),
             saveUserSettingsWeatherUnitsUseCase = SaveUserSettingsWeatherUnitsUseCase(
+                sharedPreferencesRepository = get()
+            ),
+            saveUserSettingsWindUnitsUseCase = SaveUserSettingsWindUnitsUseCase(
                 sharedPreferencesRepository = get()
             )
         )

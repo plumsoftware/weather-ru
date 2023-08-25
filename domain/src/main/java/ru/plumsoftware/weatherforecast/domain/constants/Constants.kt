@@ -20,7 +20,7 @@ sealed class Constants {
         val METRIC = Pair<String, String>("metric", "c")
         val IMPERIAL = Pair<String, String>("imperial", "f")
         val DEFAULT = Pair<String, String>("", "k")
-        val M_S = Pair<String, Float>("м/c", 1.0f)
+        val M_S = Pair<String, Float>("м/c", 0.45f)
         val MI_H = Pair<String, Float>("миль/час", 2.23f)
     }
 }

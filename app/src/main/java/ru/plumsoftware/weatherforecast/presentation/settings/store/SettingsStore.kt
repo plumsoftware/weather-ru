@@ -2,6 +2,7 @@ package ru.plumsoftware.weatherforecast.presentation.settings.store
 
 import com.arkivanov.mvikotlin.core.store.Store
 import ru.plumsoftware.weatherforecast.domain.models.weathermodels.WeatherUnits
+import ru.plumsoftware.weatherforecast.domain.models.weathermodels.WindSpeed
 
 interface SettingsStore :
     Store<SettingsStore.Intent, SettingsStore.State, SettingsStore.Label> {
@@ -23,6 +24,10 @@ interface SettingsStore :
         val weatherUnit: WeatherUnits = WeatherUnits(
             unitsPresentation = "",
             unitsValue = ""
+        ),
+        val windSpeed: WindSpeed = WindSpeed(
+            windPresentation = "",
+            windValue = 1.0f
         )
     )
 
@@ -30,8 +35,6 @@ interface SettingsStore :
         object BackButtonClicked : Label
 
         data class ChangeTheme(val value: Boolean) : Label
-        object ChangeWeatherUnits : Label
-        object ChangeWindUnits : Label
         object AboutApp : Label
         object Share : Label
         object LeaveFeedBack : Label

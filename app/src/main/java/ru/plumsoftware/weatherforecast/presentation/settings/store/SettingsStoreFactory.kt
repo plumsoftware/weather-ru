@@ -11,6 +11,7 @@ import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.domain.constants.Constants
 import ru.plumsoftware.weatherforecast.domain.models.weathermodels.WeatherUnits
+import ru.plumsoftware.weatherforecast.domain.models.weathermodels.WindSpeed
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 
 class SettingsStoreFactory(
@@ -40,6 +41,7 @@ class SettingsStoreFactory(
     sealed interface Msg {
         data class CheckBoxValue(val value: Boolean) : Msg
         data class WeatherUnit(val value: WeatherUnits) : Msg
+        data class WindUnit(val value: WindSpeed) : Msg
     }
 
     private object ReducerImpl : Reducer<SettingsStore.State, SettingsStoreFactory.Msg> {
@@ -52,6 +54,10 @@ class SettingsStoreFactory(
 
                 is Msg.WeatherUnit -> copy(
                     weatherUnit = msg.value
+                )
+
+                is Msg.WindUnit -> copy(
+                    windSpeed = msg.value
                 )
             }
     }
@@ -75,11 +81,27 @@ class SettingsStoreFactory(
                     )
 
                     dispatch(Msg.WeatherUnit(value = weatherUnits))
-                    sharedPreferencesStorage.saveWeatherUnits(weatherUnits = weatherUnits)
-                    publish(SettingsStore.Label.ChangeWeatherUnits)
+                    saveWeatherUnits(
+                        sharedPreferencesStorage = sharedPreferencesStorage,
+                        value = weatherUnits
+                    )
                 }
 
-                SettingsStore.Intent.ChangeWindUnits -> publish(SettingsStore.Label.ChangeWindUnits)
+                SettingsStore.Intent.ChangeWindUnits -> {
+                    val windSpeed = WindSpeed(
+                        windPresentation = if (getState().windSpeed.windPresentation == Constants.Settings.M_S.first)
+                            Constants.Settings.MI_H.first else Constants.Settings.M_S.first,
+                        windValue = if (getState().windSpeed.windValue == Constants.Settings.M_S.second)
+                            Constants.Settings.MI_H.second else Constants.Settings.M_S.second
+                    )
+
+                    dispatch(Msg.WindUnit(value = windSpeed))
+                    saveWindUnits(
+                        sharedPreferencesStorage = sharedPreferencesStorage,
+                        value = windSpeed
+                    )
+                }
+
                 is SettingsStore.Intent.CheckBoxValue -> {
                     dispatch(Msg.CheckBoxValue(value = intent.value))
                     saveTheme(
@@ -114,6 +136,14 @@ class SettingsStoreFactory(
                             )
                         )
                     )
+                    dispatch(
+                        Msg.WindUnit(
+                            value = WindSpeed(
+                                windPresentation = windSpeed.windPresentation,
+                                windValue = windSpeed.windValue
+                            )
+                        )
+                    )
 //                    endregion
                 }
             }
@@ -121,6 +151,20 @@ class SettingsStoreFactory(
 
         private fun saveTheme(sharedPreferencesStorage: SharedPreferencesStorage, value: Boolean) {
             sharedPreferencesStorage.saveAppTheme(applicationTheme = value)
+        }
+
+        private fun saveWeatherUnits(
+            sharedPreferencesStorage: SharedPreferencesStorage,
+            value: WeatherUnits
+        ) {
+            sharedPreferencesStorage.saveWeatherUnits(weatherUnits = value)
+        }
+
+        private fun saveWindUnits(
+            sharedPreferencesStorage: SharedPreferencesStorage,
+            value: WindSpeed
+        ) {
+            sharedPreferencesStorage.saveWindUnits(windSpeed = value)
         }
     }
 }
