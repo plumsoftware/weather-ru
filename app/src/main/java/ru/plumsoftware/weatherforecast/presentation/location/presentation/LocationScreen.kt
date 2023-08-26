@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
@@ -34,6 +35,7 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.domain.models.location.Location
@@ -45,17 +47,18 @@ import ru.plumsoftware.weatherforecast.presentation.location.viewmodel.LocationV
 @Composable
 fun LocationScreen(locationViewModel: LocationViewModel) {
     val state by locationViewModel.state.collectAsState()
+    val coroutine = rememberCoroutineScope()
 
     LaunchedEffect(locationViewModel) {
         locationViewModel.label.collect { label ->
             when (label) {
                 is LocationStore.Label.ConfirmLocation -> {
+                    coroutine.launch {
+                        locationViewModel.save(location = label.location)
+                    }
                     locationViewModel.onOutput(
                         LocationViewModel.Output.OpenContentScreen(
-                            location = Location(
-                                city = label.city,
-                                country = label.country
-                            )
+                            location = label.location
                         )
                     )
                 }

@@ -8,8 +8,11 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import ru.plumsoftware.weatherforecast.application.App
+import ru.plumsoftware.weatherforecast.data.models.location.LocationItem
+import ru.plumsoftware.weatherforecast.data.models.location.LocationItemDao
 import ru.plumsoftware.weatherforecast.data.utilities.logd
+import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.domain.models.location.Location
 import ru.plumsoftware.weatherforecast.domain.models.settings.UserSettings
 import ru.plumsoftware.weatherforecast.domain.storage.LocationStorage
@@ -17,10 +20,9 @@ import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 
 internal class LocationStoreFactory(
     private val storeFactory: StoreFactory,
-    private val sharedPreferencesStorage: SharedPreferencesStorage
+    private val sharedPreferencesStorage: SharedPreferencesStorage,
+    private val locationItemDao: LocationItemDao
 ) : KoinComponent {
-
-    private val locationStorage by inject<LocationStorage>()
 
     @OptIn(ExperimentalMviKotlinApi::class)
     fun create(): LocationStore =
@@ -30,7 +32,7 @@ internal class LocationStoreFactory(
                 initialState = LocationStore.State(),
                 bootstrapper = coroutineBootstrapper {
                     launch {
-//                        dispatch(LocationStoreFactory.Action.InitLocations) TODO(add later)
+                        dispatch(LocationStoreFactory.Action.InitLocations)
                         dispatch(LocationStoreFactory.Action.InitLocation)
                     }
                 },
@@ -94,18 +96,15 @@ internal class LocationStoreFactory(
 
                 is LocationStore.Intent.SearchButtonClicked -> {
                     with(intent.city) {
-                        logd("CITY: $this")
-                        sharedPreferencesStorage.save(
-                            userSettings = UserSettings(
-                                isDarkTheme = sharedPreferencesStorage.get().isDarkTheme,
-                                city = this@with,
-                                country = getState().country
-                            )
+                        sharedPreferencesStorage.saveLocation(
+                            location = Location(city = this@with, country = getState().country)
                         )
                         publish(
                             LocationStore.Label.ConfirmLocation(
-                                city = this@with,
-                                country = getState().country
+                                location = Location(
+                                    city = this@with,
+                                    country = getState().country
+                                )
                             )
                         )
                     }
@@ -137,16 +136,30 @@ internal class LocationStoreFactory(
 
         private fun initLocations() {
             scope.launch {
-
+                val locationItems: List<LocationItem> = locationItemDao.getAll()
+                showToast(App.INSTANCE.applicationContext, locationItems.toString())
+//                locationItemDao.upsert(LocationItem(
+//                    city = "TEST",
+//                    country = "TEST COUNTRY",
+//                    isSelected = false
+//                ))
+//                val locationItems = locationItemDao.getAll()
+//                showToast(App.INSTANCE.applicationContext, locationItems.toString())
             }
         }
 
         private fun initLocation() {
             scope.launch {
-                val currentLocation: Location = locationStorage.get()
-                with(currentLocation) {
-                    dispatch(LocationStoreFactory.Msg.Data(city = city))
-                    dispatch(LocationStoreFactory.Msg.Country(county = country))
+                with(sharedPreferencesStorage.get()) {
+                    with(
+                        Location(
+                            city = city!!,
+                            country = country!!
+                        )
+                    ) {
+                        dispatch(LocationStoreFactory.Msg.Data(city = city))
+                        dispatch(LocationStoreFactory.Msg.Country(county = country))
+                    }
                 }
             }
         }

@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
 }
 
 android {
@@ -13,6 +14,11 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
+
+////        Kapt
+//        kapt {
+//            arguments {arg("room.schemaLocation", "$projectDir/schemas")}
+//        }
     }
 
     buildTypes {
@@ -32,12 +38,20 @@ android {
 
 dependencies {
 
+    def room_version = "2.5.2"
+    def kapt_version = "2.5.2"
+
     implementation 'androidx.core:core-ktx:1.10.1'
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
 
 //    Location
     implementation 'com.google.android.gms:play-services-location:21.0.1'
+
+//    Room database
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$kapt_version"
+    implementation "androidx.room:room-ktx:$room_version"
 
 //    Modules
     api project(path: ":domain")

@@ -70,7 +70,6 @@ class MainStoreFactory(
         private fun init() {
             scope.launch {
                 if (city!!.isEmpty()) {
-                    logd("EXECUTE get city")
                     publish(MainStore.Label.OpenAuthorization)
                 }
                 else

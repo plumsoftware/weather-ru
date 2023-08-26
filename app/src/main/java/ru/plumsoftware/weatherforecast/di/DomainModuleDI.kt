@@ -11,6 +11,7 @@ import ru.plumsoftware.weatherforecast.domain.usecase.location.GetLastKnownLocat
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.GetUserSettingsShowTipsUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.GetUserSettingsUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsAppThemeUseCase
+import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsLocationUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsShowTipsUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsWeatherUnitsUseCase
@@ -44,6 +45,9 @@ internal val domainModuleDI = module {
                 sharedPreferencesRepository = get()
             ),
             saveUserSettingsWindUnitsUseCase = SaveUserSettingsWindUnitsUseCase(
+                sharedPreferencesRepository = get()
+            ),
+            saveUserSettingsLocationUseCase = SaveUserSettingsLocationUseCase(
                 sharedPreferencesRepository = get()
             )
         )

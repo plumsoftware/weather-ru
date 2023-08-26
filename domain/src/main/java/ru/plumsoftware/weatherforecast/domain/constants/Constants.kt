@@ -23,4 +23,8 @@ sealed class Constants {
         val M_S = Pair<String, Float>("м/c", 0.45f)
         val MI_H = Pair<String, Float>("миль/час", 2.23f)
     }
+
+    object Database {
+        const val DATABASE_NAME = "ru_plumsoftware_main_location.db"
+    }
 }

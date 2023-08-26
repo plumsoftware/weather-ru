@@ -1,11 +1,13 @@
 package ru.plumsoftware.weatherforecast.domain.storage
 
+import ru.plumsoftware.weatherforecast.domain.models.location.Location
 import ru.plumsoftware.weatherforecast.domain.models.settings.UserSettings
 import ru.plumsoftware.weatherforecast.domain.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecast.domain.models.settings.WindSpeed
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.GetUserSettingsShowTipsUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.GetUserSettingsUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsAppThemeUseCase
+import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsLocationUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsShowTipsUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsUseCase
 import ru.plumsoftware.weatherforecast.domain.usecase.settings.SaveUserSettingsWeatherUnitsUseCase
@@ -19,6 +21,7 @@ class SharedPreferencesStorage
     private val saveUserSettingsUseCase: SaveUserSettingsUseCase,
     private val saveUserSettingsAppThemeUseCase: SaveUserSettingsAppThemeUseCase,
     private val saveUserSettingsShowTipsUseCase: SaveUserSettingsShowTipsUseCase,
+    private val saveUserSettingsLocationUseCase: SaveUserSettingsLocationUseCase,
 
     private val saveUserSettingsWeatherUnitsUseCase: SaveUserSettingsWeatherUnitsUseCase,
     private val saveUserSettingsWindUnitsUseCase: SaveUserSettingsWindUnitsUseCase
@@ -51,5 +54,9 @@ class SharedPreferencesStorage
 
     fun saveWindUnits(windSpeed: WindSpeed) {
         saveUserSettingsWindUnitsUseCase.execute(value = windSpeed)
+    }
+
+    fun saveLocation(location: Location) {
+        saveUserSettingsLocationUseCase.execute(value = location)
     }
 }

@@ -15,9 +15,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.context.stopKoin
+import ru.plumsoftware.weatherforecast.data.models.location.LocationItem
+import ru.plumsoftware.weatherforecast.data.models.location.LocationItemDao
+import ru.plumsoftware.weatherforecast.data.utilities.logd
+import ru.plumsoftware.weatherforecast.data.utilities.showToast
+import ru.plumsoftware.weatherforecast.domain.models.location.Location
+import ru.plumsoftware.weatherforecast.domain.storage.LocationStorage
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecast.presentation.authorization.viewmodel.AuthorizationViewModel
 import ru.plumsoftware.weatherforecast.presentation.authorization.presentation.AuthorizationScreen
@@ -34,11 +44,15 @@ import ru.plumsoftware.weatherforecast.ui.WeatherAppTheme
 
 class MainApplicationActivity : ComponentActivity(), KoinComponent {
     private val sharedPreferencesStorage by inject<SharedPreferencesStorage>()
+    private val locationItemDao by inject<LocationItemDao>()
+    private val locationStorage by inject<LocationStorage>()
+
     private var isDarkTheme = mutableStateOf(false)
     private lateinit var navController: NavHostController
     private val PERMISSION_REQUEST_CODE = 1
     private val activity = this
 
+    //    region:Override
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -49,60 +63,6 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
             }
             navController = rememberNavController()
 
-//        region::View model
-            val mainViewModel =
-                MainViewModel(
-                    storeFactory = DefaultStoreFactory(),
-                    output = { output ->
-                        when (output) {
-                            is MainViewModel.Output.ChangeTheme -> {
-                                isDarkTheme.value = output.isDarkTheme
-                            }
-
-                            MainViewModel.Output.OpenAuthorizationScreen -> {
-                                navController.navigate(route = Screens.Authorization)
-                            }
-
-                            is MainViewModel.Output.OpenContentScreen -> {
-                                navController.navigate(route = Screens.Content)
-                            }
-                        }
-                    },
-                    city = sharedPreferencesStorage.get().city!!
-                )
-
-            val authorizationViewModel = AuthorizationViewModel(
-                storeFactory = DefaultStoreFactory(),
-                output = { output ->
-                    when (output) {
-                        is AuthorizationViewModel.Output.ChangeTheme -> {
-                            with(output) {
-                                isDarkTheme.value = value
-                                sharedPreferencesStorage.saveAppTheme(applicationTheme = isDarkTheme.value)
-                            }
-                        }
-
-                        AuthorizationViewModel.Output.OpenLocationScreen -> {
-                            if (ContextCompat.checkSelfPermission(
-                                    App.INSTANCE,
-                                    Manifest.permission.ACCESS_FINE_LOCATION
-                                ) != PackageManager.PERMISSION_GRANTED
-                            ) {
-                                ActivityCompat.requestPermissions(
-                                    activity,
-                                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                                    PERMISSION_REQUEST_CODE
-                                )
-                            } else {
-                                navController.navigate(route = Screens.Location)
-                            }
-                        }
-                    }
-                },
-                theme = isDarkTheme.value
-            )
-//        endregion
-
             WeatherAppTheme(darkTheme = isDarkTheme.value) {
                 SetupUIController()
                 Surface {
@@ -111,11 +71,54 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                         startDestination = Screens.Main
                     ) {
                         composable(route = Screens.Main) {
-                            MainScreen(mainViewModel = mainViewModel)
+                            MainScreen(
+                                mainViewModel = MainViewModel(
+                                    storeFactory = DefaultStoreFactory(),
+                                    output = { output ->
+                                        when (output) {
+                                            is MainViewModel.Output.ChangeTheme -> {
+                                                isDarkTheme.value = output.isDarkTheme
+                                            }
+
+                                            is MainViewModel.Output.OpenAuthorizationScreen -> {
+                                                navController.navigate(route = Screens.Authorization)
+                                            }
+
+                                            is MainViewModel.Output.OpenContentScreen -> {
+                                                navController.navigate(route = Screens.Content)
+                                            }
+                                        }
+                                    },
+                                    city = sharedPreferencesStorage.get().city!!
+                                )
+                            )
                         }
                         composable(route = Screens.Authorization) {
                             AuthorizationScreen(
-                                authorizationViewModel = authorizationViewModel
+                                authorizationViewModel = AuthorizationViewModel(
+                                    storeFactory = DefaultStoreFactory(),
+                                    output = { output ->
+                                        when (output) {
+                                            is AuthorizationViewModel.Output.ChangeTheme -> {
+                                                with(output) {
+                                                    isDarkTheme.value = value
+                                                    sharedPreferencesStorage.saveAppTheme(
+                                                        applicationTheme = isDarkTheme.value
+                                                    )
+                                                }
+                                            }
+
+                                            AuthorizationViewModel.Output.OpenLocationScreen -> {
+                                                if (checkLocationPermission()) {
+                                                    askLocationPermission()
+                                                } else {
+                                                    navController.navigate(route = Screens.Location)
+                                                }
+                                            }
+                                        }
+                                    },
+                                    theme = isDarkTheme.value
+                                )
                             )
                         }
                         composable(route = Screens.Location) {
@@ -138,7 +141,8 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                             }
                                         }
                                     },
-                                    sharedPreferencesStorage = sharedPreferencesStorage
+                                    sharedPreferencesStorage = sharedPreferencesStorage,
+                                    locationItemDao = locationItemDao
                                 )
                             )
                         }
@@ -150,7 +154,11 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                     output = { output ->
                                         when (output) {
                                             is ContentViewModel.Output.OpenLocationScreen -> {
-                                                navController.navigate(route = Screens.Location)
+                                                if (checkLocationPermission()) {
+                                                    askLocationPermission()
+                                                } else {
+                                                    navController.navigate(route = Screens.Location)
+                                                }
                                             }
 
                                             is ContentViewModel.Output.OpenSettingsScreen -> {
@@ -162,21 +170,23 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                             )
                         }
                         composable(route = Screens.Settings) {
-                            SettingsScreen(settingsViewModel = SettingsViewModel(
-                                storeFactory = DefaultStoreFactory(),
-                                sharedPreferencesStorage = sharedPreferencesStorage,
-                                output = { output ->
-                                    when (output) {
-                                        is SettingsViewModel.Output.BackStackClicked -> {
-                                            navController.popBackStack()
-                                        }
+                            SettingsScreen(
+                                settingsViewModel = SettingsViewModel(
+                                    storeFactory = DefaultStoreFactory(),
+                                    sharedPreferencesStorage = sharedPreferencesStorage,
+                                    output = { output ->
+                                        when (output) {
+                                            is SettingsViewModel.Output.BackStackClicked -> {
+                                                navController.popBackStack()
+                                            }
 
-                                        is SettingsViewModel.Output.ChangedTheme -> {
-                                            isDarkTheme.value = output.value
+                                            is SettingsViewModel.Output.ChangedTheme -> {
+                                                isDarkTheme.value = output.value
+                                            }
                                         }
                                     }
-                                }
-                            ))
+                                )
+                            )
                         }
                     }
                 }
@@ -193,6 +203,10 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         when (requestCode) {
             PERMISSION_REQUEST_CODE -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val location = locationStorage.get()
+                        sharedPreferencesStorage.saveLocation(location = location)
+                    }
                     navController.navigate(route = Screens.Location)
                 } else {
                     navController.navigate(route = Screens.Location)
@@ -219,9 +233,18 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
 //            }
         }
     }
+//    endregion
 
-    override fun onDestroy() {
-        super.onDestroy()
-        stopKoin()
-    }
+    //    region::Private function
+    private fun checkLocationPermission(): Boolean = ContextCompat.checkSelfPermission(
+        App.INSTANCE,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    ) != PackageManager.PERMISSION_GRANTED
+
+    private fun askLocationPermission() = ActivityCompat.requestPermissions(
+        activity,
+        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+        PERMISSION_REQUEST_CODE
+    )
+//    endregion
 }

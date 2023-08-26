@@ -2,6 +2,7 @@ package ru.plumsoftware.weatherforecast.presentation.location.store
 
 import androidx.compose.ui.focus.FocusRequester
 import com.arkivanov.mvikotlin.core.store.Store
+import ru.plumsoftware.weatherforecast.domain.models.location.Location
 
 interface LocationStore :
     Store<LocationStore.Intent, LocationStore.State, LocationStore.Label> {
@@ -31,7 +32,7 @@ interface LocationStore :
     sealed interface Label {
         object BackButtonClicked : Label
 
-        data class ConfirmLocation(val city: String, val country: String) : Label
+        data class ConfirmLocation(val location: Location) : Label
 
     }
 }

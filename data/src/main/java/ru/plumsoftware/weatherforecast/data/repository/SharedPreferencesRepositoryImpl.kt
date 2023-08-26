@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import ru.plumsoftware.weatherforecast.domain.constants.Constants
 import ru.plumsoftware.weatherforecast.data.utilities.logd
+import ru.plumsoftware.weatherforecast.domain.models.location.Location
 import ru.plumsoftware.weatherforecast.domain.models.settings.UserSettings
 import ru.plumsoftware.weatherforecast.domain.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecast.domain.models.settings.WindSpeed
@@ -143,6 +144,16 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
                     Constants.SharedPreferences.SHARED_PREF_WIND_SPEED_VALUE,
                     windValue
                 )
+                .apply()
+        }
+    }
+
+    override fun saveLocation(location: Location) {
+        with(location) {
+            sharedPreferences
+                .edit()
+                .putString(Constants.SharedPreferences.SHARED_PREF_CITY, city)
+                .putString(Constants.SharedPreferences.SHARED_PREF_COUNTRY, country)
                 .apply()
         }
     }
