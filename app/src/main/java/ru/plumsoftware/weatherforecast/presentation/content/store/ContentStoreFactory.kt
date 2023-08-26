@@ -7,6 +7,10 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
+import ru.plumsoftware.weatherforecast.application.App
+import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
+import ru.plumsoftware.weatherforecast.data.repository.OwmRepositoryImpl
+import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.domain.models.settings.UserSettings
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 
@@ -25,6 +29,7 @@ class ContentStoreFactory(
                     launch {
                         dispatch(ContentStoreFactory.Action.InitLocation)
                         dispatch(ContentStoreFactory.Action.InitTips)
+                        dispatch(ContentStoreFactory.Action.InitWeather)
                     }
                 },
                 reducer = ContentStoreFactory.ReducerImpl,
@@ -35,6 +40,7 @@ class ContentStoreFactory(
     sealed interface Action {
         object InitLocation : Action
         object InitTips : Action
+        object InitWeather : Action
     }
 
     sealed interface Msg {
@@ -93,6 +99,7 @@ class ContentStoreFactory(
             when (action) {
                 is Action.InitLocation -> initLocation()
                 is Action.InitTips -> initTips()
+                Action.InitWeather -> initWeather()
             }
 
         private fun initTips() {
@@ -118,6 +125,16 @@ class ContentStoreFactory(
                     )
                 }
             }
+        }
+
+        private fun initWeather() {
+//            region::Test
+            scope.launch {
+                val test: OwmRepositoryImpl = OwmRepositoryImpl()
+                val owmResponse: OwmResponse = test.getOwm<OwmResponse>()
+                showToast(App.INSTANCE.applicationContext, owmResponse.base!!)
+            }
+//            endregion
         }
     }
 }

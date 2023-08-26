@@ -41,9 +41,12 @@ dependencies {
 
     def room_version = "2.5.2"
     def kapt_version = "2.5.2"
+
     def ktor_version = "2.3.3"
     def logback_version = "1.2.11"
     def json_serialization_version = "1.5.1"
+
+    def gson_version = "2.10"
 
     implementation 'androidx.core:core-ktx:1.10.1'
     testImplementation 'junit:junit:4.13.2'
@@ -65,6 +68,9 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$json_serialization_version")
+
+//    Gson
+    implementation ("com.google.code.gson:gson:$gson_version")
 
 //    Modules
     api project(path: ":domain")
