@@ -16,10 +16,10 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
 
-////        Kapt
-//        kapt {
-//            arguments {arg("room.schemaLocation", "$projectDir/schemas")}
-//        }
+//        Kapt
+        kapt {
+            arguments {arg("room.schemaLocation", "$projectDir/schemas")}
+        }
     }
 
     buildTypes {

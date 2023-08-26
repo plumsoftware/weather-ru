@@ -55,7 +55,7 @@ class LocationViewModel(
     }
 
     private suspend fun checkLocation(location: Location) {
-        val locationItems: List<LocationItem> = locationItemDao.getAll()
+        val locationItems: List<LocationItem> = locationItemDao.getAll().value!!
         with(location) {
             locationItems.forEachIndexed { index, locationItem ->
                 if (locationItem.city == city && locationItem.country == country) {
