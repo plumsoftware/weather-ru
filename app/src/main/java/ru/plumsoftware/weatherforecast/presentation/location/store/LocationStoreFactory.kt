@@ -142,7 +142,7 @@ internal class LocationStoreFactory(
 
         private fun initLocations() {
             scope.launch {
-                val locationItems: List<LocationItem> = locationItemDao.getAll().value!!
+                val locationItems: List<LocationItem> = locationItemDao.getAll()
                 dispatch(LocationStoreFactory.Msg.Items(items = locationItems))
             }
         }

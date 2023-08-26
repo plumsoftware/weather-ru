@@ -16,5 +16,5 @@ interface LocationItemDao {
     suspend fun delete(locationItem: LocationItem)
 
     @Query("SELECT * FROM LocationItem ORDER BY id ASC")
-    suspend fun getAll(): MutableLiveData<List<LocationItem>>
+    suspend fun getAll(): List<LocationItem>
 }
