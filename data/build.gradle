@@ -2,6 +2,7 @@ plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
+    id 'org.jetbrains.kotlin.plugin.serialization'
 }
 
 android {
@@ -40,6 +41,9 @@ dependencies {
 
     def room_version = "2.5.2"
     def kapt_version = "2.5.2"
+    def ktor_version = "2.3.3"
+    def logback_version = "1.2.11"
+    def json_serialization_version = "1.5.1"
 
     implementation 'androidx.core:core-ktx:1.10.1'
     testImplementation 'junit:junit:4.13.2'
@@ -52,6 +56,15 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$kapt_version"
     implementation "androidx.room:room-ktx:$room_version"
+
+//    Ktor
+    implementation("io.ktor:ktor-client-core:$ktor_version")
+    implementation("io.ktor:ktor-client-android:$ktor_version")
+    implementation("io.ktor:ktor-client-serialization:$ktor_version")
+    implementation("io.ktor:ktor-client-logging:$ktor_version")
+    implementation("io.ktor:ktor-client-cio:$ktor_version")
+    implementation("ch.qos.logback:logback-classic:$logback_version")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:$json_serialization_version")
 
 //    Modules
     api project(path: ":domain")
