@@ -11,7 +11,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.LocationOn
-import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,16 +25,17 @@ import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionSize
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 internal fun LocationItem(city: String, country: String, onClick: () -> Unit) {
     with(MaterialTheme) {
-        Button(
+        Card(
             onClick = onClick,
             shape = shapes.large,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(paddingValues = PaddingValues(all = ExtensionPaddingValues._16dp))
+                .padding(top = ExtensionPaddingValues._10dp)
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(
@@ -44,12 +46,15 @@ internal fun LocationItem(city: String, country: String, onClick: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
+                    .padding(paddingValues = PaddingValues(vertical = ExtensionPaddingValues._10dp))
             ) {
                 Image(
                     imageVector = Icons.Rounded.LocationOn,
                     contentDescription = App.INSTANCE.getString(R.string.location_icon_description),
                     contentScale = ContentScale.None,
-                    modifier = Modifier.size(size = ExtensionSize.IconSize._24dp),
+                    modifier = Modifier
+                        .padding(start = ExtensionPaddingValues._12dp)
+                        .size(size = ExtensionSize.IconSize._24dp),
                     colorFilter = ColorFilter.tint(colorScheme.primary)
                 )
                 Column(

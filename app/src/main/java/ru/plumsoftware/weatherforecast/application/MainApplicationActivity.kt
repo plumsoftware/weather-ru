@@ -237,7 +237,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
 
     //    region::Private function
     private fun checkLocationPermission(): Boolean = ContextCompat.checkSelfPermission(
-        App.INSTANCE,
+        App.INSTANCE.applicationContext,
         Manifest.permission.ACCESS_FINE_LOCATION
     ) != PackageManager.PERMISSION_GRANTED
 

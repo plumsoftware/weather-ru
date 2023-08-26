@@ -60,6 +60,8 @@ internal class LocationStoreFactory(
         data class CloseIcon(
             val isVisibleCloseIcon: Boolean = false
         ) : Msg
+
+        data class Items(val items: List<LocationItem>) : Msg
     }
 
     private object ReducerImpl : Reducer<LocationStore.State, Msg> {
@@ -80,6 +82,10 @@ internal class LocationStoreFactory(
 
                 is Msg.Country -> copy(
                     country = msg.county
+                )
+
+                is Msg.Items -> copy(
+                    items = msg.items
                 )
             }
     }
@@ -137,14 +143,7 @@ internal class LocationStoreFactory(
         private fun initLocations() {
             scope.launch {
                 val locationItems: List<LocationItem> = locationItemDao.getAll()
-                showToast(App.INSTANCE.applicationContext, locationItems.toString())
-//                locationItemDao.upsert(LocationItem(
-//                    city = "TEST",
-//                    country = "TEST COUNTRY",
-//                    isSelected = false
-//                ))
-//                val locationItems = locationItemDao.getAll()
-//                showToast(App.INSTANCE.applicationContext, locationItems.toString())
+                dispatch(LocationStoreFactory.Msg.Items(items = locationItems))
             }
         }
 

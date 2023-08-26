@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -41,6 +42,7 @@ import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.domain.models.location.Location
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.material.components.TopBar
+import ru.plumsoftware.weatherforecast.presentation.location.presentation.components.LocationItem
 import ru.plumsoftware.weatherforecast.presentation.location.store.LocationStore
 import ru.plumsoftware.weatherforecast.presentation.location.viewmodel.LocationViewModel
 
@@ -167,13 +169,21 @@ private fun LocationScreen(
             state.focusRequester.requestFocus()
         }
 
+        Spacer(modifier = Modifier.height(height = ExtensionPaddingValues._14dp))
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
         )
         {
-
+            itemsIndexed(state.items) { index, locationItem ->
+                LocationItem(
+                    city = locationItem.city,
+                    country = locationItem.country!!,
+                    onClick = {}
+                )
+            }
         }
     }
 }

@@ -26,16 +26,12 @@ class LocationHelper(private val context: Context) {
                     context,
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 ) == PackageManager.PERMISSION_GRANTED
-
-        logd("LOCATION PERMISSION: ${if (result) "GRANTED" else "DENIED"}")
         return result
     }
 
     fun isLocationEnabled(): Boolean {
         val result = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-
-        logd("LOCATION ENABLED: ${result.toString()}")
         return result
     }
 
@@ -61,9 +57,6 @@ class LocationHelper(private val context: Context) {
             if (addresses!!.isNotEmpty()) {
                 city = addresses[0].locality
                 country = addresses[0].countryName
-
-                logd("CITY: ${city}")
-                logd("COUNTRY: ${country}")
             }
         } catch (e: IOException) {
             e.printStackTrace()

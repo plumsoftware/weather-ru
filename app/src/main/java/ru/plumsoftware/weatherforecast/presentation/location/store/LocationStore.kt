@@ -2,6 +2,7 @@ package ru.plumsoftware.weatherforecast.presentation.location.store
 
 import androidx.compose.ui.focus.FocusRequester
 import com.arkivanov.mvikotlin.core.store.Store
+import ru.plumsoftware.weatherforecast.data.models.location.LocationItem
 import ru.plumsoftware.weatherforecast.domain.models.location.Location
 
 interface LocationStore :
@@ -26,7 +27,8 @@ interface LocationStore :
         val country: String = "",
         val isSyntaxError: Boolean = false,
         val isVisibleCloseIcon: Boolean = false,
-        val focusRequester: FocusRequester = FocusRequester()
+        val focusRequester: FocusRequester = FocusRequester(),
+        val items: List<LocationItem> = emptyList()
     )
 
     sealed interface Label {
