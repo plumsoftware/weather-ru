@@ -6,12 +6,19 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
+import com.google.gson.Gson
+import io.ktor.http.HttpStatusCode
+import io.ktor.util.date.GMTDate
 import kotlinx.coroutines.launch
+import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecast.data.utilities.logd
+import ru.plumsoftware.weatherforecast.domain.remote.dto.either.OwmEither
+import ru.plumsoftware.weatherforecast.domain.storage.HttpClientStorage
 
 class MainStoreFactory(
     private val storeFactory: StoreFactory,
-    private val city: String?
+    private val city: String?,
+    private val httpClientStorage: HttpClientStorage
 ) {
     @OptIn(ExperimentalMviKotlinApi::class)
     fun create(): MainStore =
@@ -71,10 +78,21 @@ class MainStoreFactory(
             scope.launch {
                 if (city!!.isEmpty()) {
                     publish(MainStore.Label.OpenAuthorization)
+                } else {
+                    val owmEither: OwmEither<String, HttpStatusCode, GMTDate> =
+                        httpClientStorage.get()
+                    publish(
+                        MainStore.Label.SkipAuthorization(
+                            city = city,
+                            owmResponse = convertStringToJson(owmEither.data)
+                        )
+                    )
                 }
-                else
-                    publish(MainStore.Label.SkipAuthorization(city = city))
             }
         }
+
+        private fun convertStringToJson(jsonString: String): OwmResponse =
+            Gson().fromJson(jsonString, OwmResponse::class.java)
+
     }
 }

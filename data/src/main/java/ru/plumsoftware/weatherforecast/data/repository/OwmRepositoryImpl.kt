@@ -9,14 +9,16 @@ import io.ktor.client.request.get
 import io.ktor.client.request.url
 import ru.plumsoftware.weatherforecast.domain.remote.dto.either.OwmEither
 import ru.plumsoftware.weatherforecast.domain.repository.OwmRepository
+import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 
 class OwmRepositoryImpl(
-    private val client: HttpClient
+    private val client: HttpClient,
+    private val sharedPreferencesStorage: SharedPreferencesStorage
 ) : OwmRepository {
     override suspend fun <D, E, R> getOwm(): OwmEither<D, E, R> {
 
         val response = client.get {
-            url(urlString = "https://api.openweathermap.org/data/2.5/weather?q=Omsk&appid=4e228e1be370d9d0d02284441d30cf0b")
+            url(urlString = "https://api.openweathermap.org/data/2.5/weather?q=${sharedPreferencesStorage.get().city}&appid=4e228e1be370d9d0d02284441d30cf0b")
         }
 
         return try {

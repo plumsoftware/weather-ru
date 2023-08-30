@@ -2,6 +2,7 @@ package ru.plumsoftware.weatherforecast.presentation.main.store
 
 import com.arkivanov.mvikotlin.core.store.Store
 import ru.plumsoftware.weatherforecast.application.Screens
+import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
 
 interface MainStore :
     Store<MainStore.Intent, MainStore.State, MainStore.Label> {
@@ -20,6 +21,6 @@ interface MainStore :
 
         object OpenAuthorization : Label
 
-        data class SkipAuthorization(val city: String?) : Label
+        data class SkipAuthorization(val city: String?, val owmResponse: OwmResponse) : Label
     }
 }

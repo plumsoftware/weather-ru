@@ -15,20 +15,23 @@ import ru.plumsoftware.weatherforecast.domain.usecase.GetOwmUseCase
 
 internal val httpClientModel = module {
     single<OwmRepository> {
-        OwmRepositoryImpl(client = HttpClient(Android) {
-            install(Logging) {
-                level = LogLevel.ALL //TODO() remove later
-            }
+        OwmRepositoryImpl(
+            client = HttpClient(Android) {
+//                install(Logging) {
+//                    level = LogLevel.ALL
+//                }
 
-            install(ContentNegotiation) {
-                json(
-                    Json {
-                        prettyPrint = true
-                        isLenient = true
-                    }
-                )
-            }
-        })
+                install(ContentNegotiation) {
+                    json(
+                        Json {
+                            prettyPrint = true
+                            isLenient = true
+                        }
+                    )
+                }
+            },
+            sharedPreferencesStorage = get()
+        )
     }
 
     factory<HttpClientStorage> { HttpClientStorage(getOwmUseCase = GetOwmUseCase(owmRepository = get())) }

@@ -31,7 +31,14 @@ fun MainScreen(mainViewModel: MainViewModel) {
                 }
 
                 is MainStore.Label.SkipAuthorization -> {
-                    mainViewModel.onOutput(MainViewModel.Output.OpenContentScreen(city = label.city!!))
+                    with(label) {
+                        mainViewModel.onOutput(
+                            MainViewModel.Output.OpenContentScreen(
+                                city = city!!,
+                                owmResponse = owmResponse
+                            )
+                        )
+                    }
                 }
             }
         }

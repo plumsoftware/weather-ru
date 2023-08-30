@@ -64,6 +64,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
     private lateinit var navController: NavHostController
     private val PERMISSION_REQUEST_CODE = 1
     private val activity = this
+    private var OWM_VALUE = OwmResponse()
 
     //    region:Override
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,14 +72,14 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
 
         setContent {
 
-            isDarkTheme = remember {
-                mutableStateOf(value = sharedPreferencesStorage.get().isDarkTheme)
-            }
+            isDarkTheme =
+                remember { mutableStateOf(value = sharedPreferencesStorage.get().isDarkTheme) }
             navController = rememberNavController()
             val coroutine = rememberCoroutineScope()
+
             LaunchedEffect(Unit) {
                 coroutine.launch {
-                    getFromUrl()
+
                 }
             }
 
@@ -104,11 +105,13 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                             }
 
                                             is MainViewModel.Output.OpenContentScreen -> {
+                                                OWM_VALUE = output.owmResponse
                                                 navController.navigate(route = Screens.Content)
                                             }
                                         }
                                     },
-                                    city = sharedPreferencesStorage.get().city!!
+                                    city = sharedPreferencesStorage.get().city!!,
+                                    httpClientStorage = httpClientStorage
                                 )
                             )
                         }
@@ -170,6 +173,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                 contentViewModel = ContentViewModel(
                                     storeFactory = DefaultStoreFactory(),
                                     sharedPreferencesStorage = sharedPreferencesStorage,
+                                    owmResponse = OWM_VALUE,
                                     output = { output ->
                                         when (output) {
                                             is ContentViewModel.Output.OpenLocationScreen -> {
@@ -265,16 +269,5 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
         PERMISSION_REQUEST_CODE
     )
-
-    private suspend fun getFromUrl() {
-        val owmEither = httpClientStorage.get<String, HttpStatusCode, GMTDate>()
-
-        with(owmEither) {
-            val jsonValue = data
-            val gson = Gson()
-            val value = gson.fromJson(jsonValue, OwmResponse::class.java)
-            showToast(context = App.INSTANCE.applicationContext, message = value.toString())
-        }
-    }
 //    endregion
 }

@@ -30,7 +30,8 @@ import kotlinx.serialization.json.Json
 
 class ContentStoreFactory(
     private val storeFactory: StoreFactory,
-    private val sharedPreferencesStorage: SharedPreferencesStorage
+    private val sharedPreferencesStorage: SharedPreferencesStorage,
+    private val owmResponse: OwmResponse
 ) {
 
     @OptIn(ExperimentalMviKotlinApi::class)
@@ -142,7 +143,7 @@ class ContentStoreFactory(
         }
 
         private fun initWeather() {
-//            region::Test
+//            region::Init weather
             scope.launch {
 
             }
