@@ -1,4 +1,4 @@
-package ru.plumsoftware.weatherforecast.ui
+package ru.plumsoftware.weatherforecast.presentation.ui
 
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable

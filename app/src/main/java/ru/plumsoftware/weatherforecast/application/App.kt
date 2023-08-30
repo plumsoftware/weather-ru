@@ -7,6 +7,7 @@ import org.koin.core.context.startKoin
 import org.koin.core.logger.Level
 import ru.plumsoftware.weatherforecast.di.databaseModule
 import ru.plumsoftware.weatherforecast.di.domainModuleDI
+import ru.plumsoftware.weatherforecast.di.httpClientModel
 
 class App : Application() {
 
@@ -20,7 +21,7 @@ class App : Application() {
         startKoin {
             androidContext(this@App)
             androidLogger(Level.DEBUG)
-            modules(listOf(domainModuleDI, databaseModule))
+            modules(listOf(domainModuleDI, databaseModule, httpClientModel))
         }
     }
 }

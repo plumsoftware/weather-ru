@@ -6,13 +6,27 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.android.Android
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
 import kotlinx.coroutines.launch
 import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecast.data.repository.OwmRepositoryImpl
 import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.domain.models.settings.UserSettings
+import ru.plumsoftware.weatherforecast.domain.remote.dto.either.OwmEither
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
+
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.get
+import io.ktor.client.request.url
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType.Application.Json
+import io.ktor.serialization.kotlinx.cbor.cbor
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
 
 class ContentStoreFactory(
     private val storeFactory: StoreFactory,
@@ -130,9 +144,7 @@ class ContentStoreFactory(
         private fun initWeather() {
 //            region::Test
             scope.launch {
-                val test: OwmRepositoryImpl = OwmRepositoryImpl()
-                val owmResponse: OwmResponse = test.getOwm<OwmResponse>()
-                showToast(App.INSTANCE.applicationContext, owmResponse.base!!)
+
             }
 //            endregion
         }

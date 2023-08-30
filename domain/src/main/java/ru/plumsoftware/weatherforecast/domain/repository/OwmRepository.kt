@@ -1,6 +1,7 @@
 package ru.plumsoftware.weatherforecast.domain.repository
 
-interface OwmRepository {
+import ru.plumsoftware.weatherforecast.domain.remote.dto.either.OwmEither
 
-    suspend fun <T> getOwm() : T
+interface OwmRepository {
+    suspend fun <D, E, R> getOwm(): OwmEither<D, E, R>
 }

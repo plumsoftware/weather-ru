@@ -6,8 +6,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
@@ -15,18 +17,28 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
-import kotlinx.coroutines.CoroutineDispatcher
+import com.google.gson.Gson
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.android.Android
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.util.date.GMTDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.koin.core.context.stopKoin
-import ru.plumsoftware.weatherforecast.data.models.location.LocationItem
 import ru.plumsoftware.weatherforecast.data.models.location.LocationItemDao
-import ru.plumsoftware.weatherforecast.data.utilities.logd
+import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
+import ru.plumsoftware.weatherforecast.data.repository.OwmRepositoryImpl
 import ru.plumsoftware.weatherforecast.data.utilities.showToast
-import ru.plumsoftware.weatherforecast.domain.models.location.Location
+import ru.plumsoftware.weatherforecast.domain.repository.OwmRepository
+import ru.plumsoftware.weatherforecast.domain.storage.HttpClientStorage
 import ru.plumsoftware.weatherforecast.domain.storage.LocationStorage
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecast.presentation.authorization.viewmodel.AuthorizationViewModel
@@ -39,13 +51,14 @@ import ru.plumsoftware.weatherforecast.presentation.main.presentation.MainScreen
 import ru.plumsoftware.weatherforecast.presentation.main.viewmodel.MainViewModel
 import ru.plumsoftware.weatherforecast.presentation.settings.presentation.SettingsScreen
 import ru.plumsoftware.weatherforecast.presentation.settings.viewmodel.SettingsViewModel
-import ru.plumsoftware.weatherforecast.ui.SetupUIController
-import ru.plumsoftware.weatherforecast.ui.WeatherAppTheme
+import ru.plumsoftware.weatherforecast.presentation.ui.SetupUIController
+import ru.plumsoftware.weatherforecast.presentation.ui.WeatherAppTheme
 
 class MainApplicationActivity : ComponentActivity(), KoinComponent {
     private val sharedPreferencesStorage by inject<SharedPreferencesStorage>()
     private val locationItemDao by inject<LocationItemDao>()
     private val locationStorage by inject<LocationStorage>()
+    private val httpClientStorage by inject<HttpClientStorage>()
 
     private var isDarkTheme = mutableStateOf(false)
     private lateinit var navController: NavHostController
@@ -62,6 +75,12 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                 mutableStateOf(value = sharedPreferencesStorage.get().isDarkTheme)
             }
             navController = rememberNavController()
+            val coroutine = rememberCoroutineScope()
+            LaunchedEffect(Unit) {
+                coroutine.launch {
+                    getFromUrl()
+                }
+            }
 
             WeatherAppTheme(darkTheme = isDarkTheme.value) {
                 SetupUIController()
@@ -246,5 +265,16 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
         PERMISSION_REQUEST_CODE
     )
+
+    private suspend fun getFromUrl() {
+        val owmEither = httpClientStorage.get<String, HttpStatusCode, GMTDate>()
+
+        with(owmEither) {
+            val jsonValue = data
+            val gson = Gson()
+            val value = gson.fromJson(jsonValue, OwmResponse::class.java)
+            showToast(context = App.INSTANCE.applicationContext, message = value.toString())
+        }
+    }
 //    endregion
 }
