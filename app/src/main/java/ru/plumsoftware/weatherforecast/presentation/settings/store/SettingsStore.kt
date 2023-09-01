@@ -33,6 +33,7 @@ interface SettingsStore :
 
     sealed interface Label {
         object BackButtonClicked : Label
+        object SettingsChange : Label
 
         data class ChangeTheme(val value: Boolean) : Label
         object AboutApp : Label

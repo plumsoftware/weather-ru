@@ -6,5 +6,5 @@ import ru.plumsoftware.weatherforecast.domain.remote.dto.owm.Clouds
 
 @Serializable
 data class CloudsResponse(
-    @SerializedName("all") override var all: Int? = null
+    @SerializedName("all") override var all: Int? = 0
 ) : Clouds

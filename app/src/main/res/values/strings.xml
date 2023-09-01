@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Погода</string>
 
@@ -16,6 +17,8 @@
 
     <!--    Content-->
     <string name="more_icon_dewscription">Кнопка с выподающим меню</string>
+    <string name="weather_status_logo">Иконка статуса погоды</string>
+    <string name="degree_sign">°</string>
 
     <!--    Settings-->
     <string name="settings">Настройки</string>

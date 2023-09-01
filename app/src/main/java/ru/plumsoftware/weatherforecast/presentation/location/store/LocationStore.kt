@@ -13,8 +13,6 @@ interface LocationStore :
 
         object BackButtonClicked : Intent
 
-        data class ConfirmLocation(val value: String) : Intent
-
         data class TextChange(val text: String) : Intent
 
         data class TextError(val isSyntaxError: Boolean) : Intent

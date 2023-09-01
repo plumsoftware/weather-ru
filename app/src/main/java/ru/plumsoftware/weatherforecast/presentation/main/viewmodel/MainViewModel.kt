@@ -42,10 +42,8 @@ class MainViewModel(
 //    endregion
 
     sealed class Output {
-        data class ChangeTheme(val isDarkTheme: Boolean) : Output()
-
         object OpenAuthorizationScreen : Output()
 
-        data class OpenContentScreen(val city: String, val owmResponse: OwmResponse) : Output()
+        data class OpenContentScreen(val city: String) : Output()
     }
 }

@@ -38,5 +38,6 @@ class SettingsViewModel(
     sealed class Output {
         object BackStackClicked : Output()
         data class ChangedTheme(val value: Boolean) : Output()
+        object OnSettingsChange : Output()
     }
 }

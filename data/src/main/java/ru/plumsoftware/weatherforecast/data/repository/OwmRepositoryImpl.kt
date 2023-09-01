@@ -6,10 +6,12 @@ import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.url
 import ru.plumsoftware.weatherforecast.domain.remote.dto.either.OwmEither
 import ru.plumsoftware.weatherforecast.domain.repository.OwmRepository
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
+import java.util.Locale
 
 class OwmRepositoryImpl(
     private val client: HttpClient,
@@ -18,7 +20,10 @@ class OwmRepositoryImpl(
     override suspend fun <D, E, R> getOwm(): OwmEither<D, E, R> {
 
         val response = client.get {
-            url(urlString = "https://api.openweathermap.org/data/2.5/weather?q=${sharedPreferencesStorage.get().city}&appid=4e228e1be370d9d0d02284441d30cf0b")
+            url(urlString = "https://api.openweathermap.org/data/2.5/weather?q=${sharedPreferencesStorage.get().city}")
+            parameter(key = "appid", value = "4e228e1be370d9d0d02284441d30cf0b") // TODO(replace with local.properties)
+            parameter(key = "lang", value = Locale.getDefault().language)
+            parameter(key = "units", value = sharedPreferencesStorage.get().weatherUnits.unitsValue)
         }
 
         return try {

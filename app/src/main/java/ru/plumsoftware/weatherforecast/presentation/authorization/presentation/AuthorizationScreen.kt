@@ -1,6 +1,5 @@
 package ru.plumsoftware.weatherforecast.presentation.authorization.presentation
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,13 +21,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import ru.plumsoftware.uicomponents.PlumsoftwareIconPack
+import ru.plumsoftware.uicomponents.plumsoftwareiconpack.Weather
+import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.PartlyCloudyDay
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
-import ru.plumsoftware.weatherforecast.presentation.authorization.presentation.components.PrimaryGradientButton
+import ru.plumsoftware.weatherforecast.presentation.authorization.presentation.components.PrimaryButton
 import ru.plumsoftware.weatherforecast.presentation.authorization.viewmodel.AuthorizationViewModel
 import ru.plumsoftware.weatherforecast.presentation.authorization.store.AuthorizationStore
 
@@ -77,8 +79,9 @@ private fun AuthorizationScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.weather_logo),
+                Icon(
+                    imageVector = PlumsoftwareIconPack.Weather.PartlyCloudyDay,
+                    tint = MaterialTheme.colorScheme.primary,
                     contentDescription = App.INSTANCE.getString(R.string.weather_logo_description),
                     modifier = Modifier
                         .size(64.dp)
@@ -93,7 +96,7 @@ private fun AuthorizationScreen(
                 verticalArrangement = Arrangement.spacedBy(_24dp, Alignment.Top),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                PrimaryGradientButton(onClick = { event(AuthorizationStore.Intent.ContinueButtonClicked) }) {
+                PrimaryButton(onClick = { event(AuthorizationStore.Intent.ContinueButtonClicked) }) {
                     Text(
                         text = App.INSTANCE.getString(R.string.get_started),
                         style = MaterialTheme.typography.titleSmall.copy(color = Color.White),

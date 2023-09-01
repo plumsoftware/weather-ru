@@ -69,6 +69,7 @@ class SettingsStoreFactory(
         ) =
             when (intent) {
                 SettingsStore.Intent.BackButtonClicked -> publish(SettingsStore.Label.BackButtonClicked)
+
                 SettingsStore.Intent.AboutApp -> publish(SettingsStore.Label.AboutApp)
                 SettingsStore.Intent.ChangeWeatherUnits -> {
                     val weatherUnits = WeatherUnits(
@@ -83,6 +84,7 @@ class SettingsStoreFactory(
                         sharedPreferencesStorage = sharedPreferencesStorage,
                         value = weatherUnits
                     )
+                    publish(SettingsStore.Label.SettingsChange)
                 }
 
                 SettingsStore.Intent.ChangeWindUnits -> {
@@ -91,8 +93,9 @@ class SettingsStoreFactory(
                         if (getState().windSpeed.windPresentation == Constants.Settings.M_S.first)
                             Constants.Settings.MI_H.first else Constants.Settings.M_S.first
 
-                    val windValue = if (getState().windSpeed.windValue == Constants.Settings.M_S.second)
-                        Constants.Settings.MI_H.second else Constants.Settings.M_S.second
+                    val windValue =
+                        if (getState().windSpeed.windValue == Constants.Settings.M_S.second)
+                            Constants.Settings.MI_H.second else Constants.Settings.M_S.second
 
                     val windSpeed = WindSpeed(
                         windPresentation = windPresentation,
@@ -104,6 +107,7 @@ class SettingsStoreFactory(
                         sharedPreferencesStorage = sharedPreferencesStorage,
                         value = windSpeed
                     )
+                    publish(SettingsStore.Label.SettingsChange)
                 }
 
                 is SettingsStore.Intent.CheckBoxValue -> {

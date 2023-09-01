@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import ru.plumsoftware.weatherforecast.data.utilities.logd
 import ru.plumsoftware.weatherforecast.presentation.main.store.MainStore
 import ru.plumsoftware.weatherforecast.presentation.main.viewmodel.MainViewModel
 
@@ -22,9 +23,6 @@ fun MainScreen(mainViewModel: MainViewModel) {
     LaunchedEffect(mainViewModel) {
         mainViewModel.label.collect { label ->
             when (label) {
-                is MainStore.Label.ChangeTheme -> {
-                    mainViewModel.onOutput(MainViewModel.Output.ChangeTheme(isDarkTheme = label.isDarkTheme))
-                }
 
                 is MainStore.Label.OpenAuthorization -> {
                     mainViewModel.onOutput(MainViewModel.Output.OpenAuthorizationScreen)
@@ -34,8 +32,7 @@ fun MainScreen(mainViewModel: MainViewModel) {
                     with(label) {
                         mainViewModel.onOutput(
                             MainViewModel.Output.OpenContentScreen(
-                                city = city!!,
-                                owmResponse = owmResponse
+                                city = city!!
                             )
                         )
                     }

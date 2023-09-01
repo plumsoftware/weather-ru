@@ -29,7 +29,6 @@ class MainStoreFactory(
                 bootstrapper = coroutineBootstrapper {
                     launch { dispatch(MainStoreFactory.Action.Init) }
                 },
-                reducer = MainStoreFactory.ReducerImpl,
                 executorFactory = ::ExecutorImpl
             ) {
         }
@@ -39,32 +38,11 @@ class MainStoreFactory(
     }
 
     sealed interface Msg {
-        data class Theme(val isDarkTheme: Boolean) : Msg
-    }
 
-    private object ReducerImpl : Reducer<MainStore.State, MainStoreFactory.Msg> {
-
-        override fun MainStore.State.reduce(msg: MainStoreFactory.Msg): MainStore.State =
-            when (msg) {
-                is Msg.Theme -> copy(
-                    isDarkTheme = msg.isDarkTheme
-                )
-            }
     }
 
     private inner class ExecutorImpl :
         CoroutineExecutor<MainStore.Intent, MainStoreFactory.Action, MainStore.State, MainStoreFactory.Msg, MainStore.Label>() {
-
-        override fun executeIntent(
-            intent: MainStore.Intent,
-            getState: () -> MainStore.State
-        ) =
-            when (intent) {
-                is MainStore.Intent.ChangeTheme -> {
-                    dispatch(Msg.Theme(isDarkTheme = intent.isDarkTheme))
-                    publish(MainStore.Label.ChangeTheme(isDarkTheme = intent.isDarkTheme))
-                }
-            }
 
         override fun executeAction(
             action: MainStoreFactory.Action,
@@ -75,24 +53,13 @@ class MainStoreFactory(
             }
 
         private fun init() {
-            scope.launch {
-                if (city!!.isEmpty()) {
-                    publish(MainStore.Label.OpenAuthorization)
-                } else {
-                    val owmEither: OwmEither<String, HttpStatusCode, GMTDate> =
-                        httpClientStorage.get()
-                    publish(
-                        MainStore.Label.SkipAuthorization(
-                            city = city,
-                            owmResponse = convertStringToJson(owmEither.data)
-                        )
-                    )
-                }
+            if (city!!.isEmpty()) {
+                publish(MainStore.Label.OpenAuthorization)
+            } else {
+                publish(
+                    MainStore.Label.SkipAuthorization(city = city)
+                )
             }
         }
-
-        private fun convertStringToJson(jsonString: String): OwmResponse =
-            Gson().fromJson(jsonString, OwmResponse::class.java)
-
     }
 }

@@ -80,7 +80,7 @@ fun CityComponent(
                 )
             }
             Text(
-                text = with(location) { "$city, $country" },
+                text = with(location) { "$city ${if (country.isNotEmpty()) ", $country" else ""}" },
                 style = typography.titleMedium,
                 modifier = Modifier
                     .wrapContentSize()

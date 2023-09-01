@@ -6,5 +6,5 @@ import ru.plumsoftware.weatherforecast.domain.remote.dto.owm.Rain
 
 @Serializable
 data class RainResponse(
-    @SerializedName("1h") override var _1h: Double? = null
+    @SerializedName("1h") override var _1h: Double? = 0.0
 ) : Rain

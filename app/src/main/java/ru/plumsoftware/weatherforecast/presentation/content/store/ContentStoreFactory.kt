@@ -67,6 +67,11 @@ class ContentStoreFactory(
         data class DropDownMenu(val value: Boolean) : Msg
 
         data class CheckBoxValue(val value: Boolean) : Msg
+
+        //        region::Weather
+        data class OwmResponseMsg(val value: OwmResponse) : Msg
+        data class WeatherUnit(val value: String) : Msg
+//        endregion
     }
 
     private object ReducerImpl : Reducer<ContentStore.State, Msg> {
@@ -80,6 +85,8 @@ class ContentStoreFactory(
 
                 is Msg.CheckBoxValue -> copy(checkBoxState = msg.value)
                 is Msg.DropDownMenu -> copy(dropDownState = !msg.value)
+                is Msg.OwmResponseMsg -> copy(owmResponse = msg.value)
+                is Msg.WeatherUnit -> copy(weatherUnit = "°" + msg.value.uppercase())
             }
     }
 
@@ -114,7 +121,10 @@ class ContentStoreFactory(
             when (action) {
                 is Action.InitLocation -> initLocation()
                 is Action.InitTips -> initTips()
-                Action.InitWeather -> initWeather()
+                Action.InitWeather -> initWeather(
+                    sharedPreferencesStorage = sharedPreferencesStorage,
+                    owmResponse = owmResponse
+                )
             }
 
         private fun initTips() {
@@ -142,10 +152,14 @@ class ContentStoreFactory(
             }
         }
 
-        private fun initWeather() {
+        private fun initWeather(
+            sharedPreferencesStorage: SharedPreferencesStorage,
+            owmResponse: OwmResponse
+        ) {
 //            region::Init weather
             scope.launch {
-
+                dispatch(ContentStoreFactory.Msg.OwmResponseMsg(value = owmResponse))
+                dispatch(ContentStoreFactory.Msg.WeatherUnit(value = sharedPreferencesStorage.get().weatherUnits.unitsPresentation))
             }
 //            endregion
         }

@@ -67,10 +67,15 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel) {
                         SettingsViewModel.Output.BackStackClicked
                     )
                 }
+
                 SettingsStore.Label.LeaveFeedBack -> {}
                 SettingsStore.Label.Share -> {}
                 is SettingsStore.Label.ChangeTheme -> {
                     settingsViewModel.onOutput(SettingsViewModel.Output.ChangedTheme(value = label.value))
+                }
+
+                is SettingsStore.Label.SettingsChange -> {
+                    settingsViewModel.onOutput(SettingsViewModel.Output.OnSettingsChange)
                 }
             }
         }

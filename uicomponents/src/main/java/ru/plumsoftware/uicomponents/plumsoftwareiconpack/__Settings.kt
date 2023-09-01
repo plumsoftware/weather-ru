@@ -10,13 +10,13 @@ public object SettingsGroup
 public val PlumsoftwareIconPack.Settings: SettingsGroup
   get() = SettingsGroup
 
-private var __PlumsoftwareIcons: ____KtList<ImageVector>? = null
+private var __AllIcons: ____KtList<ImageVector>? = null
 
-public val SettingsGroup.PlumsoftwareIcons: ____KtList<ImageVector>
+public val SettingsGroup.AllIcons: ____KtList<ImageVector>
   get() {
-    if (__PlumsoftwareIcons != null) {
-      return __PlumsoftwareIcons!!
+    if (__AllIcons != null) {
+      return __AllIcons!!
     }
-    __PlumsoftwareIcons= listOf(Darkmode)
-    return __PlumsoftwareIcons!!
+    __AllIcons= listOf(Darkmode)
+    return __AllIcons!!
   }

@@ -1,3 +1,5 @@
+//@file:Suppress("CAST_NEVER_SUCCEEDS")
+
 package ru.plumsoftware.weatherforecast.presentation.content.presentation
 
 import android.annotation.SuppressLint
@@ -96,6 +98,13 @@ private fun ContentScreen(
                 )
             }
         )
-        WeatherStatus()
+        with(state.owmResponse) {
+            WeatherStatus(
+                description = weather[0].description!!,
+                temp = main!!.temp!!.toInt().toString(),
+                weatherUnit = state.weatherUnit,
+                iconId = state.owmResponse.weather[0].id!!
+            )
+        }
     }
 }

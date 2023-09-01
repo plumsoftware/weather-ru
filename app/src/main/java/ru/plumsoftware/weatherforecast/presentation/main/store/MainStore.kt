@@ -17,10 +17,10 @@ interface MainStore :
     )
 
     sealed interface Label {
-        data class ChangeTheme(val isDarkTheme: Boolean) : Label
+//        data class ChangeTheme(val isDarkTheme: Boolean) : Label
 
         object OpenAuthorization : Label
 
-        data class SkipAuthorization(val city: String?, val owmResponse: OwmResponse) : Label
+        data class SkipAuthorization(val city: String?) : Label
     }
 }

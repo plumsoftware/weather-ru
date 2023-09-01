@@ -1,6 +1,7 @@
 package ru.plumsoftware.weatherforecast.presentation.content.store
 
 import com.arkivanov.mvikotlin.core.store.Store
+import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
 
 
 interface ContentStore :
@@ -25,7 +26,9 @@ interface ContentStore :
         val city: String = "",
         val country: String = "",
         val dropDownState: Boolean = false,
-        val checkBoxState: Boolean = true
+        val checkBoxState: Boolean = true,
+        val owmResponse: OwmResponse = OwmResponse(),
+        val weatherUnit: String = ""
     )
 
     sealed interface Label {

@@ -6,12 +6,12 @@ import ru.plumsoftware.weatherforecast.domain.remote.dto.owm.Main
 
 @Serializable
 data class MainResponse(
-    @SerializedName("temp") override var temp: Double? = null,
-    @SerializedName("feels_like") override var feelsLike: Double? = null,
-    @SerializedName("temp_min") override var tempMin: Double? = null,
-    @SerializedName("temp_max") override var tempMax: Double? = null,
-    @SerializedName("pressure") override var pressure: Int? = null,
-    @SerializedName("humidity") override var humidity: Int? = null,
-    @SerializedName("sea_level") override var seaLevel: Int? = null,
-    @SerializedName("grnd_level") override var grndLevel: Int? = null
+    @SerializedName("temp") override var temp: Double? = 0.0,
+    @SerializedName("feels_like") override var feelsLike: Double? = 0.0,
+    @SerializedName("temp_min") override var tempMin: Double? = 0.0,
+    @SerializedName("temp_max") override var tempMax: Double? = 0.0,
+    @SerializedName("pressure") override var pressure: Int? = 0,
+    @SerializedName("humidity") override var humidity: Int? = 0,
+    @SerializedName("sea_level") override var seaLevel: Int? = 0,
+    @SerializedName("grnd_level") override var grndLevel: Int? = 0
 ) : Main

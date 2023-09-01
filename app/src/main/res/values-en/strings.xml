@@ -17,6 +17,8 @@
 
     <!--    Content-->
     <string name="more_icon_dewscription">Button with dropdown menu</string>
+    <string name="weather_status_logo">Weather status icon</string>
+    <string name="degree_sign">°</string>
 
     <!--    Settings-->
     <string name="settings">Settings</string>

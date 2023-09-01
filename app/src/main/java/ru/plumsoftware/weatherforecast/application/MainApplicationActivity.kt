@@ -3,13 +3,21 @@ package ru.plumsoftware.weatherforecast.application
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
@@ -33,10 +41,15 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.data.models.location.LocationItemDao
 import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecast.data.repository.OwmRepositoryImpl
+import ru.plumsoftware.weatherforecast.data.utilities.logd
 import ru.plumsoftware.weatherforecast.data.utilities.showToast
+import ru.plumsoftware.weatherforecast.domain.constants.Constants
+import ru.plumsoftware.weatherforecast.domain.models.settings.WeatherUnits
+import ru.plumsoftware.weatherforecast.domain.remote.dto.either.OwmEither
 import ru.plumsoftware.weatherforecast.domain.repository.OwmRepository
 import ru.plumsoftware.weatherforecast.domain.storage.HttpClientStorage
 import ru.plumsoftware.weatherforecast.domain.storage.LocationStorage
@@ -55,16 +68,8 @@ import ru.plumsoftware.weatherforecast.presentation.ui.SetupUIController
 import ru.plumsoftware.weatherforecast.presentation.ui.WeatherAppTheme
 
 class MainApplicationActivity : ComponentActivity(), KoinComponent {
-    private val sharedPreferencesStorage by inject<SharedPreferencesStorage>()
-    private val locationItemDao by inject<LocationItemDao>()
-    private val locationStorage by inject<LocationStorage>()
-    private val httpClientStorage by inject<HttpClientStorage>()
-
     private var isDarkTheme = mutableStateOf(false)
     private lateinit var navController: NavHostController
-    private val PERMISSION_REQUEST_CODE = 1
-    private val activity = this
-    private var OWM_VALUE = OwmResponse()
 
     //    region:Override
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,16 +77,45 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
 
         setContent {
 
+//            region::Variables
+            val sharedPreferencesStorage by inject<SharedPreferencesStorage>()
+            val locationItemDao by inject<LocationItemDao>()
+            val locationStorage by inject<LocationStorage>()
+            val httpClientStorage by inject<HttpClientStorage>()
+            val context = LocalContext.current
+
             isDarkTheme =
                 remember { mutableStateOf(value = sharedPreferencesStorage.get().isDarkTheme) }
             navController = rememberNavController()
             val coroutine = rememberCoroutineScope()
-
-            LaunchedEffect(Unit) {
-                coroutine.launch {
-
+            val OWM_VALUE = remember { mutableStateOf(OwmResponse()) }
+            val launcher = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+                if (isGranted) {
+                    // Permission Accepted: Do something
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val location = locationStorage.get()
+                        sharedPreferencesStorage.saveLocation(location = location)
+                        CoroutineScope(Dispatchers.Main).launch {
+                            navController.navigate(route = Screens.Location)
+                        }
+                    }
+                } else {
+                    // Permission Denied: Do something
+                    navController.navigate(route = Screens.Location)
                 }
             }
+
+//            endregion
+
+//            region::Coroutines
+            LaunchedEffect(Unit) {
+                coroutine.launch {
+                    OWM_VALUE.value = doHttpResponse(httpClientStorage = httpClientStorage)
+                }
+            }
+//            endregion
 
             WeatherAppTheme(darkTheme = isDarkTheme.value) {
                 SetupUIController()
@@ -96,16 +130,11 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                     storeFactory = DefaultStoreFactory(),
                                     output = { output ->
                                         when (output) {
-                                            is MainViewModel.Output.ChangeTheme -> {
-                                                isDarkTheme.value = output.isDarkTheme
-                                            }
-
                                             is MainViewModel.Output.OpenAuthorizationScreen -> {
                                                 navController.navigate(route = Screens.Authorization)
                                             }
 
                                             is MainViewModel.Output.OpenContentScreen -> {
-                                                OWM_VALUE = output.owmResponse
                                                 navController.navigate(route = Screens.Content)
                                             }
                                         }
@@ -132,7 +161,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
 
                                             AuthorizationViewModel.Output.OpenLocationScreen -> {
                                                 if (checkLocationPermission()) {
-                                                    askLocationPermission()
+                                                    launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                                                 } else {
                                                     navController.navigate(route = Screens.Location)
                                                 }
@@ -156,6 +185,10 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                             is LocationViewModel.Output.OpenContentScreen -> {
                                                 navController.navigate(route = Screens.Content)
                                                 {
+                                                    coroutine.launch {
+                                                        OWM_VALUE.value = doHttpResponse(httpClientStorage = httpClientStorage)
+                                                    }
+
                                                     popUpTo(route = Screens.Content) {
                                                         inclusive = true
                                                     }
@@ -173,12 +206,12 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                 contentViewModel = ContentViewModel(
                                     storeFactory = DefaultStoreFactory(),
                                     sharedPreferencesStorage = sharedPreferencesStorage,
-                                    owmResponse = OWM_VALUE,
+                                    owmResponse = OWM_VALUE.value,
                                     output = { output ->
                                         when (output) {
                                             is ContentViewModel.Output.OpenLocationScreen -> {
                                                 if (checkLocationPermission()) {
-                                                    askLocationPermission()
+                                                    launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                                                 } else {
                                                     navController.navigate(route = Screens.Location)
                                                 }
@@ -206,6 +239,13 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                             is SettingsViewModel.Output.ChangedTheme -> {
                                                 isDarkTheme.value = output.value
                                             }
+
+                                            is SettingsViewModel.Output.OnSettingsChange -> {
+                                                CoroutineScope(Dispatchers.IO).launch {
+                                                    OWM_VALUE.value =
+                                                        doHttpResponse(httpClientStorage = httpClientStorage)
+                                                }
+                                            }
                                         }
                                     }
                                 )
@@ -217,43 +257,12 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            PERMISSION_REQUEST_CODE -> {
-                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val location = locationStorage.get()
-                        sharedPreferencesStorage.saveLocation(location = location)
-                    }
-                    navController.navigate(route = Screens.Location)
-                } else {
-                    navController.navigate(route = Screens.Location)
-                }
-                return
-            }
-        }
-    }
-
     override fun onBackPressed() {
         super.onBackPressed()
         when (navController.currentDestination!!.route) {
             Screens.Main -> {
                 finish()
             }
-//            Screens.Location -> {
-//                navController.popBackStack()
-//            }
-//            Screens.Content -> {
-//                finish()
-//            }
-//            Screens.Authorization -> {
-//                navController.popBackStack()
-//            }
         }
     }
 //    endregion
@@ -264,10 +273,36 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         Manifest.permission.ACCESS_FINE_LOCATION
     ) != PackageManager.PERMISSION_GRANTED
 
-    private fun askLocationPermission() = ActivityCompat.requestPermissions(
-        activity,
-        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-        PERMISSION_REQUEST_CODE
-    )
+    private fun convertStringToJson(jsonString: String): OwmResponse =
+        Gson().fromJson(jsonString, OwmResponse::class.java)
+
+    private suspend fun doHttpResponse(httpClientStorage: HttpClientStorage): OwmResponse {
+        val owmEither: OwmEither<String, HttpStatusCode, GMTDate> =
+            httpClientStorage.get()
+        val owmResponse = convertStringToJson(owmEither.data)
+        return owmResponse
+    }
+
+    private fun windDirection(deg: Int): String {
+        val directions = arrayOf(
+            "С", "ССВ", "СВ", "ВСВ",
+            "В", "ВЮВ", "ЮВ", "ЮЮВ",
+            "Ю", "ЮЮЗ", "ЮЗ", "ЗЮЗ",
+            "З", "ЗСЗ", "СЗ", "ССЗ"
+        )
+        val index = ((deg / 22.5) + 0.5).toInt() % 16
+        return directions[index]
+    }
+
+    private fun windDirectionFull(deg: Int): String {
+        val directions = arrayOf(
+            "Севера", "Северо-северо-востока", "Северо-востока", "Восток-северо-востока",
+            "Востока", "Восток-юго-востока", "Юго-востока", "Юго-юго-востока",
+            "Юга", "Юго-юго-запада", "Юго-запада", "Запад-юго-запада",
+            "Запада", "Запад-северо-запада", "Северо-запада", "Северо-северо-запада"
+        )
+        val index = ((deg / 22.5) + 0.5).toInt() % 16
+        return directions[index]
+    }
 //    endregion
 }

@@ -98,8 +98,6 @@ internal class LocationStoreFactory(
             getState: () -> LocationStore.State
         ) =
             when (intent) {
-                is LocationStore.Intent.ConfirmLocation -> TODO()
-
                 is LocationStore.Intent.SearchButtonClicked -> {
                     with(intent.city) {
                         sharedPreferencesStorage.saveLocation(
