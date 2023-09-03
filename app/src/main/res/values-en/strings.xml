@@ -19,6 +19,8 @@
     <string name="more_icon_dewscription">Button with dropdown menu</string>
     <string name="weather_status_logo">Weather status icon</string>
     <string name="degree_sign">°</string>
+    <string name="feels_like_temp">feels like</string>
+    <string name="weather_hour_logo_desc">Weather icon at a certain hour</string>
 
     <!--    Settings-->
     <string name="settings">Settings</string>

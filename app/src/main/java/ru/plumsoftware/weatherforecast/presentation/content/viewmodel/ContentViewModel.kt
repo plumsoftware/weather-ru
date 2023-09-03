@@ -8,6 +8,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
+import ru.plumsoftware.weatherforecast.data.remote.dto.weatherapi.WeatherApiResponse
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecast.presentation.content.store.ContentStore
 import ru.plumsoftware.weatherforecast.presentation.content.store.ContentStoreFactory
@@ -16,12 +17,14 @@ class ContentViewModel(
     storeFactory: StoreFactory,
     sharedPreferencesStorage: SharedPreferencesStorage,
     owmResponse: OwmResponse,
+    weatherApiResponse: WeatherApiResponse,
     private val output: (Output) -> Unit,
 ) : ViewModel() {
     private val contentStore = ContentStoreFactory(
         storeFactory = storeFactory,
         sharedPreferencesStorage = sharedPreferencesStorage,
-        owmResponse = owmResponse
+        owmResponse = owmResponse,
+        weatherApiResponse = weatherApiResponse
     ).create()
 
     @OptIn(ExperimentalCoroutinesApi::class)

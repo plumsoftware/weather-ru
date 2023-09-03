@@ -3,12 +3,14 @@ package ru.plumsoftware.weatherforecast.presentation.content.presentation.compon
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -19,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 import ru.plumsoftware.uicomponents.PlumsoftwareIconPack
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.Weather
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Cloud
@@ -41,7 +44,11 @@ import ru.plumsoftware.weatherforecast.material.extensions.ExtensionSize
 fun WeatherStatus(
     description: String,
     temp: String,
+    tempMax: String,
+    tempMin: String,
+    tempFeelsLike: String,
     weatherUnit: String,
+    base: String,
     iconId: Int
 ) {
     Column(
@@ -51,39 +58,48 @@ fun WeatherStatus(
             .fillMaxWidth(fraction = 1.0f)
             .wrapContentHeight()
     ) {
-        Spacer(modifier = Modifier.height(height = ExtensionPaddingValues._4dp))
-        with(
-            badIconToGoodIcon(
-                icon = iconId,
-                isNight = isSystemInDarkTheme()
-            )
-        ) {
-            Icon(
-                imageVector = first,
-                contentDescription = stringResource(id = T.string.weather_status_logo),
-                tint = second,
-                modifier = Modifier.size(size = ExtensionSize.IconSize._64dp),
-            )
-        }
-        Spacer(modifier = Modifier.height(height = ExtensionPaddingValues._14dp))
-        Column(
-            verticalArrangement = Arrangement.spacedBy(
-                space = ExtensionPaddingValues._10dp,
-                alignment = Alignment.CenterVertically
-            ),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .padding(all = ExtensionPaddingValues._10dp)
-        ) {
-            Text(
-                text = "$temp $weatherUnit",
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge
-            )
-            Text(
-                text = description,
-                style = MaterialTheme.typography.labelMedium
-            )
+        if (base == "") {
+            CircularProgressIndicator()
+        } else {
+            with(
+                badIconToGoodIcon(
+                    icon = iconId,
+                    isNight = isSystemInDarkTheme()
+                )
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = first,
+                        contentDescription = stringResource(id = T.string.weather_status_logo),
+                        tint = second,
+                        modifier = Modifier.size(size = ExtensionSize.IconSize._34dp),
+                    )
+                    Spacer(modifier = Modifier.width(width = ExtensionPaddingValues._10dp))
+                    Text(
+                        text = "$temp°${weatherUnit.uppercase()}",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleLarge.copy(fontSize = 54.sp)
+                    )
+                }
+            }
+            Column(
+                verticalArrangement = Arrangement.spacedBy(
+                    space = ExtensionPaddingValues._10dp,
+                    alignment = Alignment.CenterVertically
+                ),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .padding(all = ExtensionPaddingValues._10dp)
+            ) {
+                Text(
+                    text = "$tempMax°/$tempMin°, ${stringResource(id = T.string.feels_like_temp)} $tempFeelsLike°${weatherUnit.uppercase()}\n$description",
+                    style = MaterialTheme.typography.labelMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

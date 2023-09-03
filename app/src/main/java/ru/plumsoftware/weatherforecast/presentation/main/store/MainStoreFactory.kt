@@ -1,18 +1,11 @@
 package ru.plumsoftware.weatherforecast.presentation.main.store
 
-import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
-import com.google.gson.Gson
-import io.ktor.http.HttpStatusCode
-import io.ktor.util.date.GMTDate
 import kotlinx.coroutines.launch
-import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
-import ru.plumsoftware.weatherforecast.data.utilities.logd
-import ru.plumsoftware.weatherforecast.domain.remote.dto.either.OwmEither
 import ru.plumsoftware.weatherforecast.domain.storage.HttpClientStorage
 
 class MainStoreFactory(

@@ -6,24 +6,18 @@ import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.request.get
-import io.ktor.client.request.parameter
 import io.ktor.client.request.url
 import ru.plumsoftware.weatherforecast.domain.remote.dto.either.WeatherEither
-import ru.plumsoftware.weatherforecast.domain.repository.OwmRepository
+import ru.plumsoftware.weatherforecast.domain.repository.WeatherApiRepository
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
-import java.util.Locale
 
-class OwmRepositoryImpl(
+class WeatherApiRepositoryImpl(
     private val client: HttpClient,
     private val sharedPreferencesStorage: SharedPreferencesStorage
-) : OwmRepository {
-    override suspend fun <D, E, R> getOwm(): WeatherEither<D, E, R> {
-
+) : WeatherApiRepository {
+    override suspend fun <D, E, R> getWeatherApi(): WeatherEither<D, E, R> {
         val response = client.get {
-            url(urlString = "https://api.openweathermap.org/data/2.5/weather?q=${sharedPreferencesStorage.get().city}")
-            parameter(key = "appid", value = "4e228e1be370d9d0d02284441d30cf0b") // TODO(replace with local.properties)
-            parameter(key = "lang", value = Locale.getDefault().language)
-            parameter(key = "units", value = sharedPreferencesStorage.get().weatherUnits.unitsValue)
+            url(urlString = "https://api.weatherapi.com/v1/forecast.json?key=863d89dfe5734725a09155301221203&q=${sharedPreferencesStorage.get().city}&aqi=yes&alerts=yes")
         }
 
         return try {
@@ -76,42 +70,4 @@ class OwmRepositoryImpl(
             )
         }
     }
-//    override suspend fun getOwm() : OwmResponse {
-//        return try {
-//            val response = client.get {
-//                url(urlString = "https://api.openweathermap.org/data/2.5/weather?q=Omsk&appid=4e228e1be370d9d0d02284441d30cf0b")
-//            }
-//            val httpError = response.status
-//            val httpResponse = response.body<OwmResponse>()
-////            val httpResponse = response as D
-//            return httpResponse
-//        } catch (e: RedirectResponseException) {
-////            3xx
-//            val httpResponse = null
-//            val httpError = e
-//            return OwmResponse(
-//                cod = 300
-//            )
-//        } catch (e: ClientRequestException) {
-////            4xx
-//            val httpResponse = null
-//            val httpError = e
-//            return OwmResponse(
-//                cod = 400
-//            )
-//        } catch (e: ServerResponseException) {
-////            5xx
-//            val httpResponse = null
-//            val httpError = e
-//            return OwmResponse(
-//                cod = 500
-//            )
-//        } catch (e: Exception) {
-//            val httpResponse = null
-//            val httpError = e
-//            return OwmResponse(
-//                cod = -1
-//            )
-//        }
-//    }
 }

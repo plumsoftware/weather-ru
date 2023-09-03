@@ -3,22 +3,16 @@ package ru.plumsoftware.weatherforecast.application
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -26,31 +20,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import com.google.gson.Gson
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.android.Android
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.HttpStatusCode
-import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.date.GMTDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.data.models.location.LocationItemDao
 import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
-import ru.plumsoftware.weatherforecast.data.repository.OwmRepositoryImpl
-import ru.plumsoftware.weatherforecast.data.utilities.logd
+import ru.plumsoftware.weatherforecast.data.remote.dto.weatherapi.WeatherApiResponse
 import ru.plumsoftware.weatherforecast.data.utilities.showToast
-import ru.plumsoftware.weatherforecast.domain.constants.Constants
-import ru.plumsoftware.weatherforecast.domain.models.settings.WeatherUnits
-import ru.plumsoftware.weatherforecast.domain.remote.dto.either.OwmEither
-import ru.plumsoftware.weatherforecast.domain.repository.OwmRepository
+import ru.plumsoftware.weatherforecast.domain.remote.dto.either.WeatherEither
 import ru.plumsoftware.weatherforecast.domain.storage.HttpClientStorage
 import ru.plumsoftware.weatherforecast.domain.storage.LocationStorage
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
@@ -89,6 +70,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
             navController = rememberNavController()
             val coroutine = rememberCoroutineScope()
             val OWM_VALUE = remember { mutableStateOf(OwmResponse()) }
+            val WEATHER_API_VALUE = remember { mutableStateOf(WeatherApiResponse()) }
             val launcher = rememberLauncherForActivityResult(
                 ActivityResultContracts.RequestPermission()
             ) { isGranted: Boolean ->
@@ -112,7 +94,8 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
 //            region::Coroutines
             LaunchedEffect(Unit) {
                 coroutine.launch {
-                    OWM_VALUE.value = doHttpResponse(httpClientStorage = httpClientStorage)
+                    OWM_VALUE.value = doHttpResponse(httpClientStorage = httpClientStorage).first
+                    WEATHER_API_VALUE.value = doHttpResponse(httpClientStorage = httpClientStorage).second
                 }
             }
 //            endregion
@@ -186,7 +169,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                                 navController.navigate(route = Screens.Content)
                                                 {
                                                     coroutine.launch {
-                                                        OWM_VALUE.value = doHttpResponse(httpClientStorage = httpClientStorage)
+                                                        OWM_VALUE.value = doHttpResponse(httpClientStorage = httpClientStorage).first
                                                     }
 
                                                     popUpTo(route = Screens.Content) {
@@ -207,6 +190,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                     storeFactory = DefaultStoreFactory(),
                                     sharedPreferencesStorage = sharedPreferencesStorage,
                                     owmResponse = OWM_VALUE.value,
+                                    weatherApiResponse = WEATHER_API_VALUE.value,
                                     output = { output ->
                                         when (output) {
                                             is ContentViewModel.Output.OpenLocationScreen -> {
@@ -243,7 +227,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                             is SettingsViewModel.Output.OnSettingsChange -> {
                                                 CoroutineScope(Dispatchers.IO).launch {
                                                     OWM_VALUE.value =
-                                                        doHttpResponse(httpClientStorage = httpClientStorage)
+                                                        doHttpResponse(httpClientStorage = httpClientStorage).first
                                                 }
                                             }
                                         }
@@ -273,14 +257,17 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         Manifest.permission.ACCESS_FINE_LOCATION
     ) != PackageManager.PERMISSION_GRANTED
 
-    private fun convertStringToJson(jsonString: String): OwmResponse =
-        Gson().fromJson(jsonString, OwmResponse::class.java)
+    private inline fun <reified T> convertStringToJson  (jsonString: String): T =
+        Gson().fromJson(jsonString, T::class.java)
 
-    private suspend fun doHttpResponse(httpClientStorage: HttpClientStorage): OwmResponse {
-        val owmEither: OwmEither<String, HttpStatusCode, GMTDate> =
+    private suspend fun doHttpResponse(httpClientStorage: HttpClientStorage): Pair<OwmResponse, WeatherApiResponse> {
+        var weatherEither: WeatherEither<String, HttpStatusCode, GMTDate> =
             httpClientStorage.get()
-        val owmResponse = convertStringToJson(owmEither.data)
-        return owmResponse
+        val owmResponse = convertStringToJson<OwmResponse> (jsonString = weatherEither.data)
+
+        weatherEither = httpClientStorage.getWeatherApi()
+        val weatherApiResponse = convertStringToJson<WeatherApiResponse> (jsonString = weatherEither.data)
+        return Pair(first = owmResponse, second = weatherApiResponse)
     }
 
     private fun windDirection(deg: Int): String {

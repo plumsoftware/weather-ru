@@ -6,32 +6,21 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.android.Android
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logging
 import kotlinx.coroutines.launch
-import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
-import ru.plumsoftware.weatherforecast.data.repository.OwmRepositoryImpl
-import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.domain.models.settings.UserSettings
-import ru.plumsoftware.weatherforecast.domain.remote.dto.either.OwmEither
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 
 import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.get
-import io.ktor.client.request.url
-import io.ktor.client.statement.HttpResponse
-import io.ktor.http.ContentType.Application.Json
-import io.ktor.serialization.kotlinx.cbor.cbor
 import io.ktor.serialization.kotlinx.json.*
-import kotlinx.serialization.json.Json
+import ru.plumsoftware.weatherforecast.data.remote.dto.weatherapi.WeatherApiResponse
+import ru.plumsoftware.weatherforecast.domain.models.settings.WeatherUnits
 
 class ContentStoreFactory(
     private val storeFactory: StoreFactory,
     private val sharedPreferencesStorage: SharedPreferencesStorage,
-    private val owmResponse: OwmResponse
+    private val owmResponse: OwmResponse,
+    private val weatherApiResponse: WeatherApiResponse
 ) {
 
     @OptIn(ExperimentalMviKotlinApi::class)
@@ -70,7 +59,8 @@ class ContentStoreFactory(
 
         //        region::Weather
         data class OwmResponseMsg(val value: OwmResponse) : Msg
-        data class WeatherUnit(val value: String) : Msg
+        data class WeatherUnitsMsg(val value: WeatherUnits) : Msg
+        data class WeatherApiResponseMsg(val value: WeatherApiResponse) : Msg
 //        endregion
     }
 
@@ -86,7 +76,8 @@ class ContentStoreFactory(
                 is Msg.CheckBoxValue -> copy(checkBoxState = msg.value)
                 is Msg.DropDownMenu -> copy(dropDownState = !msg.value)
                 is Msg.OwmResponseMsg -> copy(owmResponse = msg.value)
-                is Msg.WeatherUnit -> copy(weatherUnit = "°" + msg.value.uppercase())
+                is Msg.WeatherUnitsMsg -> copy(weatherUnits = msg.value)
+                is Msg.WeatherApiResponseMsg -> copy(weatherApiResponse = msg.value)
             }
     }
 
@@ -123,7 +114,8 @@ class ContentStoreFactory(
                 is Action.InitTips -> initTips()
                 Action.InitWeather -> initWeather(
                     sharedPreferencesStorage = sharedPreferencesStorage,
-                    owmResponse = owmResponse
+                    owmResponse = owmResponse,
+                    weatherApiResponse = weatherApiResponse
                 )
             }
 
@@ -154,12 +146,14 @@ class ContentStoreFactory(
 
         private fun initWeather(
             sharedPreferencesStorage: SharedPreferencesStorage,
-            owmResponse: OwmResponse
+            owmResponse: OwmResponse,
+            weatherApiResponse: WeatherApiResponse
         ) {
 //            region::Init weather
             scope.launch {
                 dispatch(ContentStoreFactory.Msg.OwmResponseMsg(value = owmResponse))
-                dispatch(ContentStoreFactory.Msg.WeatherUnit(value = sharedPreferencesStorage.get().weatherUnits.unitsPresentation))
+                dispatch(ContentStoreFactory.Msg.WeatherUnitsMsg(value = sharedPreferencesStorage.get().weatherUnits))
+                dispatch(ContentStoreFactory.Msg.WeatherApiResponseMsg(value = weatherApiResponse))
             }
 //            endregion
         }

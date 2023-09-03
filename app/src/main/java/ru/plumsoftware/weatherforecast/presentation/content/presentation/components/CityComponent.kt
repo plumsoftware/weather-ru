@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
@@ -26,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.application.App
@@ -79,14 +81,26 @@ fun CityComponent(
                     contentDescription = ""
                 )
             }
-            Text(
-                text = with(location) { "$city ${if (country.isNotEmpty()) ", $country" else ""}" },
-                style = typography.titleMedium,
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(
+                    space = ExtensionPaddingValues._10dp,
+                    alignment = Alignment.CenterHorizontally
+                ),
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
                     .wrapContentSize()
-                    .weight(1f),
-                textAlign = TextAlign.Center
-            )
+                    .weight(1f)
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.LocationOn,
+                    contentDescription = stringResource(id = R.string.location_icon_description)
+                )
+                Text(
+                    text = with(location) { "$city ${if (country.isNotEmpty()) ", $country" else ""}" },
+                    style = typography.titleMedium,
+                    textAlign = TextAlign.Center
+                )
+            }
             Box {
                 IconButton(
                     modifier = Modifier

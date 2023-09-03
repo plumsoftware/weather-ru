@@ -5,7 +5,12 @@ package ru.plumsoftware.weatherforecast.presentation.content.presentation
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -15,6 +20,7 @@ import androidx.compose.ui.Modifier
 import ru.plumsoftware.weatherforecast.domain.models.location.Location
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.presentation.content.presentation.components.CityComponent
+import ru.plumsoftware.weatherforecast.presentation.content.presentation.components.HourlyWeatherForecast
 import ru.plumsoftware.weatherforecast.presentation.content.presentation.components.WeatherStatus
 import ru.plumsoftware.weatherforecast.presentation.content.store.ContentStore
 import ru.plumsoftware.weatherforecast.presentation.content.viewmodel.ContentViewModel
@@ -56,11 +62,13 @@ private fun ContentScreen(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(
-            space = ExtensionPaddingValues._24dp,
+            space = ExtensionPaddingValues._10dp,
             alignment = Alignment.Top
         ),
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
     ) {
         CityComponent(
             Location(city = state.city, country = state.country),
@@ -102,8 +110,26 @@ private fun ContentScreen(
             WeatherStatus(
                 description = weather[0].description!!,
                 temp = main!!.temp!!.toInt().toString(),
-                weatherUnit = state.weatherUnit,
-                iconId = state.owmResponse.weather[0].id!!
+                tempMax = main!!.tempMax!!.toInt().toString(),
+                tempMin = main!!.tempMin!!.toInt().toString(),
+                tempFeelsLike = main!!.feelsLike!!.toInt().toString(),
+                weatherUnit = "",
+                iconId = weather[0].id!!,
+                base = base!!
+            )
+        }
+        Column(
+            verticalArrangement = Arrangement.spacedBy(
+                space = ExtensionPaddingValues._10dp,
+                alignment = Alignment.Top
+            ),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(horizontal = ExtensionPaddingValues._24dp)
+        ) {
+            Spacer(modifier = Modifier.height(height = ExtensionPaddingValues._10dp))
+            HourlyWeatherForecast(
+                list = state.weatherApiResponse.forecast!!.forecastday[0].hour,
+                weatherUnits = state.weatherUnits
             )
         }
     }

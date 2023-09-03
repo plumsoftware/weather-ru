@@ -19,6 +19,8 @@
     <string name="more_icon_dewscription">Кнопка с выподающим меню</string>
     <string name="weather_status_logo">Иконка статуса погоды</string>
     <string name="degree_sign">°</string>
+    <string name="feels_like_temp">ощущается как</string>
+    <string name="weather_hour_logo_desc">Иконка погоды в определённый час</string>
 
     <!--    Settings-->
     <string name="settings">Настройки</string>

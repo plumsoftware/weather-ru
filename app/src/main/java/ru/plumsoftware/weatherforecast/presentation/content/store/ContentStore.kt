@@ -2,21 +2,23 @@ package ru.plumsoftware.weatherforecast.presentation.content.store
 
 import com.arkivanov.mvikotlin.core.store.Store
 import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
+import ru.plumsoftware.weatherforecast.data.remote.dto.weatherapi.WeatherApiResponse
+import ru.plumsoftware.weatherforecast.domain.models.settings.WeatherUnits
 
 
 interface ContentStore :
     Store<ContentStore.Intent, ContentStore.State, ContentStore.Label> {
 
     sealed interface Intent {
-//        region::Drop down menu
+        //        region::Drop down menu
         data class DropDownMenuChange(val value: Boolean) : Intent
 //        endregion
 
-//        region::Check box
+        //        region::Check box
         data class CheckBoxChange(val value: Boolean) : Intent
 //        endregion
 
-//        region::Navigation
+        //        region::Navigation
         object OpenLocation : Intent
         object OpenSettings : Intent
 //        endregion
@@ -28,7 +30,10 @@ interface ContentStore :
         val dropDownState: Boolean = false,
         val checkBoxState: Boolean = true,
         val owmResponse: OwmResponse = OwmResponse(),
-        val weatherUnit: String = ""
+        val weatherUnits: WeatherUnits = WeatherUnits(
+            unitsPresentation = "", unitsValue = ""
+        ),
+        val weatherApiResponse: WeatherApiResponse = WeatherApiResponse()
     )
 
     sealed interface Label {
