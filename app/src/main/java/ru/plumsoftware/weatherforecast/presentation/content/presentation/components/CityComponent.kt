@@ -96,7 +96,7 @@ fun CityComponent(
                     contentDescription = stringResource(id = R.string.location_icon_description)
                 )
                 Text(
-                    text = with(location) { "$city ${if (country.isNotEmpty()) ", $country" else ""}" },
+                    text = with(location) { "$city ${if (country.isNotEmpty())", $country" else ""}" },
                     style = typography.titleMedium,
                     textAlign = TextAlign.Center
                 )

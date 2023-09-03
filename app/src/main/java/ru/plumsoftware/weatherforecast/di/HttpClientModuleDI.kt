@@ -40,9 +40,9 @@ internal val httpClientModel = module {
     single<WeatherApiRepository> {
         WeatherApiRepositoryImpl(
             client = HttpClient(Android) {
-                install(Logging) {
-                    level = LogLevel.ALL
-                }
+//                install(Logging) {
+//                    level = LogLevel.ALL
+//                }
 
                 install(ContentNegotiation) {
                     json(

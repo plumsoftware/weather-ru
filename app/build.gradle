@@ -28,10 +28,18 @@ android {
         }
     }
 
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file("local.properties").newDataInputStream())
+
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "OWM_API_KEY", "\"${properties.getProperty("OWM_API_KEY")}\""
+        }
+        debug {
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "OWM_API_KEY", "\"${properties.getProperty("OWM_API_KEY")}\""
         }
     }
     compileOptions {

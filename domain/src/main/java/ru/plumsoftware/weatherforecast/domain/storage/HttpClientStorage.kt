@@ -8,8 +8,8 @@ class HttpClientStorage(
     private val getOwmUseCase: GetOwmUseCase,
     private val getWeatherApiUseCase: GetWeatherApiUseCase
 ) {
-    suspend fun <D, E, R> get(): WeatherEither<D, E, R> {
-        val execute = getOwmUseCase.execute<D, E, R>()
+    suspend fun <D, E, R> get(api: String): WeatherEither<D, E, R> {
+        val execute = getOwmUseCase.execute<D, E, R>(api = api)
         return execute
     }
 

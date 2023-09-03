@@ -15,6 +15,7 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import ru.plumsoftware.weatherforecast.data.remote.dto.weatherapi.WeatherApiResponse
 import ru.plumsoftware.weatherforecast.domain.models.settings.WeatherUnits
+import ru.plumsoftware.weatherforecast.domain.models.settings.WindSpeed
 
 class ContentStoreFactory(
     private val storeFactory: StoreFactory,
@@ -57,10 +58,13 @@ class ContentStoreFactory(
 
         data class CheckBoxValue(val value: Boolean) : Msg
 
+        data class ShowTipsMsg(val value: Boolean) : Msg
+
         //        region::Weather
         data class OwmResponseMsg(val value: OwmResponse) : Msg
         data class WeatherUnitsMsg(val value: WeatherUnits) : Msg
         data class WeatherApiResponseMsg(val value: WeatherApiResponse) : Msg
+        data class WindSpeedMsg(val value: WindSpeed) : Msg
 //        endregion
     }
 
@@ -78,6 +82,8 @@ class ContentStoreFactory(
                 is Msg.OwmResponseMsg -> copy(owmResponse = msg.value)
                 is Msg.WeatherUnitsMsg -> copy(weatherUnits = msg.value)
                 is Msg.WeatherApiResponseMsg -> copy(weatherApiResponse = msg.value)
+                is Msg.WindSpeedMsg -> copy(windSpeed = msg.value)
+                is Msg.ShowTipsMsg -> copy(showTips = msg.value)
             }
     }
 
@@ -92,6 +98,7 @@ class ContentStoreFactory(
 
                 is ContentStore.Intent.CheckBoxChange -> {
                     dispatch(Msg.CheckBoxValue(value = intent.value))
+                    dispatch(Msg.ShowTipsMsg(value = intent.value))
                     sharedPreferencesStorage.saveShowTips(showTips = intent.value)
                 }
 
@@ -151,9 +158,13 @@ class ContentStoreFactory(
         ) {
 //            region::Init weather
             scope.launch {
-                dispatch(ContentStoreFactory.Msg.OwmResponseMsg(value = owmResponse))
-                dispatch(ContentStoreFactory.Msg.WeatherUnitsMsg(value = sharedPreferencesStorage.get().weatherUnits))
-                dispatch(ContentStoreFactory.Msg.WeatherApiResponseMsg(value = weatherApiResponse))
+                with(sharedPreferencesStorage.get()) {
+                    dispatch(ContentStoreFactory.Msg.OwmResponseMsg(value = owmResponse))
+                    dispatch(ContentStoreFactory.Msg.WeatherUnitsMsg(value = weatherUnits))
+                    dispatch(ContentStoreFactory.Msg.WeatherApiResponseMsg(value = weatherApiResponse))
+                    dispatch(ContentStoreFactory.Msg.WindSpeedMsg(value = windSpeed))
+                    dispatch(ContentStoreFactory.Msg.ShowTipsMsg(value = showTips))
+                }
             }
 //            endregion
         }

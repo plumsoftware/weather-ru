@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -113,15 +114,16 @@ fun HourlyForecastItem(
             ) {
                 Text(
                     text = time!!.substringAfter(" "),
-                    style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
+                    style = MaterialTheme.typography.labelMedium
                 )
                 Icon(
                     imageVector = icon,
-                    tint = if (isSystemInDarkTheme()) Color(227, 227, 227) else Color(
-                        181,
-                        181,
-                        181
-                    ),
+//                    tint = if (isSystemInDarkTheme()) Color(227, 227, 227) else Color(
+//                        181,
+//                        181,
+//                        181
+//                    ),
+                    tint = LocalContentColor.current,
                     contentDescription = stringResource(id = R.string.weather_hour_logo_desc),
                     modifier = Modifier.width(width = ExtensionSize.IconSize._34dp)
                 )
@@ -147,7 +149,7 @@ fun HourlyForecastItem(
                         .width(width = 2.dp)
                         .clip(shape = MaterialTheme.shapes.extraSmall)
                         .background(
-                            color = md_theme_light_bar,
+                            color = LocalContentColor.current,
                             shape = RoundedCornerShape(
                                 topStart = ExtensionSize.Corners._8dp,
                                 topEnd = ExtensionSize.Corners._8dp,
@@ -156,14 +158,10 @@ fun HourlyForecastItem(
                             )
                         )
                 ) {}
-                Spacer(
-                    modifier = Modifier
-                        .height(height = ExtensionPaddingValues._10dp)
-                )
                 Text(
                     text = "$temp°",
 //                            "${if (units) "°C" else "°F"}",
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center
                 )
             }

@@ -27,10 +27,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import ru.plumsoftware.weatherforecast.BuildConfig
 import ru.plumsoftware.weatherforecast.data.models.location.LocationItemDao
 import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecast.data.remote.dto.weatherapi.WeatherApiResponse
-import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.domain.remote.dto.either.WeatherEither
 import ru.plumsoftware.weatherforecast.domain.storage.HttpClientStorage
 import ru.plumsoftware.weatherforecast.domain.storage.LocationStorage
@@ -51,6 +51,7 @@ import ru.plumsoftware.weatherforecast.presentation.ui.WeatherAppTheme
 class MainApplicationActivity : ComponentActivity(), KoinComponent {
     private var isDarkTheme = mutableStateOf(false)
     private lateinit var navController: NavHostController
+    val owmApiKey = BuildConfig.OWM_API_KEY
 
     //    region:Override
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,8 +95,12 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
 //            region::Coroutines
             LaunchedEffect(Unit) {
                 coroutine.launch {
-                    OWM_VALUE.value = doHttpResponse(httpClientStorage = httpClientStorage).first
-                    WEATHER_API_VALUE.value = doHttpResponse(httpClientStorage = httpClientStorage).second
+                    OWM_VALUE.value =
+                        doHttpResponse(httpClientStorage = httpClientStorage, api = owmApiKey).first
+                    WEATHER_API_VALUE.value = doHttpResponse(
+                        httpClientStorage = httpClientStorage,
+                        api = owmApiKey
+                    ).second
                 }
             }
 //            endregion
@@ -169,7 +174,10 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                                 navController.navigate(route = Screens.Content)
                                                 {
                                                     coroutine.launch {
-                                                        OWM_VALUE.value = doHttpResponse(httpClientStorage = httpClientStorage).first
+                                                        OWM_VALUE.value = doHttpResponse(
+                                                            httpClientStorage = httpClientStorage,
+                                                            api = owmApiKey
+                                                        ).first
                                                     }
 
                                                     popUpTo(route = Screens.Content) {
@@ -227,7 +235,10 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                             is SettingsViewModel.Output.OnSettingsChange -> {
                                                 CoroutineScope(Dispatchers.IO).launch {
                                                     OWM_VALUE.value =
-                                                        doHttpResponse(httpClientStorage = httpClientStorage).first
+                                                        doHttpResponse(
+                                                            httpClientStorage = httpClientStorage,
+                                                            api = owmApiKey
+                                                        ).first
                                                 }
                                             }
                                         }
@@ -257,39 +268,21 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         Manifest.permission.ACCESS_FINE_LOCATION
     ) != PackageManager.PERMISSION_GRANTED
 
-    private inline fun <reified T> convertStringToJson  (jsonString: String): T =
+    private inline fun <reified T> convertStringToJson(jsonString: String): T =
         Gson().fromJson(jsonString, T::class.java)
 
-    private suspend fun doHttpResponse(httpClientStorage: HttpClientStorage): Pair<OwmResponse, WeatherApiResponse> {
+    private suspend fun doHttpResponse(
+        httpClientStorage: HttpClientStorage,
+        api: String
+    ): Pair<OwmResponse, WeatherApiResponse> {
         var weatherEither: WeatherEither<String, HttpStatusCode, GMTDate> =
-            httpClientStorage.get()
-        val owmResponse = convertStringToJson<OwmResponse> (jsonString = weatherEither.data)
+            httpClientStorage.get(api = api)
+        val owmResponse = convertStringToJson<OwmResponse>(jsonString = weatherEither.data)
 
         weatherEither = httpClientStorage.getWeatherApi()
-        val weatherApiResponse = convertStringToJson<WeatherApiResponse> (jsonString = weatherEither.data)
+        val weatherApiResponse =
+            convertStringToJson<WeatherApiResponse>(jsonString = weatherEither.data)
         return Pair(first = owmResponse, second = weatherApiResponse)
-    }
-
-    private fun windDirection(deg: Int): String {
-        val directions = arrayOf(
-            "С", "ССВ", "СВ", "ВСВ",
-            "В", "ВЮВ", "ЮВ", "ЮЮВ",
-            "Ю", "ЮЮЗ", "ЮЗ", "ЗЮЗ",
-            "З", "ЗСЗ", "СЗ", "ССЗ"
-        )
-        val index = ((deg / 22.5) + 0.5).toInt() % 16
-        return directions[index]
-    }
-
-    private fun windDirectionFull(deg: Int): String {
-        val directions = arrayOf(
-            "Севера", "Северо-северо-востока", "Северо-востока", "Восток-северо-востока",
-            "Востока", "Восток-юго-востока", "Юго-востока", "Юго-юго-востока",
-            "Юга", "Юго-юго-запада", "Юго-запада", "Запад-юго-запада",
-            "Запада", "Запад-северо-запада", "Северо-запада", "Северо-северо-запада"
-        )
-        val index = ((deg / 22.5) + 0.5).toInt() % 16
-        return directions[index]
     }
 //    endregion
 }

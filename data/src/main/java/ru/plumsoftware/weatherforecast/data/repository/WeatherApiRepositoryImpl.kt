@@ -6,10 +6,12 @@ import io.ktor.client.plugins.ClientRequestException
 import io.ktor.client.plugins.RedirectResponseException
 import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.request.get
+import io.ktor.client.request.parameter
 import io.ktor.client.request.url
 import ru.plumsoftware.weatherforecast.domain.remote.dto.either.WeatherEither
 import ru.plumsoftware.weatherforecast.domain.repository.WeatherApiRepository
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
+import java.util.Locale
 
 class WeatherApiRepositoryImpl(
     private val client: HttpClient,
@@ -17,7 +19,11 @@ class WeatherApiRepositoryImpl(
 ) : WeatherApiRepository {
     override suspend fun <D, E, R> getWeatherApi(): WeatherEither<D, E, R> {
         val response = client.get {
-            url(urlString = "https://api.weatherapi.com/v1/forecast.json?key=863d89dfe5734725a09155301221203&q=${sharedPreferencesStorage.get().city}&aqi=yes&alerts=yes")
+            url(urlString = "https://api.weatherapi.com/v1/forecast.json?key=863d89dfe5734725a09155301221203")//TODO()
+            parameter(key = "q", value = "${sharedPreferencesStorage.get().city}")
+            parameter(key = "aqi", value = "yes")
+            parameter(key = "alerts", value = "yes")
+            parameter(key = "lang", value = Locale.getDefault().language)
         }
 
         return try {

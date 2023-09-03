@@ -4,6 +4,7 @@ import com.arkivanov.mvikotlin.core.store.Store
 import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecast.data.remote.dto.weatherapi.WeatherApiResponse
 import ru.plumsoftware.weatherforecast.domain.models.settings.WeatherUnits
+import ru.plumsoftware.weatherforecast.domain.models.settings.WindSpeed
 
 
 interface ContentStore :
@@ -33,7 +34,12 @@ interface ContentStore :
         val weatherUnits: WeatherUnits = WeatherUnits(
             unitsPresentation = "", unitsValue = ""
         ),
-        val weatherApiResponse: WeatherApiResponse = WeatherApiResponse()
+        val weatherApiResponse: WeatherApiResponse = WeatherApiResponse(),
+        val windSpeed: WindSpeed = WindSpeed(
+            windValue = 0.0f,
+            windPresentation = ""
+        ),
+        val showTips: Boolean = true
     )
 
     sealed interface Label {

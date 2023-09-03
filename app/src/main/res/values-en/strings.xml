@@ -21,6 +21,11 @@
     <string name="degree_sign">°</string>
     <string name="feels_like_temp">feels like</string>
     <string name="weather_hour_logo_desc">Weather icon at a certain hour</string>
+    <string name="hourly_weather_forecast">Hourly weather forecast</string>
+    <string name="alerts">Important to read</string>
+    <string name="details">Details</string>
+    <string name="tips_star">✨</string>
+    <string name="tips_rocket">🚀</string>
 
     <!--    Settings-->
     <string name="settings">Settings</string>

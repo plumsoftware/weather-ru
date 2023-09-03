@@ -36,6 +36,14 @@ internal val Typography = Typography(
         letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing
     ),
 
+    labelLarge = TextStyle(
+        fontFamily = getBoldFont(),
+        fontWeight = ExtensionTypography.TypographyWeight.regular,
+        fontSize = ExtensionTypography.TypographySize._16sp,
+        lineHeight = ExtensionTypography.LineHeight.lineHeight,
+        letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing
+    ),
+
     labelMedium = TextStyle(
         fontFamily = getRegularFont(),
         fontWeight = ExtensionTypography.TypographyWeight.regular,
