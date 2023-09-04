@@ -99,7 +99,7 @@ fun HourlyForecastItem(
             modifier = Modifier
                 .wrapContentWidth()
                 .fillMaxHeight()
-                .padding(all = ExtensionPaddingValues._10dp)
+                .padding(all = ExtensionPaddingValues._4dp)
                 .width(width = ExtensionSize.HourlyForecastItem.width)
         ) {
             Column(

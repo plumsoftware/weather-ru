@@ -23,12 +23,23 @@ android {
         }
     }
 
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file("local.properties").newDataInputStream())
+
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "OWM_API_KEY", "\"${properties.getProperty("OWM_API_KEY")}\""
+            buildConfigField "String", "WEATHER_API", "\"${properties.getProperty("WEATHER_API")}\""
+        }
+        debug {
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "String", "OWM_API_KEY", "\"${properties.getProperty("OWM_API_KEY")}\""
+            buildConfigField "String", "WEATHER_API", "\"${properties.getProperty("WEATHER_API")}\""
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8

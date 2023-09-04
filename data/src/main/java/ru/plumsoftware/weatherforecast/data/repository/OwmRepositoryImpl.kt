@@ -18,11 +18,11 @@ class OwmRepositoryImpl(
     private val client: HttpClient,
     private val sharedPreferencesStorage: SharedPreferencesStorage
 ) : OwmRepository {
-    override suspend fun <D, E, R> getOwm(api: String): WeatherEither<D, E, R> {
+    override suspend fun <D, E, R> getOwm(): WeatherEither<D, E, R> {
 
         val response = client.get {
             url(urlString = "https://api.openweathermap.org/data/2.5/weather?q=${sharedPreferencesStorage.get().city}")
-            parameter(key = "appid", value = api)
+            parameter(key = "appid", value = BuildConfig.OWM_API_KEY)
             parameter(key = "lang", value = Locale.getDefault().language)
             parameter(key = "units", value = sharedPreferencesStorage.get().weatherUnits.unitsValue)
         }

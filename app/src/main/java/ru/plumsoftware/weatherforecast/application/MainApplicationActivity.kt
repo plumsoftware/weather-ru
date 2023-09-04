@@ -7,6 +7,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +22,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import com.google.gson.Gson
+import com.yandex.mobile.ads.common.AdRequestError
+import com.yandex.mobile.ads.common.MobileAds
+import com.yandex.mobile.ads.nativeads.NativeAd
+import com.yandex.mobile.ads.nativeads.NativeAdRequestConfiguration
+import com.yandex.mobile.ads.nativeads.NativeBulkAdLoadListener
+import com.yandex.mobile.ads.nativeads.NativeBulkAdLoader
 import io.ktor.http.HttpStatusCode
 import io.ktor.util.date.GMTDate
 import kotlinx.coroutines.CoroutineScope
@@ -27,10 +35,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import ru.plumsoftware.weatherforecast.BuildConfig
 import ru.plumsoftware.weatherforecast.data.models.location.LocationItemDao
 import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecast.data.remote.dto.weatherapi.WeatherApiResponse
+import ru.plumsoftware.weatherforecast.data.utilities.logd
 import ru.plumsoftware.weatherforecast.domain.remote.dto.either.WeatherEither
 import ru.plumsoftware.weatherforecast.domain.storage.HttpClientStorage
 import ru.plumsoftware.weatherforecast.domain.storage.LocationStorage
@@ -51,7 +59,6 @@ import ru.plumsoftware.weatherforecast.presentation.ui.WeatherAppTheme
 class MainApplicationActivity : ComponentActivity(), KoinComponent {
     private var isDarkTheme = mutableStateOf(false)
     private lateinit var navController: NavHostController
-    val owmApiKey = BuildConfig.OWM_API_KEY
 
     //    region:Override
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,8 +93,19 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                     }
                 } else {
                     // Permission Denied: Do something
-                    navController.navigate(route = Screens.Location)
+                    CoroutineScope(Dispatchers.IO).launch {
+                        navController.navigate(route = Screens.Location)
+                    }
                 }
+            }
+            val list = remember {
+                mutableStateOf(mutableListOf<NativeAd>())
+            }
+            val adsError = remember {
+                mutableStateOf(false)
+            }
+            val isAdsLoading = remember {
+                mutableStateOf(true)
             }
 
 //            endregion
@@ -95,11 +113,38 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
 //            region::Coroutines
             LaunchedEffect(Unit) {
                 coroutine.launch {
+
+                    MobileAds.initialize(context) {
+                        logd(message = "RSY initialized!")
+                    }
+
+                    isAdsLoading.value = true
+                    val nativeAdsLoader = NativeBulkAdLoader(context).apply {
+                        setNativeBulkAdLoadListener(object : NativeBulkAdLoadListener {
+                            override fun onAdsLoaded(p0: MutableList<NativeAd>) {
+                                list.value = p0
+                                adsError.value = false
+                                isAdsLoading.value = false
+                            }
+
+                            override fun onAdsFailedToLoad(p0: AdRequestError) {
+                                logd(p0.toString())
+                                adsError.value = true
+                                isAdsLoading.value = false
+                            }
+                        })
+                    }
+                    val adRequestConfiguration =
+                        NativeAdRequestConfiguration.Builder("demo-native-content-yandex")
+                            .build()
+                    nativeAdsLoader.loadAds(adRequestConfiguration, 1)
+
                     OWM_VALUE.value =
-                        doHttpResponse(httpClientStorage = httpClientStorage, api = owmApiKey).first
+                        doHttpResponse(
+                            httpClientStorage = httpClientStorage
+                        ).first
                     WEATHER_API_VALUE.value = doHttpResponse(
-                        httpClientStorage = httpClientStorage,
-                        api = owmApiKey
+                        httpClientStorage = httpClientStorage
                     ).second
                 }
             }
@@ -175,8 +220,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                                 {
                                                     coroutine.launch {
                                                         OWM_VALUE.value = doHttpResponse(
-                                                            httpClientStorage = httpClientStorage,
-                                                            api = owmApiKey
+                                                            httpClientStorage = httpClientStorage
                                                         ).first
                                                     }
 
@@ -199,6 +243,8 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                     sharedPreferencesStorage = sharedPreferencesStorage,
                                     owmResponse = OWM_VALUE.value,
                                     weatherApiResponse = WEATHER_API_VALUE.value,
+                                    adsList = list.value,
+                                    isAdsLoading = isAdsLoading.value,
                                     output = { output ->
                                         when (output) {
                                             is ContentViewModel.Output.OpenLocationScreen -> {
@@ -236,8 +282,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                                 CoroutineScope(Dispatchers.IO).launch {
                                                     OWM_VALUE.value =
                                                         doHttpResponse(
-                                                            httpClientStorage = httpClientStorage,
-                                                            api = owmApiKey
+                                                            httpClientStorage = httpClientStorage
                                                         ).first
                                                 }
                                             }
@@ -272,11 +317,10 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         Gson().fromJson(jsonString, T::class.java)
 
     private suspend fun doHttpResponse(
-        httpClientStorage: HttpClientStorage,
-        api: String
+        httpClientStorage: HttpClientStorage
     ): Pair<OwmResponse, WeatherApiResponse> {
         var weatherEither: WeatherEither<String, HttpStatusCode, GMTDate> =
-            httpClientStorage.get(api = api)
+            httpClientStorage.get()
         val owmResponse = convertStringToJson<OwmResponse>(jsonString = weatherEither.data)
 
         weatherEither = httpClientStorage.getWeatherApi()

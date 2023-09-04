@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
+import com.yandex.mobile.ads.nativeads.NativeAd
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,13 +19,17 @@ class ContentViewModel(
     sharedPreferencesStorage: SharedPreferencesStorage,
     owmResponse: OwmResponse,
     weatherApiResponse: WeatherApiResponse,
+    adsList: MutableList<NativeAd>,
+    isAdsLoading: Boolean,
     private val output: (Output) -> Unit,
 ) : ViewModel() {
     private val contentStore = ContentStoreFactory(
         storeFactory = storeFactory,
         sharedPreferencesStorage = sharedPreferencesStorage,
         owmResponse = owmResponse,
-        weatherApiResponse = weatherApiResponse
+        weatherApiResponse = weatherApiResponse,
+        adsList = adsList,
+        isAdsLoading = isAdsLoading
     ).create()
 
     @OptIn(ExperimentalCoroutinesApi::class)

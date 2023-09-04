@@ -23,6 +23,7 @@
     <string name="weather_hour_logo_desc">Иконка погоды в определённый час</string>
     <string name="hourly_weather_forecast">Почасовой прогноз погоды</string>
     <string name="alerts">Важно для прочтения</string>
+    <string name="tips">Подсказки</string>
     <string name="details">Детали</string>
     <string name="tips_star">✨</string>
     <string name="tips_rocket">🚀</string>

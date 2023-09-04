@@ -8,6 +8,7 @@ import io.ktor.client.plugins.ServerResponseException
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.url
+import ru.plumsoftware.data.BuildConfig
 import ru.plumsoftware.weatherforecast.domain.remote.dto.either.WeatherEither
 import ru.plumsoftware.weatherforecast.domain.repository.WeatherApiRepository
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
@@ -19,7 +20,7 @@ class WeatherApiRepositoryImpl(
 ) : WeatherApiRepository {
     override suspend fun <D, E, R> getWeatherApi(): WeatherEither<D, E, R> {
         val response = client.get {
-            url(urlString = "https://api.weatherapi.com/v1/forecast.json?key=863d89dfe5734725a09155301221203")//TODO()
+            url(urlString = "https://api.weatherapi.com/v1/forecast.json?key=${BuildConfig.WEATHER_API}")
             parameter(key = "q", value = "${sharedPreferencesStorage.get().city}")
             parameter(key = "aqi", value = "yes")
             parameter(key = "alerts", value = "yes")

@@ -1,10 +1,12 @@
 package ru.plumsoftware.weatherforecast.presentation.content.store
 
 import com.arkivanov.mvikotlin.core.store.Store
+import com.yandex.mobile.ads.nativeads.NativeAd
 import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecast.data.remote.dto.weatherapi.WeatherApiResponse
 import ru.plumsoftware.weatherforecast.domain.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecast.domain.models.settings.WindSpeed
+import java.lang.annotation.Native
 
 
 interface ContentStore :
@@ -39,7 +41,9 @@ interface ContentStore :
             windValue = 0.0f,
             windPresentation = ""
         ),
-        val showTips: Boolean = true
+        val showTips: Boolean = true,
+        val adsList: MutableList<NativeAd> = mutableListOf(),
+        val isAdsLoading: Boolean = true
     )
 
     sealed interface Label {

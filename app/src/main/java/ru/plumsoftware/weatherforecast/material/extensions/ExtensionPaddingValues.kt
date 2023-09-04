@@ -3,6 +3,7 @@ package ru.plumsoftware.weatherforecast.material.extensions
 import androidx.compose.ui.unit.dp
 
 internal object ExtensionPaddingValues {
+    val _2dp = 2.dp
     val _4dp = 4.dp
     val _8dp = 8.dp
     val _10dp = 10.dp

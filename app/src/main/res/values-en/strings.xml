@@ -23,6 +23,7 @@
     <string name="weather_hour_logo_desc">Weather icon at a certain hour</string>
     <string name="hourly_weather_forecast">Hourly weather forecast</string>
     <string name="alerts">Important to read</string>
+    <string name="tips">Tips</string>
     <string name="details">Details</string>
     <string name="tips_star">✨</string>
     <string name="tips_rocket">🚀</string>

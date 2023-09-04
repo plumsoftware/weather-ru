@@ -6,6 +6,7 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
+import com.yandex.mobile.ads.nativeads.NativeAd
 import kotlinx.coroutines.launch
 import ru.plumsoftware.weatherforecast.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecast.domain.models.settings.UserSettings
@@ -21,7 +22,9 @@ class ContentStoreFactory(
     private val storeFactory: StoreFactory,
     private val sharedPreferencesStorage: SharedPreferencesStorage,
     private val owmResponse: OwmResponse,
-    private val weatherApiResponse: WeatherApiResponse
+    private val weatherApiResponse: WeatherApiResponse,
+    private val adsList: MutableList<NativeAd>,
+    private val isAdsLoading: Boolean
 ) {
 
     @OptIn(ExperimentalMviKotlinApi::class)
@@ -35,6 +38,8 @@ class ContentStoreFactory(
                         dispatch(ContentStoreFactory.Action.InitLocation)
                         dispatch(ContentStoreFactory.Action.InitTips)
                         dispatch(ContentStoreFactory.Action.InitWeather)
+                        dispatch(ContentStoreFactory.Action.InitAds)
+                        dispatch(ContentStoreFactory.Action.InitIsAdsLoading)
                     }
                 },
                 reducer = ContentStoreFactory.ReducerImpl,
@@ -46,6 +51,8 @@ class ContentStoreFactory(
         object InitLocation : Action
         object InitTips : Action
         object InitWeather : Action
+        object InitAds : Action
+        object InitIsAdsLoading : Action
     }
 
     sealed interface Msg {
@@ -59,6 +66,10 @@ class ContentStoreFactory(
         data class CheckBoxValue(val value: Boolean) : Msg
 
         data class ShowTipsMsg(val value: Boolean) : Msg
+
+        data class AdsList(val value: MutableList<NativeAd>) : Msg
+
+        data class IsAdsLoading(val value: Boolean) : Msg
 
         //        region::Weather
         data class OwmResponseMsg(val value: OwmResponse) : Msg
@@ -84,6 +95,8 @@ class ContentStoreFactory(
                 is Msg.WeatherApiResponseMsg -> copy(weatherApiResponse = msg.value)
                 is Msg.WindSpeedMsg -> copy(windSpeed = msg.value)
                 is Msg.ShowTipsMsg -> copy(showTips = msg.value)
+                is Msg.AdsList -> copy(adsList = msg.value)
+                is Msg.IsAdsLoading -> copy(isAdsLoading = msg.value)
             }
     }
 
@@ -124,6 +137,9 @@ class ContentStoreFactory(
                     owmResponse = owmResponse,
                     weatherApiResponse = weatherApiResponse
                 )
+
+                Action.InitAds -> initAds(list = adsList)
+                Action.InitIsAdsLoading -> initIsAdsLoading(isLoading = isAdsLoading)
             }
 
         private fun initTips() {
@@ -167,6 +183,18 @@ class ContentStoreFactory(
                 }
             }
 //            endregion
+        }
+
+        private fun initAds(list: MutableList<NativeAd>) {
+            scope.launch {
+                dispatch(ContentStoreFactory.Msg.AdsList(value = list))
+            }
+        }
+
+        private fun initIsAdsLoading(isLoading: Boolean) {
+            scope.launch {
+                dispatch(ContentStoreFactory.Msg.IsAdsLoading(value = isLoading))
+            }
         }
     }
 }
