@@ -19,6 +19,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
+import ru.plumsoftware.weatherforecast.presentation.ui.md_theme_text_cover
+import ru.plumsoftware.weatherforecast.presentation.ui.md_theme_tint_cover
 
 @Composable
 fun RowScope.DetailComponent(title: String, description: String, pair: Pair<ImageVector, Color>) {
@@ -47,7 +49,10 @@ fun RowScope.DetailComponent(title: String, description: String, pair: Pair<Imag
             if (title[0] == '0') {
                 CircularProgressIndicator()
             } else {
-                Icon(imageVector = pair.first, contentDescription = "", tint = pair.second) //TODO()
+                Icon(
+                    imageVector = pair.first,
+                    contentDescription = "",
+                    tint = pair.second.also { md_theme_tint_cover })
                 Column(
                     verticalArrangement = Arrangement.spacedBy(
                         space = ExtensionPaddingValues._4dp,
@@ -58,7 +63,7 @@ fun RowScope.DetailComponent(title: String, description: String, pair: Pair<Imag
                     Text(text = title, style = MaterialTheme.typography.labelMedium)
                     Text(
                         text = description,
-                        style = MaterialTheme.typography.bodyMedium.copy(color = Color(0xFFA098AE)) //TODO()
+                        style = MaterialTheme.typography.bodyMedium.copy(color = md_theme_text_cover)
                     )
                 }
             }

@@ -7,8 +7,10 @@ import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.CloudSnowDay
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.CloudSnowNight
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.CloudThunder
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Doublecloud
+import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Drops
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Dust
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Hazzy
+import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Mild
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Moon
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.PartlyCloudyDay
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.RainyDay
@@ -17,6 +19,7 @@ import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.SleetyDay
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.SleetyNight
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Sunny
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Tornado
+import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Windy
 import kotlin.collections.List as ____KtList
 
 public object WeatherGroup
@@ -31,7 +34,8 @@ public val WeatherGroup.AllIcons: ____KtList<ImageVector>
     if (__AllIcons != null) {
       return __AllIcons!!
     }
-    __AllIcons= listOf(Cloud, CloudSnowDay, CloudSnowNight, CloudThunder, Doublecloud, Dust, Hazzy,
-        Moon, PartlyCloudyDay, RainyDay, RainyNight, SleetyDay, SleetyNight, Sunny, Tornado)
+    __AllIcons= listOf(Cloud, CloudSnowDay, CloudSnowNight, CloudThunder, Doublecloud, Drops, Dust,
+        Hazzy, Mild, Moon, PartlyCloudyDay, RainyDay, RainyNight, SleetyDay, SleetyNight, Sunny,
+        Tornado, Windy)
     return __AllIcons!!
   }

@@ -3,11 +3,8 @@
 package ru.plumsoftware.weatherforecast.presentation.content.presentation
 
 import android.annotation.SuppressLint
-import android.media.Rating
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.ImageView
-import android.widget.RatingBar
 import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.compose.foundation.background
@@ -45,21 +42,22 @@ import com.yandex.mobile.ads.nativeads.NativeAdEventListener
 import com.yandex.mobile.ads.nativeads.NativeAdException
 import com.yandex.mobile.ads.nativeads.NativeAdLoadListener
 import com.yandex.mobile.ads.nativeads.NativeAdLoader
-import com.yandex.mobile.ads.nativeads.NativeAdRequestConfiguration
 import com.yandex.mobile.ads.nativeads.NativeAdView
 import com.yandex.mobile.ads.nativeads.NativeAdViewBinder
-import com.yandex.mobile.ads.nativeads.NativeBulkAdLoadListener
-import com.yandex.mobile.ads.nativeads.NativeBulkAdLoader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.plumsoftware.uicomponents.PlumsoftwareIconPack
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.Weather
+import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Drops
+import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Hazzy
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Sunny
+import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Windy
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.data.utilities.logd
 import ru.plumsoftware.weatherforecast.domain.models.location.Location
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
+import ru.plumsoftware.weatherforecast.presentation.authorization.store.AuthorizationStore
 import ru.plumsoftware.weatherforecast.presentation.content.presentation.components.CityComponent
 import ru.plumsoftware.weatherforecast.presentation.content.presentation.components.DetailComponent
 import ru.plumsoftware.weatherforecast.presentation.content.presentation.components.HourlyWeatherForecast
@@ -67,6 +65,10 @@ import ru.plumsoftware.weatherforecast.presentation.content.presentation.compone
 import ru.plumsoftware.weatherforecast.presentation.content.presentation.components.WeatherStatus
 import ru.plumsoftware.weatherforecast.presentation.content.store.ContentStore
 import ru.plumsoftware.weatherforecast.presentation.content.viewmodel.ContentViewModel
+import ru.plumsoftware.weatherforecast.presentation.ui.md_theme_humidity_color
+import ru.plumsoftware.weatherforecast.presentation.ui.md_theme_sunny_color
+import ru.plumsoftware.weatherforecast.presentation.ui.md_theme_visibility_color
+import ru.plumsoftware.weatherforecast.presentation.ui.md_theme_wind_color
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -88,6 +90,10 @@ fun ContentScreen(contentViewModel: ContentViewModel) {
                 ContentStore.Label.OpenSettings -> {
                     contentViewModel.onOutput(ContentViewModel.Output.OpenSettingsScreen)
                 }
+
+                is ContentStore.Label.ChangeHourly -> {
+
+                }
             }
         }
     }
@@ -102,13 +108,14 @@ fun ContentScreen(contentViewModel: ContentViewModel) {
 
 @Composable
 private fun ContentScreen(
-    state: ContentStore.State, contentViewModel: ContentViewModel, coroutine: CoroutineScope
+    state: ContentStore.State,
+    contentViewModel: ContentViewModel,
+    coroutine: CoroutineScope
 ) {
     if (state.isAdsLoading) {
         Box(
             modifier = Modifier
-                .fillMaxSize()
-                .background(color = Color(0x4DFFFFFF)),
+                .fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             CircularProgressIndicator()
@@ -300,8 +307,14 @@ private fun ContentScreen(
                     )
 
                     HourlyWeatherForecast(
-                        list = state.weatherApiResponse.forecast!!.forecastday[0].hour,
-                        weatherUnits = state.weatherUnits
+                        list = state.weatherApiResponse.forecast!!.forecastday[state.hourlyState].hour,
+                        weatherUnits = state.weatherUnits,
+                        scrollToItem = state.scrollToItem,
+                        needScroll = state.needScroll,
+                        index = state.hourlyState,
+                        onClick = { index ->
+                            contentViewModel.onEvent(ContentStore.Intent.ChangeHourly(value = index))
+                        }
                     )
                 }
 //            endregion
@@ -314,7 +327,6 @@ private fun ContentScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = ExtensionPaddingValues._14dp)
                 ) {
                     Text(
                         text = stringResource(id = R.string.details),
@@ -337,18 +349,18 @@ private fun ContentScreen(
                         ) {
                             DetailComponent(
                                 title = "${state.owmResponse.visibility}м",
-                                description = "Видимость", //TODO()
+                                description = stringResource(id = R.string.visibility),
                                 pair = Pair(
-                                    PlumsoftwareIconPack.Weather.Sunny, Color(0xFFCC9F00)
-                                ) // TODO()
+                                    PlumsoftwareIconPack.Weather.Hazzy, md_theme_visibility_color
+                                )
                             )
 
                             DetailComponent(
                                 title = "${state.owmResponse.main!!.humidity}%",
-                                description = "Влажность",//TODO()
+                                description = stringResource(id = R.string.humidity),
                                 pair = Pair(
-                                    PlumsoftwareIconPack.Weather.Sunny, Color(70, 92, 204)
-                                ) // TODO()
+                                    PlumsoftwareIconPack.Weather.Drops, md_theme_humidity_color
+                                )
                             )
                         }
                         Row(
@@ -360,17 +372,17 @@ private fun ContentScreen(
                         ) {
                             DetailComponent(
                                 title = calculateUVIndex(state.weatherApiResponse.current!!.uv!!),
-                                description = "УВ индекс", //TODO()
+                                description = stringResource(id = R.string.uv_index),
                                 pair = Pair(
-                                    PlumsoftwareIconPack.Weather.Sunny, Color(0xFFCC9F00) // TODO()
+                                    PlumsoftwareIconPack.Weather.Sunny, md_theme_sunny_color
                                 )
                             )
 
                             DetailComponent(
                                 title = "${state.owmResponse.wind!!.speed!!.toInt()} ${state.windSpeed.windPresentation}",
-                                description = windDirectionFull(state.owmResponse.wind!!.deg!!),//TODO()
+                                description = windDirectionFull(state.owmResponse.wind!!.deg!!),
                                 pair = Pair(
-                                    PlumsoftwareIconPack.Weather.Sunny, Color(70, 92, 204) // TODO()
+                                    PlumsoftwareIconPack.Weather.Windy, md_theme_wind_color
                                 )
                             )
                         }

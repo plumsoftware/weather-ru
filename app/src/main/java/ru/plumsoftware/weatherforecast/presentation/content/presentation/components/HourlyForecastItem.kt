@@ -47,7 +47,8 @@ import java.time.LocalTime
 @Composable
 fun HourlyForecastItem(
     hour: Hour,
-    weatherUnits: WeatherUnits
+    weatherUnits: WeatherUnits,
+    currentColorCover: Color
 ) {
     with(hour) {
 
@@ -90,48 +91,7 @@ fun HourlyForecastItem(
         }
         val temp = if (units) tempC!!.toInt().toString() else tempF!!.toInt().toString()
 
-        Column(
-            verticalArrangement = Arrangement.spacedBy(
-                space = ExtensionPaddingValues._10dp,
-                alignment = Alignment.Bottom
-            ),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .wrapContentWidth()
-                .fillMaxHeight()
-                .padding(all = ExtensionPaddingValues._4dp)
-                .width(width = ExtensionSize.HourlyForecastItem.width)
-        ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(
-                    space = ExtensionPaddingValues._10dp,
-                    alignment = Alignment.Top
-                ),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(weight = 1.0f)
-            ) {
-                Text(
-                    text = time!!.substringAfter(" "),
-                    style = MaterialTheme.typography.labelMedium
-                )
-                Icon(
-                    imageVector = icon,
-//                    tint = if (isSystemInDarkTheme()) Color(227, 227, 227) else Color(
-//                        181,
-//                        181,
-//                        181
-//                    ),
-                    tint = LocalContentColor.current,
-                    contentDescription = stringResource(id = R.string.weather_hour_logo_desc),
-                    modifier = Modifier.width(width = ExtensionSize.IconSize._34dp)
-                )
-                Text(
-                    text = if (season == Seasons.WINTER) "${chanceOfSnow.toString()}%" else "${chanceOfRain}%",
-                    style = MaterialTheme.typography.labelSmall
-                )
-            }
+        with(currentColorCover) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(
                     space = ExtensionPaddingValues._10dp,
@@ -139,31 +99,83 @@ fun HourlyForecastItem(
                 ),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .wrapContentHeight()
+                    .wrapContentWidth()
+                    .fillMaxHeight()
+                    .padding(all = ExtensionPaddingValues._4dp)
+                    .width(width = ExtensionSize.HourlyForecastItem.width)
             ) {
                 Column(
-                    verticalArrangement = Arrangement.Bottom,
+                    verticalArrangement = Arrangement.spacedBy(
+                        space = ExtensionPaddingValues._10dp,
+                        alignment = Alignment.Top
+                    ),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
-                        .height(height = ((if (units) tempC!! else tempF!!) * 2).toInt().dp)
-                        .width(width = 2.dp)
-                        .clip(shape = MaterialTheme.shapes.extraSmall)
-                        .background(
-                            color = LocalContentColor.current,
-                            shape = RoundedCornerShape(
-                                topStart = ExtensionSize.Corners._8dp,
-                                topEnd = ExtensionSize.Corners._8dp,
-                                bottomEnd = 0.dp,
-                                bottomStart = 0.dp
+                        .fillMaxHeight()
+                        .weight(weight = 1.0f)
+                ) {
+                    Text(
+                        text = time!!.substringAfter(" "),
+                        style = MaterialTheme.typography.labelMedium.copy(color = this@with)
+                    )
+                    Icon(
+                        imageVector = icon,
+//                    tint = if (isSystemInDarkTheme()) Color(227, 227, 227) else Color(
+//                        181,
+//                        181,
+//                        181
+//                    ),
+                        tint = LocalContentColor.current.also { this@with },
+                        contentDescription = stringResource(id = R.string.weather_hour_logo_desc),
+                        modifier = Modifier.width(width = ExtensionSize.IconSize._34dp)
+                    )
+                    Text(
+                        text = if (season == Seasons.WINTER) "${chanceOfSnow.toString()}%" else "${chanceOfRain}%",
+                        style = MaterialTheme.typography.labelSmall.copy(color = this@with)
+                    )
+                }
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(
+                        space = ExtensionPaddingValues._10dp,
+                        alignment = Alignment.Bottom
+                    ),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .wrapContentHeight()
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Bottom,
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .height(height = ((if (units) if (tempC!! > 0) tempC!! else tempC!! * -1 else if (tempF!! > 0) tempF!! else tempF!! * -1)).toInt().dp)
+                            .width(width = ExtensionSize.HourlyForecastItem.divWidth)
+                            .clip(shape = MaterialTheme.shapes.extraSmall)
+                            .background(
+                                color = LocalContentColor.current,
+                                shape = RoundedCornerShape(
+                                    topStart = ExtensionSize.Corners._8dp,
+                                    topEnd = ExtensionSize.Corners._8dp,
+                                    bottomEnd = 0.dp,
+                                    bottomStart = 0.dp
+                                )
                             )
-                        )
-                ) {}
-                Text(
-                    text = "$temp°",
+                            .background(
+                                color = this@with,
+                                shape = RoundedCornerShape(
+                                    topStart = ExtensionSize.Corners._8dp,
+                                    topEnd = ExtensionSize.Corners._8dp,
+                                    bottomEnd = 0.dp,
+                                    bottomStart = 0.dp
+                                )
+                            )
+                    ) {}
+                    Text(
+                        text = "$temp°",
 //                            "${if (units) "°C" else "°F"}",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
+                        style = MaterialTheme.typography.bodyLarge.copy(color = this@with),
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
     }

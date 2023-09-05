@@ -17,6 +17,7 @@ import io.ktor.serialization.kotlinx.json.*
 import ru.plumsoftware.weatherforecast.data.remote.dto.weatherapi.WeatherApiResponse
 import ru.plumsoftware.weatherforecast.domain.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecast.domain.models.settings.WindSpeed
+import java.time.LocalDateTime
 
 class ContentStoreFactory(
     private val storeFactory: StoreFactory,
@@ -71,6 +72,12 @@ class ContentStoreFactory(
 
         data class IsAdsLoading(val value: Boolean) : Msg
 
+        data class ChangeHourly(val value: Int) : Msg
+
+        data class ScrollToItem(val value: Int) : Msg
+
+        data class NeedScroll(val value: Boolean) : Msg
+
         //        region::Weather
         data class OwmResponseMsg(val value: OwmResponse) : Msg
         data class WeatherUnitsMsg(val value: WeatherUnits) : Msg
@@ -97,6 +104,9 @@ class ContentStoreFactory(
                 is Msg.ShowTipsMsg -> copy(showTips = msg.value)
                 is Msg.AdsList -> copy(adsList = msg.value)
                 is Msg.IsAdsLoading -> copy(isAdsLoading = msg.value)
+                is Msg.ChangeHourly -> copy(hourlyState = msg.value)
+                is Msg.NeedScroll -> copy(needScroll = msg.value)
+                is Msg.ScrollToItem -> copy(scrollToItem = msg.value)
             }
     }
 
@@ -125,6 +135,12 @@ class ContentStoreFactory(
 
                 ContentStore.Intent.OpenSettings -> {
                     publish(ContentStore.Label.OpenSettings)
+                }
+
+                is ContentStore.Intent.ChangeHourly -> {
+                    dispatch(ContentStoreFactory.Msg.ChangeHourly(value = intent.value))
+                    dispatch(ContentStoreFactory.Msg.ScrollToItem(value = if (intent.value == 0) LocalDateTime.now().hour else 0))
+                    dispatch(ContentStoreFactory.Msg.NeedScroll(value = intent.value == 0))
                 }
             }
 

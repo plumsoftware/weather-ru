@@ -22,6 +22,7 @@ class WeatherApiRepositoryImpl(
         val response = client.get {
             url(urlString = "https://api.weatherapi.com/v1/forecast.json?key=${BuildConfig.WEATHER_API}")
             parameter(key = "q", value = "${sharedPreferencesStorage.get().city}")
+            parameter(key = "days", value = "3")
             parameter(key = "aqi", value = "yes")
             parameter(key = "alerts", value = "yes")
             parameter(key = "lang", value = Locale.getDefault().language)

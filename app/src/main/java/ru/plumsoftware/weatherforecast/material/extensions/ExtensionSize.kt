@@ -20,8 +20,9 @@ object ExtensionSize {
     }
 
     object HourlyForecastItem {
+        val divWidth = 4.dp
         val width = 54.dp
-        val metricHeight = 300.dp
-        val imperialHeight = 370.dp
+        val metricHeight = 280.dp
+        val imperialHeight = 350.dp
     }
 }

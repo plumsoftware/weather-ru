@@ -27,6 +27,12 @@
     <string name="details">Детали</string>
     <string name="tips_star">✨</string>
     <string name="tips_rocket">🚀</string>
+    <string name="humidity">Влажность</string>
+    <string name="uv_index">УВ индекс</string>
+    <string name="visibility">Видимость</string>
+    <string name="today">Сегодня</string>
+    <string name="tomorrow">Завтра</string>
+    <string name="day_after_tomorrow">Послезавтра</string>
 
     <!--    Settings-->
     <string name="settings">Настройки</string>

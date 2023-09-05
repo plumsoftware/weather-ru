@@ -90,6 +90,15 @@ internal val md_theme_gray_2 = Color(0xFFB7B7B7)
 internal val md_theme_light_gray = Color(0xFFC1C6CE)
 internal val md_theme_dark_gray = Color(0xFF635F6C)
 
+internal val md_theme_sunny_color = Color(0xFFCC9F00)
+internal val md_theme_visibility_color = Color(0xFFFF54B0)
+internal val md_theme_wind_color = Color(0xFFFFC368)
+internal val md_theme_humidity_color = Color(70, 92, 204)
+internal val md_theme_tint_cover = Color (0x33FFFFFF)
+internal val md_theme_text_cover = Color(0xFFA098AE)
+
+internal val md_theme_text_hour_cover = Color(0x663B62ED)
+
 val DarkColorScheme = darkColorScheme(
     primary = md_theme_dark_primary,
     onPrimary = md_theme_dark_onPrimary,

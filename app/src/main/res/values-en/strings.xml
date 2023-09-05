@@ -27,6 +27,12 @@
     <string name="details">Details</string>
     <string name="tips_star">✨</string>
     <string name="tips_rocket">🚀</string>
+    <string name="humidity">Humidity</string>
+    <string name="uv_index">UV index</string>
+    <string name="visibility">Visibility</string>
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
+    <string name="day_after_tomorrow">The day after tomorrow</string>
 
     <!--    Settings-->
     <string name="settings">Settings</string>
