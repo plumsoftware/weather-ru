@@ -47,18 +47,21 @@ class LocationViewModel(
         with(location) {
             locationItemDao.upsert(
                 locationItem = LocationItem(
-                    city = city,
-                    country = country
+                    city = city
                 )
             )
         }
+    }
+
+    suspend fun delete(location: LocationItem) {
+        locationItemDao.delete(locationItem = location)
     }
 
     private suspend fun checkLocation(location: Location) {
         val locationItems: List<LocationItem> = locationItemDao.getAll()
         with(location) {
             locationItems.forEachIndexed { index, locationItem ->
-                if (locationItem.city == city && locationItem.country == country) {
+                if (locationItem.city == city) {
                     showToast(context = ru.plumsoftware.weatherforecast.application.App.INSTANCE.applicationContext, message = "Такой город уже добавлен") // TODO()
                 } else {
 
@@ -67,8 +70,7 @@ class LocationViewModel(
 
             locationItemDao.upsert(
                 locationItem = LocationItem(
-                    city = city,
-                    country = country
+                    city = city
                 )
             )
         }

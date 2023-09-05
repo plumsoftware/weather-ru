@@ -11,11 +11,8 @@ import org.koin.core.component.KoinComponent
 import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.data.models.location.LocationItem
 import ru.plumsoftware.weatherforecast.data.models.location.LocationItemDao
-import ru.plumsoftware.weatherforecast.data.utilities.logd
 import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.domain.models.location.Location
-import ru.plumsoftware.weatherforecast.domain.models.settings.UserSettings
-import ru.plumsoftware.weatherforecast.domain.storage.LocationStorage
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
 
 internal class LocationStoreFactory(
@@ -62,6 +59,10 @@ internal class LocationStoreFactory(
         ) : Msg
 
         data class Items(val items: List<LocationItem>) : Msg
+
+        data class ShowDialogMsg(val value: Boolean) : Msg
+
+        data class SelectedLocationItemMsg(val value: LocationItem) : Msg
     }
 
     private object ReducerImpl : Reducer<LocationStore.State, Msg> {
@@ -87,6 +88,10 @@ internal class LocationStoreFactory(
                 is Msg.Items -> copy(
                     items = msg.items
                 )
+
+                is Msg.ShowDialogMsg -> copy(showDialog = msg.value)
+
+                is Msg.SelectedLocationItemMsg -> copy(selectedLocationItem = msg.value)
             }
     }
 
@@ -131,7 +136,21 @@ internal class LocationStoreFactory(
                 }
 
                 is LocationStore.Intent.CountryChange -> {
-                    dispatch(LocationStoreFactory.Msg.Country(country = intent.text))
+                    dispatch(Msg.Country(country = intent.text))
+                }
+
+                is LocationStore.Intent.ShowDialog -> {
+                    dispatch(Msg.ShowDialogMsg(value = intent.value))
+                }
+
+                is LocationStore.Intent.DeleteLocation -> {
+                    publish(LocationStore.Label.DeleteLocation(locationItem = intent.locationItem))
+
+                    initLocations()
+                }
+
+                is LocationStore.Intent.ChangeSelectedLocationItem -> {
+                    dispatch(Msg.SelectedLocationItemMsg(value = intent.locationItem))
                 }
             }
 

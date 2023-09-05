@@ -1,6 +1,10 @@
 package ru.plumsoftware.weatherforecast.presentation.location.presentation.components
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
@@ -26,19 +31,23 @@ import ru.plumsoftware.weatherforecast.domain.models.location.Location
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionSize
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-internal fun LocationItem(city: String, country: String, onClick: (Location) -> Unit) {
+internal fun LocationItem(
+    city: String,
+    onClick: (Location) -> Unit,
+    onLongClick: () -> Unit
+) {
     with(MaterialTheme) {
         Card(
-            onClick = {
-                onClick(Location(city = city, country = country))
-            },
             shape = shapes.large,
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .padding(top = ExtensionPaddingValues._10dp)
+                .combinedClickable(
+                    onLongClick = onLongClick,
+                    onClick = { onClick(Location(city = city)) })
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(
@@ -68,11 +77,11 @@ internal fun LocationItem(city: String, country: String, onClick: (Location) -> 
                     horizontalAlignment = Alignment.Start,
                 ) {
                     Text(text = city, style = typography.labelMedium)
-                    if (country.isNotEmpty())
-                        Text(
-                            text = country,
-                            style = typography.bodyMedium.copy(color = colorScheme.secondary)
-                        )
+//                    if (country.isNotEmpty())
+//                        Text(
+//                            text = country,
+//                            style = typography.bodyMedium.copy(color = colorScheme.secondary)
+//                        )
                 }
             }
         }

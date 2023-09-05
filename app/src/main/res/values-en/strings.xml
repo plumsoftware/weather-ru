@@ -14,6 +14,9 @@
     <string name="clear_icon_description">Clear entered text</string>
     <string name="back_arrow_icon_description">Back button</string>
     <string name="location_icon_description">Location icon</string>
+    <string name="delete_location">Delete</string>
+    <string name="cancel_delete_location">Cancel</string>
+    <string name="delete_location_hint">Delete location</string>
 
     <!--    Content-->
     <string name="more_icon_dewscription">Button with dropdown menu</string>

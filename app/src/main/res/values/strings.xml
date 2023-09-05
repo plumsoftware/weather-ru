@@ -14,6 +14,9 @@
     <string name="clear_icon_description">Очистить введённый текст</string>
     <string name="back_arrow_icon_description">Кнопка назад</string>
     <string name="location_icon_description">Иконка местоположения</string>
+    <string name="delete_location">Удалить</string>
+    <string name="cancel_delete_location">Отмена</string>
+    <string name="delete_location_hint">Удалить местоположение</string>
 
     <!--    Content-->
     <string name="more_icon_dewscription">Кнопка с выподающим меню</string>

@@ -20,6 +20,12 @@ interface LocationStore :
         data class TextError(val isSyntaxError: Boolean) : Intent
 
         data class CloseIconChange(val isVisibleCloseIcon: Boolean) : Intent
+
+        data class ShowDialog(val value: Boolean) : Intent
+
+        data class DeleteLocation(val locationItem: LocationItem) : Intent
+
+        data class ChangeSelectedLocationItem(val locationItem: LocationItem) : Intent
     }
 
     data class State(
@@ -28,7 +34,10 @@ interface LocationStore :
         val isSyntaxError: Boolean = false,
         val isVisibleCloseIcon: Boolean = false,
         val focusRequester: FocusRequester = FocusRequester(),
-        val items: List<LocationItem> = emptyList()
+        val items: List<LocationItem> = emptyList(),
+        val showDialog: Boolean = false,
+        val selectedLocation: Location = Location(city = city, country = country),
+        val selectedLocationItem: LocationItem = LocationItem(city = city)
     )
 
     sealed interface Label {
@@ -36,5 +45,6 @@ interface LocationStore :
 
         data class ConfirmLocation(val location: Location) : Label
 
+        data class DeleteLocation(val locationItem: LocationItem) : Label
     }
 }

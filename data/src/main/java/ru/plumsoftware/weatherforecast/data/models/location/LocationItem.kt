@@ -8,5 +8,4 @@ data class LocationItem(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val city: String,
-    val country: String?
 )
