@@ -165,6 +165,8 @@ dependencies {
     def logback_version = "1.2.11"
     def json_serialization_version = "1.5.1"
 
+    def ycharts_version = "2.1.0"
+
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.0')
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
@@ -227,6 +229,9 @@ dependencies {
     implementation 'com.yandex.android:mobileads:6.0.0'
     implementation 'com.yandex.ads.mediation:mobileads-mytarget:5.16.2.0'
     implementation 'com.yandex.ads.mediation:mobileads-mytarget:5.16.2.0'
+
+//    Charts
+    implementation "co.yml:ycharts:$ycharts_version"
 
 //    Modules
     implementation project(path: ":domain")

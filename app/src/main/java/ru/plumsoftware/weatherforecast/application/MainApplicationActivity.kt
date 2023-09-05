@@ -7,8 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatDelegate
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +41,8 @@ import ru.plumsoftware.weatherforecast.domain.remote.dto.either.WeatherEither
 import ru.plumsoftware.weatherforecast.domain.storage.HttpClientStorage
 import ru.plumsoftware.weatherforecast.domain.storage.LocationStorage
 import ru.plumsoftware.weatherforecast.domain.storage.SharedPreferencesStorage
+import ru.plumsoftware.weatherforecast.presentation.airquality.presentation.AirQualityScreen
+import ru.plumsoftware.weatherforecast.presentation.airquality.viewmodel.AirQualityViewModel
 import ru.plumsoftware.weatherforecast.presentation.authorization.viewmodel.AuthorizationViewModel
 import ru.plumsoftware.weatherforecast.presentation.authorization.presentation.AuthorizationScreen
 import ru.plumsoftware.weatherforecast.presentation.content.presentation.ContentScreen
@@ -258,6 +258,10 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                             is ContentViewModel.Output.OpenSettingsScreen -> {
                                                 navController.navigate(route = Screens.Settings)
                                             }
+
+                                            is ContentViewModel.Output.OpenAirQualityScreen -> {
+                                                navController.navigate(route = Screens.AirQuality)
+                                            }
                                         }
                                     }
                                 )
@@ -285,6 +289,21 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                                             httpClientStorage = httpClientStorage
                                                         ).first
                                                 }
+                                            }
+                                        }
+                                    }
+                                )
+                            )
+                        }
+                        composable(route = Screens.AirQuality) {
+                            AirQualityScreen (
+                                airQualityViewModel = AirQualityViewModel(
+                                    storeFactory = DefaultStoreFactory(),
+                                    airQuality = WEATHER_API_VALUE.value.current!!.airQuality!!,
+                                    output = { output ->
+                                        when(output){
+                                            AirQualityViewModel.Output.OpenContentScreen -> {
+                                                navController.popBackStack()
                                             }
                                         }
                                     }

@@ -24,6 +24,7 @@ interface ContentStore :
         //        region::Navigation
         object OpenLocation : Intent
         object OpenSettings : Intent
+        object OpenAirQuality : Intent
 //        endregion
 
         //        region::Hourly
@@ -57,6 +58,7 @@ interface ContentStore :
         //        region::Navigation
         object OpenLocation : Label
         object OpenSettings : Label
+        object OpenAirQuality : Label
 //        endregion
 
         data class ChangeHourly(val value: Int) : Label

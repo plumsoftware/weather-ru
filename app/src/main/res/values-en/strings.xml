@@ -36,4 +36,7 @@
 
     <!--    Settings-->
     <string name="settings">Settings</string>
+
+    <!--    Air quality-->
+    <string name="air_quality">Air composition</string>
 </resources>

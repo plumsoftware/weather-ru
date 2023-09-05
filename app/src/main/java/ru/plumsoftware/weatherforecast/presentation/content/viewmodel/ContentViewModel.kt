@@ -48,5 +48,6 @@ class ContentViewModel(
     sealed class Output {
         object OpenLocationScreen : Output()
         object OpenSettingsScreen : Output()
+        object OpenAirQualityScreen : Output()
     }
 }

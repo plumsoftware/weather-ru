@@ -6,4 +6,6 @@ object Screens {
     const val Authorization = "ru.plumsoftware.weatherforecast.authorization"
     const val Location = "ru.plumsoftware.weatherforecast.location"
     const val Settings = "ru.plumsoftware.weatherforecast.settings"
+    const val AirQuality = "ru.plumsoftware.weatherforecast.airquality"
+    const val AboutApp = "ru.plumsoftware.weatherforecast.aboutApp"
 }

@@ -47,7 +47,8 @@ fun CityComponent(
     checkBoxValue: Boolean,
     onCheckedChange: (Boolean) -> Unit,
     onClickOpenLocation: () -> Unit,
-    onClickOpenSettings: () -> Unit
+    onClickOpenSettings: () -> Unit,
+    onCLickOpenAirQuality: () -> Unit
 //    endregion
 ) {
     Row(
@@ -96,7 +97,7 @@ fun CityComponent(
                     contentDescription = stringResource(id = R.string.location_icon_description)
                 )
                 Text(
-                    text = with(location) { "$city ${if (country.isNotEmpty())", $country" else ""}" },
+                    text = with(location) { "$city ${if (country.isNotEmpty()) ", $country" else ""}" },
                     style = typography.titleMedium,
                     textAlign = TextAlign.Center
                 )
@@ -125,7 +126,7 @@ fun CityComponent(
                 ) {
                     DropdownMenuItem(text = {
                         Text(
-                            text = "Местоположение",
+                            text = stringResource(id = R.string.location),
                             style = MaterialTheme.typography.labelMedium,
                             modifier = Modifier
                                 .padding(horizontal = ExtensionPaddingValues._10dp),
@@ -139,7 +140,7 @@ fun CityComponent(
 
                     DropdownMenuItem(text = {
                         Text(
-                            text = "Настройки",
+                            text = stringResource(id = R.string.settings),
                             style = MaterialTheme.typography.labelMedium,
                             modifier = Modifier
                                 .padding(horizontal = ExtensionPaddingValues._10dp),
@@ -152,13 +153,16 @@ fun CityComponent(
 
                     DropdownMenuItem(text = {
                         Text(
-                            text = "Качество воздуха",
+                            text = stringResource(id = R.string.air_quality),
                             style = MaterialTheme.typography.labelMedium,
                             modifier = Modifier
                                 .padding(horizontal = ExtensionPaddingValues._10dp),
                             textAlign = TextAlign.Start
                         )
-                    }, onClick = { onCloseDropDownMenu() })
+                    }, onClick = {
+                        onCloseDropDownMenu()
+                        onCLickOpenAirQuality()
+                    })
 
                     Divider(modifier = Modifier.height(height = ExtensionSize.Divider.height))
                     DropdownMenuItem(text = {
@@ -172,7 +176,7 @@ fun CityComponent(
                             )
                             Spacer(modifier = Modifier.width(width = ExtensionPaddingValues._10dp))
                             Text(
-                                text = "Показывать посказки",
+                                text = stringResource(id = R.string.tips),
                                 style = MaterialTheme.typography.labelMedium,
                                 modifier = Modifier
                                     .padding(end = ExtensionPaddingValues._10dp)

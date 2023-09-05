@@ -138,9 +138,13 @@ class ContentStoreFactory(
                 }
 
                 is ContentStore.Intent.ChangeHourly -> {
-                    dispatch(ContentStoreFactory.Msg.ChangeHourly(value = intent.value))
-                    dispatch(ContentStoreFactory.Msg.ScrollToItem(value = if (intent.value == 0) LocalDateTime.now().hour else 0))
-                    dispatch(ContentStoreFactory.Msg.NeedScroll(value = intent.value == 0))
+                    dispatch(Msg.ChangeHourly(value = intent.value))
+                    dispatch(Msg.ScrollToItem(value = if (intent.value == 0) LocalDateTime.now().hour else 0))
+                    dispatch(Msg.NeedScroll(value = intent.value == 0))
+                }
+
+                is ContentStore.Intent.OpenAirQuality -> {
+                    publish(ContentStore.Label.OpenAirQuality)
                 }
             }
 

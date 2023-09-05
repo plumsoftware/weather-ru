@@ -55,6 +55,7 @@ import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Windy
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.application.App
 import ru.plumsoftware.weatherforecast.data.utilities.logd
+import ru.plumsoftware.weatherforecast.data.utilities.showToast
 import ru.plumsoftware.weatherforecast.domain.models.location.Location
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.presentation.authorization.store.AuthorizationStore
@@ -93,6 +94,10 @@ fun ContentScreen(contentViewModel: ContentViewModel) {
 
                 is ContentStore.Label.ChangeHourly -> {
 
+                }
+
+                is ContentStore.Label.OpenAirQuality -> {
+                    contentViewModel.onOutput(ContentViewModel.Output.OpenAirQualityScreen)
                 }
             }
         }
@@ -162,6 +167,11 @@ private fun ContentScreen(
                 onClickOpenSettings = {
                     contentViewModel.onEvent(
                         event = ContentStore.Intent.OpenSettings
+                    )
+                },
+                onCLickOpenAirQuality = {
+                    contentViewModel.onEvent(
+                        event = ContentStore.Intent.OpenAirQuality
                     )
                 })
             with(state.owmResponse) {

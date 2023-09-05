@@ -25,4 +25,8 @@ object ExtensionSize {
         val metricHeight = 280.dp
         val imperialHeight = 350.dp
     }
+
+    object PieChart {
+        val height = 300.dp
+    }
 }
