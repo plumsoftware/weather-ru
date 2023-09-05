@@ -7,7 +7,7 @@ data class Current (
 
   @SerializedName("last_updated_epoch" ) var lastUpdatedEpoch : Int?        = null,
   @SerializedName("last_updated"       ) var lastUpdated      : String?     = null,
-  @SerializedName("temp_c"             ) var tempC            : Int?        = null,
+  @SerializedName("temp_c"             ) var tempC            : Double?        = null,
   @SerializedName("temp_f"             ) var tempF            : Double?     = null,
   @SerializedName("is_day"             ) var isDay            : Int?        = null,
   @SerializedName("condition"          ) var condition        : Condition?  = Condition(),
@@ -23,7 +23,7 @@ data class Current (
   @SerializedName("cloud"              ) var cloud            : Int?        = null,
   @SerializedName("feelslike_c"        ) var feelslikeC       : Double?     = null,
   @SerializedName("feelslike_f"        ) var feelslikeF       : Double?     = null,
-  @SerializedName("vis_km"             ) var visKm            : Int?        = null,
+  @SerializedName("vis_km"             ) var visKm            : Double?        = null,
   @SerializedName("vis_miles"          ) var visMiles         : Double?        = null,
   @SerializedName("uv"                 ) var uv               : Int?        = -1,
   @SerializedName("gust_mph"           ) var gustMph          : Double?     = null,

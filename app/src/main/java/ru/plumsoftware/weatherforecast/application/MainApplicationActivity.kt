@@ -93,7 +93,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                     }
                 } else {
                     // Permission Denied: Do something
-                    CoroutineScope(Dispatchers.IO).launch {
+                    CoroutineScope(Dispatchers.Main).launch {
                         navController.navigate(route = Screens.Location)
                     }
                 }

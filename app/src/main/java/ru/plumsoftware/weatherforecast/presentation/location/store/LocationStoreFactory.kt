@@ -51,7 +51,7 @@ internal class LocationStoreFactory(
             val city: String
         ) : Msg
 
-        data class Country(val county: String) : Msg
+        data class Country(val country: String) : Msg
 
         data class Error(
             val value: Boolean = false
@@ -81,7 +81,7 @@ internal class LocationStoreFactory(
                 )
 
                 is Msg.Country -> copy(
-                    country = msg.county
+                    country = msg.country
                 )
 
                 is Msg.Items -> copy(
@@ -129,6 +129,10 @@ internal class LocationStoreFactory(
                 is LocationStore.Intent.CloseIconChange -> {
                     dispatch(Msg.CloseIcon(isVisibleCloseIcon = intent.isVisibleCloseIcon))
                 }
+
+                is LocationStore.Intent.CountryChange -> {
+                    dispatch(LocationStoreFactory.Msg.Country(country = intent.text))
+                }
             }
 
         override fun executeAction(action: Action, getState: () -> LocationStore.State) =
@@ -155,7 +159,7 @@ internal class LocationStoreFactory(
                         )
                     ) {
                         dispatch(LocationStoreFactory.Msg.Data(city = city))
-                        dispatch(LocationStoreFactory.Msg.Country(county = country))
+                        dispatch(LocationStoreFactory.Msg.Country(country = country))
                     }
                 }
             }

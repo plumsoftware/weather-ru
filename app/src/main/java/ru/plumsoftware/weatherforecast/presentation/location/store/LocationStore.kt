@@ -15,6 +15,8 @@ interface LocationStore :
 
         data class TextChange(val text: String) : Intent
 
+        data class CountryChange(val text: String) : Intent
+
         data class TextError(val isSyntaxError: Boolean) : Intent
 
         data class CloseIconChange(val isVisibleCloseIcon: Boolean) : Intent

@@ -114,6 +114,7 @@ private fun LocationScreen(
                         event(LocationStore.Intent.TextChange(text = this@with))
                         event(LocationStore.Intent.TextError(isSyntaxError = false))
                         event(LocationStore.Intent.CloseIconChange(isVisibleCloseIcon = this@with.isNotEmpty()))
+                        event(LocationStore.Intent.CountryChange(text = ""))
                     }
                 },
                 keyboardOptions = KeyboardOptions(
@@ -181,7 +182,10 @@ private fun LocationScreen(
                 LocationItem(
                     city = locationItem.city,
                     country = locationItem.country!!,
-                    onClick = {}
+                    onClick = { selectedLocation ->
+                        event(LocationStore.Intent.SearchButtonClicked(city = selectedLocation.city))
+                        event(LocationStore.Intent.CountryChange(text = selectedLocation.country.ifEmpty { "" }))
+                    }
                 )
             }
         }

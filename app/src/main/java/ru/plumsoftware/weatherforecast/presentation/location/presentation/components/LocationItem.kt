@@ -22,15 +22,18 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecast.application.App
+import ru.plumsoftware.weatherforecast.domain.models.location.Location
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecast.material.extensions.ExtensionSize
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-internal fun LocationItem(city: String, country: String, onClick: () -> Unit) {
+internal fun LocationItem(city: String, country: String, onClick: (Location) -> Unit) {
     with(MaterialTheme) {
         Card(
-            onClick = onClick,
+            onClick = {
+                onClick(Location(city = city, country = country))
+            },
             shape = shapes.large,
             modifier = Modifier
                 .fillMaxWidth()
@@ -46,7 +49,7 @@ internal fun LocationItem(city: String, country: String, onClick: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(paddingValues = PaddingValues(vertical = ExtensionPaddingValues._10dp))
+                    .padding(paddingValues = PaddingValues(vertical = ExtensionPaddingValues._24dp))
             ) {
                 Image(
                     imageVector = Icons.Rounded.LocationOn,
@@ -60,15 +63,16 @@ internal fun LocationItem(city: String, country: String, onClick: () -> Unit) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(
                         ExtensionPaddingValues._10dp,
-                        Alignment.Top
+                        Alignment.CenterVertically
                     ),
                     horizontalAlignment = Alignment.Start,
                 ) {
                     Text(text = city, style = typography.labelMedium)
-                    Text(
-                        text = country,
-                        style = typography.bodyMedium.copy(color = colorScheme.secondary)
-                    )
+                    if (country.isNotEmpty())
+                        Text(
+                            text = country,
+                            style = typography.bodyMedium.copy(color = colorScheme.secondary)
+                        )
                 }
             }
         }
