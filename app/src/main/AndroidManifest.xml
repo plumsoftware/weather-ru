@@ -17,7 +17,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
-        android:name=".application.App"
+        android:name="ru.plumsoftware.weatherforecastru.application.App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -28,7 +28,7 @@
         android:theme="@style/Theme.Погода"
         tools:targetApi="31">
         <activity
-            android:name=".application.MainApplicationActivity"
+            android:name="ru.plumsoftware.weatherforecastru.application.MainApplicationActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Погода">

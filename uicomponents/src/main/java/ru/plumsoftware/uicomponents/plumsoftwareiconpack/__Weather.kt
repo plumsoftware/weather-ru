@@ -18,8 +18,11 @@ import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.RainyNight
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.SleetyDay
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.SleetyNight
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Sunny
+import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Sunrise
+import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Sunset
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Tornado
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Windy
+import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.CleanNight
 import kotlin.collections.List as ____KtList
 
 public object WeatherGroup
@@ -34,8 +37,8 @@ public val WeatherGroup.AllIcons: ____KtList<ImageVector>
     if (__AllIcons != null) {
       return __AllIcons!!
     }
-    __AllIcons= listOf(Cloud, CloudSnowDay, CloudSnowNight, CloudThunder, Doublecloud, Drops, Dust,
-        Hazzy, Mild, Moon, PartlyCloudyDay, RainyDay, RainyNight, SleetyDay, SleetyNight, Sunny,
-        Tornado, Windy)
+    __AllIcons= listOf(CleanNight, Cloud, CloudSnowDay, CloudSnowNight, CloudThunder,
+        Doublecloud, Drops, Dust, Hazzy, Mild, Moon, PartlyCloudyDay, RainyDay, RainyNight,
+        SleetyDay, SleetyNight, Sunny, Sunrise, Sunset, Tornado, Windy)
     return __AllIcons!!
   }

@@ -28,6 +28,10 @@
     <string name="alerts">Important to read</string>
     <string name="tips">Tips</string>
     <string name="details">Details</string>
+    <string name="astronomy">Astronomy</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="sunset">Sunset</string>
+    <string name="moon_phase">Moon phase</string>
     <string name="tips_star">✨</string>
     <string name="tips_rocket">🚀</string>
     <string name="humidity">Humidity</string>
@@ -36,10 +40,28 @@
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
     <string name="day_after_tomorrow">The day after tomorrow</string>
+    <string name="button_arrow">Next button</string>
+    <string name="share_description">An app that has it all!</string>
+    <string name="weather_units">Units of measurement</string>
+    <string name="weather">Weather</string>
+    <string name="wind_speed">Wind speed</string>
+    <string name="application">Application</string>
+    <string name="application_theme_icon">Application theme icon</string>
+    <string name="theme_desc">Dark theme</string>
+    <string name="about_application_icon">About application icon</string>
+    <string name="share_application">Share application icon</string>
+    <string name="share_">Share</string>
+    <string name="feedback">Feedback</string>
+    <string name="rustore_logo">RuStore app store logo</string>
+    <string name="rustore_review">Review on RuStore</string>
 
     <!--    Settings-->
     <string name="settings">Settings</string>
 
     <!--    Air quality-->
     <string name="air_quality">Air composition</string>
+
+    <!--    About application-->
+    <string name="about_app">About application</string>
+    <string name="version_hint">Version</string>
 </resources>

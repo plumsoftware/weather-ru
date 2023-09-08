@@ -28,18 +28,40 @@
     <string name="alerts">Важно для прочтения</string>
     <string name="tips">Подсказки</string>
     <string name="details">Детали</string>
+    <string name="astronomy">Астрономия</string>
     <string name="tips_star">✨</string>
     <string name="tips_rocket">🚀</string>
     <string name="humidity">Влажность</string>
     <string name="uv_index">УВ индекс</string>
     <string name="visibility">Видимость</string>
+    <string name="sunrise">Восход</string>
+    <string name="sunset">Закат</string>
+    <string name="moon_phase">Фаза луны</string>
     <string name="today">Сегодня</string>
     <string name="tomorrow">Завтра</string>
     <string name="day_after_tomorrow">Послезавтра</string>
+    <string name="button_arrow">Кнопка далее</string>
+    <string name="share_description">Приложение, в котором есть всё!</string>
+    <string name="weather_units">Единицы измерения</string>
+    <string name="weather">Погода</string>
+    <string name="wind_speed">Скорость ветра</string>
+    <string name="application">Приложение</string>
+    <string name="application_theme_icon">Иконка темы приложения</string>
+    <string name="theme_desc">Тёмная тема</string>
+    <string name="about_application_icon">Иконка информации о приложении</string>
+    <string name="share_application">Иконка поделить приложением</string>
+    <string name="share_">Поделиться</string>
+    <string name="feedback">Обратная связь</string>
+    <string name="rustore_logo">Логотип магазина приложений RuStore</string>
+    <string name="rustore_review">Отзыв в RuStore</string>
 
     <!--    Settings-->
     <string name="settings">Настройки</string>
 
     <!--    Air quality-->
     <string name="air_quality">Состав воздуха</string>
+
+    <!--    About application-->
+    <string name="about_app">О Приложении</string>
+    <string name="version_hint">Версия</string>
 </resources>
