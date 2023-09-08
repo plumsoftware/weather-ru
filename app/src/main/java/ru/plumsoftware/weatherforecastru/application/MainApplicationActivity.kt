@@ -1,8 +1,11 @@
 package ru.plumsoftware.weatherforecastru.application
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -48,6 +51,7 @@ import ru.plumsoftware.weatherforecastru.domain.remote.dto.either.WeatherEither
 import ru.plumsoftware.weatherforecastru.domain.storage.HttpClientStorage
 import ru.plumsoftware.weatherforecastru.domain.storage.LocationStorage
 import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
+import ru.plumsoftware.weatherforecastru.presentation.NoConnection
 import ru.plumsoftware.weatherforecastru.presentation.aboutapp.presentation.AboutApp
 import ru.plumsoftware.weatherforecastru.presentation.aboutapp.viewmodel.AboutAppViewModel
 import ru.plumsoftware.weatherforecastru.presentation.airquality.presentation.AirQualityScreen
@@ -89,6 +93,9 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
             val coroutine = rememberCoroutineScope()
             val OWM_VALUE = remember { mutableStateOf(OwmResponse()) }
             val WEATHER_API_VALUE = remember { mutableStateOf(WeatherApiResponse()) }
+            val owmHttpCode = remember { mutableStateOf(-1) }
+            val weatherApiHttpCode = remember { mutableStateOf(-1) }
+            val httpHolder = remember { mutableStateOf(0) }
             val launcher = rememberLauncherForActivityResult(
                 ActivityResultContracts.RequestPermission()
             ) { isGranted: Boolean ->
@@ -145,17 +152,30 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                         })
                     }
                     val adRequestConfiguration =
-                        NativeAdRequestConfiguration.Builder("demo-native-content-yandex")//TODO(Replase)
+                        NativeAdRequestConfiguration.Builder("demo-native-content-yandex") //TODO(Replase)
                             .build()
                     nativeAdsLoader.loadAds(adRequestConfiguration, 1)
+                }
+            }
 
-                    OWM_VALUE.value =
-                        doHttpResponse(
-                            httpClientStorage = httpClientStorage
-                        ).first
-                    WEATHER_API_VALUE.value = doHttpResponse(
-                        httpClientStorage = httpClientStorage
-                    ).second
+            when (httpHolder.value) {
+                1 -> {
+                    LaunchedEffect(true) {
+                        coroutine.launch {
+                            with(
+                                doHttpResponse(
+                                    httpClientStorage = httpClientStorage,
+                                    launch = true
+                                )
+                            ) {
+                                OWM_VALUE.value = second.first
+                                WEATHER_API_VALUE.value = second.second
+
+                                owmHttpCode.value = first.first.value
+                                weatherApiHttpCode.value = first.second.value
+                            }
+                        }
+                    }
                 }
             }
 //            endregion
@@ -177,8 +197,8 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                                 navController.navigate(route = Screens.Authorization)
                                             }
 
-                                            is MainViewModel.Output.OpenContentScreen -> {
-                                                navController.navigate(route = Screens.Content)
+                                            is MainViewModel.Output.DoHttpResponse -> {
+                                                httpHolder.value = 1
                                             }
                                         }
                                     },
@@ -229,9 +249,16 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                                 navController.navigate(route = Screens.Content)
                                                 {
                                                     coroutine.launch {
-                                                        OWM_VALUE.value = doHttpResponse(
-                                                            httpClientStorage = httpClientStorage
-                                                        ).first
+                                                        with(
+                                                            doHttpResponse(
+                                                                httpClientStorage = httpClientStorage,
+                                                                launch = false
+                                                            )
+                                                        ) {
+                                                            OWM_VALUE.value = second.first
+
+                                                            owmHttpCode.value = first.first.value
+                                                        }
                                                     }
 
                                                     popUpTo(route = Screens.Content) {
@@ -256,6 +283,8 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                     adsList = list.value,
                                     isAdsLoading = isAdsLoading.value,
                                     isDark = isSystemInDarkTheme(),
+                                    owmCode = owmHttpCode.value,
+                                    weatherApiCode = weatherApiHttpCode.value,
                                     output = { output ->
                                         when (output) {
                                             is ContentViewModel.Output.OpenLocationScreen -> {
@@ -295,10 +324,16 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
 
                                             is SettingsViewModel.Output.OnSettingsChange -> {
                                                 CoroutineScope(Dispatchers.IO).launch {
-                                                    OWM_VALUE.value =
+                                                    with(
                                                         doHttpResponse(
-                                                            httpClientStorage = httpClientStorage
-                                                        ).first
+                                                            httpClientStorage = httpClientStorage,
+                                                            launch = false
+                                                        )
+                                                    ) {
+                                                        OWM_VALUE.value = second.first
+
+                                                        owmHttpCode.value = first.first.value
+                                                    }
                                                 }
                                             }
 
@@ -365,6 +400,9 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                 }
                             ))
                         }
+                        composable(route = Screens.NoConnection) {
+                            NoConnection()
+                        }
                     }
                 }
             }
@@ -391,16 +429,60 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         Gson().fromJson(jsonString, T::class.java)
 
     private suspend fun doHttpResponse(
-        httpClientStorage: HttpClientStorage
-    ): Pair<OwmResponse, WeatherApiResponse> {
-        var weatherEither: WeatherEither<String, HttpStatusCode, GMTDate> =
-            httpClientStorage.get()
-        val owmResponse = convertStringToJson<OwmResponse>(jsonString = weatherEither.data)
+        httpClientStorage: HttpClientStorage,
+        launch: Boolean
+    ): Pair<Pair<HttpStatusCode, HttpStatusCode>, Pair<OwmResponse, WeatherApiResponse>> {
 
-        weatherEither = httpClientStorage.getWeatherApi()
-        val weatherApiResponse =
-            convertStringToJson<WeatherApiResponse>(jsonString = weatherEither.data)
-        return Pair(first = owmResponse, second = weatherApiResponse)
+        val checkInternetConnection =
+            checkInternetConnection(context = App.INSTANCE.applicationContext)
+
+        if (checkInternetConnection) {
+            if (launch)
+                CoroutineScope(Dispatchers.Main).launch {
+                    navController.navigate(route = Screens.Content)
+                }
+            var weatherEither: WeatherEither<String, HttpStatusCode, GMTDate> =
+                httpClientStorage.get()
+            val owmResponse = convertStringToJson<OwmResponse>(jsonString = weatherEither.data)
+            val fistCode = weatherEither.httpStatusCode
+
+            weatherEither = httpClientStorage.getWeatherApi()
+            val weatherApiResponse =
+                convertStringToJson<WeatherApiResponse>(jsonString = weatherEither.data)
+            val secondCode = weatherEither.httpStatusCode
+
+            return Pair(
+                first = Pair(first = fistCode, second = secondCode),
+                second = Pair(first = owmResponse, second = weatherApiResponse)
+            )
+        } else {
+            CoroutineScope(Dispatchers.Main).launch {
+                navController.navigate(route = Screens.NoConnection)
+            }
+            return Pair(
+                first = Pair(first = HttpStatusCode(-1, ""), second = HttpStatusCode(-1, "")),
+                second = Pair(first = OwmResponse(), second = WeatherApiResponse())
+            )
+        }
+    }
+
+
+    private fun checkInternetConnection(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = connectivityManager.activeNetwork
+        val capabilities = connectivityManager.getNetworkCapabilities(network)
+
+        if (capabilities != null) {
+            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                return true
+            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                return true
+            }
+        } else {
+            return false
+        }
+        return true
     }
 //    endregion
 }

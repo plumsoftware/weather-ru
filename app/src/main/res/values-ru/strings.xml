@@ -64,4 +64,8 @@
     <!--    About application-->
     <string name="about_app">О Приложении</string>
     <string name="version_hint">Версия</string>
+
+    <!--    Errors-->
+    <string name="error_desc">Плохое соединение с интернетом</string>
+    <string name="error_code">Ошибка:</string>
 </resources>

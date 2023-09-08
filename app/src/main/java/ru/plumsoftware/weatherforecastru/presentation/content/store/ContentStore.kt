@@ -52,7 +52,9 @@ interface ContentStore :
         val hourlyState: Int = 0,
         val scrollToItem: Int = LocalDateTime.now().hour,
         val needScroll: Boolean = true,
-        val isDark: Boolean = false
+        val isDark: Boolean = false,
+        val owmCode: Int = -1,
+        val weatherApiCode:Int = -1
     )
 
     sealed interface Label {

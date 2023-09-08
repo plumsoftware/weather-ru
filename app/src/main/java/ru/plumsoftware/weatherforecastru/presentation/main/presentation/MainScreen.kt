@@ -29,7 +29,7 @@ fun MainScreen(mainViewModel: MainViewModel) {
                 is MainStore.Label.SkipAuthorization -> {
                     with(label) {
                         mainViewModel.onOutput(
-                            MainViewModel.Output.OpenContentScreen(
+                            MainViewModel.Output.DoHttpResponse(
                                 city = city!!
                             )
                         )

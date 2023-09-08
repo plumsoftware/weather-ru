@@ -8,4 +8,5 @@ object Screens {
     const val Settings = "ru.plumsoftware.weatherforecast.settings"
     const val AirQuality = "ru.plumsoftware.weatherforecast.airquality"
     const val AboutApp = "ru.plumsoftware.weatherforecast.aboutApp"
+    const val NoConnection = "ru.plumsoftware.weatherforecast.noconnection"
 }

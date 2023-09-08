@@ -64,4 +64,8 @@
     <!--    About application-->
     <string name="about_app">About application</string>
     <string name="version_hint">Version</string>
+
+    <!--    Errors-->
+    <string name="error_desc">Bad connection with internet</string>
+    <string name="error_code">Error:</string>
 </resources>

@@ -21,7 +21,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -64,6 +67,7 @@ import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingVal
 import ru.plumsoftware.weatherforecastru.presentation.content.presentation.components.CityComponent
 import ru.plumsoftware.weatherforecastru.presentation.content.presentation.components.DetailComponent
 import ru.plumsoftware.weatherforecastru.presentation.content.presentation.components.HourlyWeatherForecast
+import ru.plumsoftware.weatherforecastru.presentation.content.presentation.components.HttpErrorComponent
 import ru.plumsoftware.weatherforecastru.presentation.content.presentation.components.TipsComponent
 import ru.plumsoftware.weatherforecastru.presentation.content.presentation.components.WeatherStatus
 import ru.plumsoftware.weatherforecastru.presentation.content.store.ContentStore
@@ -186,7 +190,8 @@ private fun ContentScreen(
                     tempFeelsLike = main!!.feelsLike!!.toInt().toString(),
                     weatherUnit = "",
                     iconId = weather[0].id!!,
-                    base = base!!
+                    base = base!!,
+                    httpCode = state.owmCode
                 )
             }
             Column(
@@ -254,219 +259,224 @@ private fun ContentScreen(
                 )
 //            endregion
 
+                if (state.weatherApiCode in 300..599) {
+                    HttpErrorComponent(state.weatherApiCode)
+                } else {
 //            region::Alerts
-                if (state.weatherApiResponse.alerts!!.alert.isNotEmpty()) {
+                    if (state.weatherApiResponse.alerts!!.alert.isNotEmpty()) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(
+                                space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
+                            ), horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.alerts),
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier.fillMaxWidth(),
+                                style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
+                            )
+                            Column(
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        color = MaterialTheme.colorScheme.secondaryContainer,
+                                        shape = MaterialTheme.shapes.large
+                                    )
+                                    .padding(all = ExtensionPaddingValues._14dp)
+                            ) {
+                                state.weatherApiResponse.alerts!!.alert.forEachIndexed { index, alert ->
+                                    Text(
+                                        text = alert.desc!!,
+                                        style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSecondaryContainer)
+                                    )
+                                }
+                            }
+                        }
+                    }
+//            endregion
+
+//            region::Tips
+                    if (state.showTips)
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(
+                                space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
+                            ), horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.tips),
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier.fillMaxWidth(),
+                                style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
+                            )
+                            TipsComponent(base = state.owmResponse.base!!)
+                        }
+//            endregion
+
+//            region::Hourly forecast
                     Column(
                         verticalArrangement = Arrangement.spacedBy(
                             space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
                         ), horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            text = stringResource(id = R.string.alerts),
+                            text = stringResource(id = R.string.hourly_weather_forecast),
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.fillMaxWidth(),
+                            style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
+                        )
+
+                        HourlyWeatherForecast(
+                            list = state.weatherApiResponse.forecast!!.forecastday[state.hourlyState].hour,
+                            weatherUnits = state.weatherUnits,
+                            scrollToItem = state.scrollToItem,
+                            needScroll = state.needScroll,
+                            index = state.hourlyState,
+                            onClick = { index ->
+                                contentViewModel.onEvent(ContentStore.Intent.ChangeHourly(value = index))
+                            }
+                        )
+                    }
+//            endregion
+
+//            region::Details
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(
+                            space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
+                        ),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.details),
                             textAlign = TextAlign.Start,
                             modifier = Modifier.fillMaxWidth(),
                             style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
                         )
                         Column(
-                            verticalArrangement = Arrangement.Center,
+                            verticalArrangement = Arrangement.spacedBy(
+                                space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
+                            ),
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                    shape = MaterialTheme.shapes.large
-                                )
-                                .padding(all = ExtensionPaddingValues._14dp)
                         ) {
-                            state.weatherApiResponse.alerts!!.alert.forEachIndexed { index, alert ->
-                                Text(
-                                    text = alert.desc!!,
-                                    style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSecondaryContainer)
+                            Row(
+                                verticalAlignment = Alignment.Top,
+                                horizontalArrangement = Arrangement.spacedBy(
+                                    space = ExtensionPaddingValues._10dp,
+                                    alignment = Alignment.CenterHorizontally
+                                )
+                            ) {
+                                DetailComponent(
+                                    title = "${state.owmResponse.visibility}м",
+                                    description = stringResource(id = R.string.visibility),
+                                    pair = Pair(
+                                        PlumsoftwareIconPack.Weather.Hazzy,
+                                        md_theme_visibility_color
+                                    )
+                                )
+
+                                DetailComponent(
+                                    title = "${state.owmResponse.main!!.humidity}%",
+                                    description = stringResource(id = R.string.humidity),
+                                    pair = Pair(
+                                        PlumsoftwareIconPack.Weather.Drops, md_theme_humidity_color
+                                    )
+                                )
+                            }
+                            Row(
+                                verticalAlignment = Alignment.Top,
+                                horizontalArrangement = Arrangement.spacedBy(
+                                    space = ExtensionPaddingValues._10dp,
+                                    alignment = Alignment.CenterHorizontally
+                                )
+                            ) {
+                                DetailComponent(
+                                    title = calculateUVIndex(state.weatherApiResponse.current!!.uv!!),
+                                    description = stringResource(id = R.string.uv_index),
+                                    pair = Pair(
+                                        PlumsoftwareIconPack.Weather.Sunny, md_theme_sunny_color
+                                    )
+                                )
+
+                                DetailComponent(
+                                    title = "${state.owmResponse.wind!!.speed!!.toInt()} ${state.windSpeed.windPresentation}",
+                                    description = windDirectionFull(state.owmResponse.wind!!.deg!!),
+                                    pair = Pair(
+                                        PlumsoftwareIconPack.Weather.Windy, md_theme_wind_color
+                                    )
                                 )
                             }
                         }
                     }
-                }
 //            endregion
 
-//            region::Tips
-                if (state.showTips)
+//                region::Astronomy
                     Column(
                         verticalArrangement = Arrangement.spacedBy(
                             space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
-                        ), horizontalAlignment = Alignment.CenterHorizontally
+                        ),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .fillMaxWidth()
                     ) {
                         Text(
-                            text = stringResource(id = R.string.tips),
+                            text = stringResource(id = R.string.astronomy),
                             textAlign = TextAlign.Start,
                             modifier = Modifier.fillMaxWidth(),
                             style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
                         )
-                        TipsComponent(base = state.owmResponse.base!!)
-                    }
-//            endregion
-
-//            region::Hourly forecast
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(
-                        space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
-                    ), horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.hourly_weather_forecast),
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.fillMaxWidth(),
-                        style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
-                    )
-
-                    HourlyWeatherForecast(
-                        list = state.weatherApiResponse.forecast!!.forecastday[state.hourlyState].hour,
-                        weatherUnits = state.weatherUnits,
-                        scrollToItem = state.scrollToItem,
-                        needScroll = state.needScroll,
-                        index = state.hourlyState,
-                        onClick = { index ->
-                            contentViewModel.onEvent(ContentStore.Intent.ChangeHourly(value = index))
-                        }
-                    )
-                }
-//            endregion
-
-//            region::Details
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(
-                        space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
-                    ),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.details),
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.fillMaxWidth(),
-                        style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
-                    )
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(
-                            space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
-                        ),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.Top,
-                            horizontalArrangement = Arrangement.spacedBy(
-                                space = ExtensionPaddingValues._10dp,
-                                alignment = Alignment.CenterHorizontally
-                            )
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(
+                                space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
+                            ),
+                            horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
-                            DetailComponent(
-                                title = "${state.owmResponse.visibility}м",
-                                description = stringResource(id = R.string.visibility),
-                                pair = Pair(
-                                    PlumsoftwareIconPack.Weather.Hazzy, md_theme_visibility_color
+                            Row(
+                                verticalAlignment = Alignment.Top,
+                                horizontalArrangement = Arrangement.spacedBy(
+                                    space = ExtensionPaddingValues._10dp,
+                                    alignment = Alignment.CenterHorizontally
                                 )
-                            )
-
-                            DetailComponent(
-                                title = "${state.owmResponse.main!!.humidity}%",
-                                description = stringResource(id = R.string.humidity),
-                                pair = Pair(
-                                    PlumsoftwareIconPack.Weather.Drops, md_theme_humidity_color
+                            ) {
+                                DetailComponent(
+                                    title = state.weatherApiResponse.forecast!!.forecastday[0].astro!!.sunrise!!,
+                                    description = stringResource(id = R.string.sunrise),
+                                    pair = Pair(
+                                        PlumsoftwareIconPack.Weather.Sunrise, md_theme_sunny_color
+                                    )
                                 )
-                            )
-                        }
-                        Row(
-                            verticalAlignment = Alignment.Top,
-                            horizontalArrangement = Arrangement.spacedBy(
-                                space = ExtensionPaddingValues._10dp,
-                                alignment = Alignment.CenterHorizontally
-                            )
-                        ) {
-                            DetailComponent(
-                                title = calculateUVIndex(state.weatherApiResponse.current!!.uv!!),
-                                description = stringResource(id = R.string.uv_index),
-                                pair = Pair(
-                                    PlumsoftwareIconPack.Weather.Sunny, md_theme_sunny_color
+                                DetailComponent(
+                                    title = state.weatherApiResponse.forecast!!.forecastday[0].astro!!.sunset!!,
+                                    description = stringResource(id = R.string.sunset),
+                                    pair = Pair(
+                                        PlumsoftwareIconPack.Weather.Sunset, md_theme_sunny_color
+                                    )
                                 )
-                            )
-
-                            DetailComponent(
-                                title = "${state.owmResponse.wind!!.speed!!.toInt()} ${state.windSpeed.windPresentation}",
-                                description = windDirectionFull(state.owmResponse.wind!!.deg!!),
-                                pair = Pair(
-                                    PlumsoftwareIconPack.Weather.Windy, md_theme_wind_color
+                            }
+                            Row(
+                                verticalAlignment = Alignment.Top,
+                                horizontalArrangement = Arrangement.spacedBy(
+                                    space = ExtensionPaddingValues._10dp,
+                                    alignment = Alignment.CenterHorizontally
                                 )
-                            )
+                            ) {
+                                DetailComponent(
+                                    title = translateMoonPhase(
+                                        languageTag = Locale.current.language,
+                                        moonPhase = state.weatherApiResponse.forecast!!.forecastday[0].astro!!.moonPhase!!
+                                    ),
+                                    description = stringResource(id = R.string.moon_phase),
+                                    pair = Pair(
+                                        PlumsoftwareIconPack.Weather.CleanNight, md_theme_moon_phase
+                                    )
+                                )
+                            }
                         }
                     }
-                }
-//            endregion
-
-//                region::Astronomy
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(
-                        space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
-                    ),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.astronomy),
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.fillMaxWidth(),
-                        style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
-                    )
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(
-                            space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
-                        ),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.Top,
-                            horizontalArrangement = Arrangement.spacedBy(
-                                space = ExtensionPaddingValues._10dp,
-                                alignment = Alignment.CenterHorizontally
-                            )
-                        ) {
-                            DetailComponent(
-                                title = state.weatherApiResponse.forecast!!.forecastday[0].astro!!.sunrise!!,
-                                description = stringResource(id = R.string.sunrise),
-                                pair = Pair(
-                                    PlumsoftwareIconPack.Weather.Sunrise, md_theme_sunny_color
-                                )
-                            )
-                            DetailComponent(
-                                title = state.weatherApiResponse.forecast!!.forecastday[0].astro!!.sunset!!,
-                                description = stringResource(id = R.string.sunset),
-                                pair = Pair(
-                                    PlumsoftwareIconPack.Weather.Sunset, md_theme_sunny_color
-                                )
-                            )
-                        }
-                        Row(
-                            verticalAlignment = Alignment.Top,
-                            horizontalArrangement = Arrangement.spacedBy(
-                                space = ExtensionPaddingValues._10dp,
-                                alignment = Alignment.CenterHorizontally
-                            )
-                        ) {
-                            DetailComponent(
-                                title = translateMoonPhase(
-                                    languageTag = Locale.current.language,
-                                    moonPhase = state.weatherApiResponse.forecast!!.forecastday[0].astro!!.moonPhase!!
-                                ),
-                                description = stringResource(id = R.string.moon_phase),
-                                pair = Pair(
-                                    PlumsoftwareIconPack.Weather.CleanNight, md_theme_moon_phase
-                                )
-                            )
-                        }
-                    }
-                }
 //                endregion
+                }
 
                 Spacer(modifier = Modifier.height(height = ExtensionPaddingValues._14dp))
             }

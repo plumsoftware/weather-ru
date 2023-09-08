@@ -43,6 +43,6 @@ class MainViewModel(
     sealed class Output {
         object OpenAuthorizationScreen : Output()
 
-        data class OpenContentScreen(val city: String) : Output()
+        data class DoHttpResponse(val city: String) : Output()
     }
 }

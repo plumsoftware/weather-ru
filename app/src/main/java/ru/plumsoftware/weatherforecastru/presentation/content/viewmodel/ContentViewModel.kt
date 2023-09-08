@@ -22,6 +22,8 @@ class ContentViewModel(
     adsList: MutableList<NativeAd>,
     isAdsLoading: Boolean,
     isDark: Boolean,
+    owmCode: Int,
+    weatherApiCode: Int,
     private val output: (Output) -> Unit,
 ) : ViewModel() {
     private val contentStore = ContentStoreFactory(
@@ -31,7 +33,9 @@ class ContentViewModel(
         weatherApiResponse = weatherApiResponse,
         adsList = adsList,
         isAdsLoading = isAdsLoading,
-        isDark = isDark
+        isDark = isDark,
+        owmCode = owmCode,
+        weatherApiCode = weatherApiCode
     ).create()
 
     @OptIn(ExperimentalCoroutinesApi::class)

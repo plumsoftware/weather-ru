@@ -26,7 +26,9 @@ class ContentStoreFactory(
     private val weatherApiResponse: WeatherApiResponse,
     private val adsList: MutableList<NativeAd>,
     private val isAdsLoading: Boolean,
-    private val isDark: Boolean
+    private val isDark: Boolean,
+    private val owmCode: Int,
+    private val weatherApiCode: Int,
 ) {
 
     @OptIn(ExperimentalMviKotlinApi::class)
@@ -56,7 +58,7 @@ class ContentStoreFactory(
         object InitWeather : Action
         object InitAds : Action
         object InitIsAdsLoading : Action
-        object InitTheme: Action
+        object InitTheme : Action
     }
 
     sealed interface Msg {
@@ -88,6 +90,8 @@ class ContentStoreFactory(
         data class WeatherUnitsMsg(val value: WeatherUnits) : Msg
         data class WeatherApiResponseMsg(val value: WeatherApiResponse) : Msg
         data class WindSpeedMsg(val value: WindSpeed) : Msg
+        data class OwmCode(val value: Int) : Msg
+        data class WeatherApiCode(val value: Int) : Msg
 //        endregion
     }
 
@@ -113,6 +117,8 @@ class ContentStoreFactory(
                 is Msg.NeedScroll -> copy(needScroll = msg.value)
                 is Msg.ScrollToItem -> copy(scrollToItem = msg.value)
                 is Msg.IsDark -> copy(isDark = msg.value)
+                is Msg.OwmCode -> copy(owmCode = msg.value)
+                is Msg.WeatherApiCode -> copy(weatherApiCode = msg.value)
             }
     }
 
@@ -161,7 +167,9 @@ class ContentStoreFactory(
                 Action.InitWeather -> initWeather(
                     sharedPreferencesStorage = sharedPreferencesStorage,
                     owmResponse = owmResponse,
-                    weatherApiResponse = weatherApiResponse
+                    weatherApiResponse = weatherApiResponse,
+                    owmCode = owmCode,
+                    weatherApiCode = weatherApiCode
                 )
 
                 Action.InitAds -> initAds(list = adsList)
@@ -203,16 +211,27 @@ class ContentStoreFactory(
         private fun initWeather(
             sharedPreferencesStorage: SharedPreferencesStorage,
             owmResponse: OwmResponse,
-            weatherApiResponse: WeatherApiResponse
+            weatherApiResponse: WeatherApiResponse,
+            owmCode: Int,
+            weatherApiCode: Int
         ) {
 //            region::Init weather
             scope.launch {
                 with(sharedPreferencesStorage.get()) {
-                    dispatch(ContentStoreFactory.Msg.OwmResponseMsg(value = owmResponse))
-                    dispatch(ContentStoreFactory.Msg.WeatherUnitsMsg(value = weatherUnits))
-                    dispatch(ContentStoreFactory.Msg.WeatherApiResponseMsg(value = weatherApiResponse))
-                    dispatch(ContentStoreFactory.Msg.WindSpeedMsg(value = windSpeed))
-                    dispatch(ContentStoreFactory.Msg.ShowTipsMsg(value = showTips))
+                    if (owmCode in 300..599) {
+                        dispatch(ContentStoreFactory.Msg.OwmCode(value = owmCode))
+                    } else {
+                        dispatch(ContentStoreFactory.Msg.OwmResponseMsg(value = owmResponse))
+                        dispatch(ContentStoreFactory.Msg.WeatherUnitsMsg(value = weatherUnits))
+                        dispatch(ContentStoreFactory.Msg.WindSpeedMsg(value = windSpeed))
+                        dispatch(ContentStoreFactory.Msg.ShowTipsMsg(value = showTips))
+                    }
+
+                    if (weatherApiCode in 300..599) {
+                        dispatch(ContentStoreFactory.Msg.WeatherApiCode(value = weatherApiCode))
+                    } else {
+                        dispatch(ContentStoreFactory.Msg.WeatherApiResponseMsg(value = weatherApiResponse))
+                    }
                 }
             }
 //            endregion
