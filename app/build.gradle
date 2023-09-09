@@ -167,6 +167,12 @@ dependencies {
 
     def ycharts_version = "2.1.0"
 
+    def yandex_ads_version = "6.0.0"
+    def mytarget_version = "5.16.2.0"
+
+    def glance_version = "1.0.0-rc01"
+    def glance_material_version = "1.0.0-rc01"
+
     implementation 'androidx.core:core-ktx:1.10.1'
     implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.0')
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
@@ -226,9 +232,12 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10'
 
 //    РСЯ
-    implementation 'com.yandex.android:mobileads:6.0.0'
-    implementation 'com.yandex.ads.mediation:mobileads-mytarget:5.16.2.0'
-    implementation 'com.yandex.ads.mediation:mobileads-mytarget:5.16.2.0'
+    implementation "com.yandex.android:mobileads:$yandex_ads_version"
+    implementation "com.yandex.ads.mediation:mobileads-mytarget:$mytarget_version"
+
+//    Glance widget
+    implementation "androidx.glance:glance-appwidget:$glance_version"
+    implementation "androidx.glance:glance-material3:$glance_material_version"
 
 //    Charts
     implementation "co.yml:ycharts:$ycharts_version"

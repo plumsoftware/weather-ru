@@ -68,4 +68,7 @@
     <!--    Errors-->
     <string name="error_desc">Плохое соединение с интернетом</string>
     <string name="error_code">Ошибка:</string>
+
+    <!--    Widgets-->
+    <string name="simple_widget_description">Виджет с текущей температурой (минимальной и максимальной). Всё, что необходимо</string>
 </resources>

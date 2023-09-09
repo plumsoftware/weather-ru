@@ -51,7 +51,7 @@ import ru.plumsoftware.weatherforecastru.domain.remote.dto.either.WeatherEither
 import ru.plumsoftware.weatherforecastru.domain.storage.HttpClientStorage
 import ru.plumsoftware.weatherforecastru.domain.storage.LocationStorage
 import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
-import ru.plumsoftware.weatherforecastru.presentation.NoConnection
+import ru.plumsoftware.weatherforecastru.presentation.noconnection.NoConnection
 import ru.plumsoftware.weatherforecastru.presentation.aboutapp.presentation.AboutApp
 import ru.plumsoftware.weatherforecastru.presentation.aboutapp.viewmodel.AboutAppViewModel
 import ru.plumsoftware.weatherforecastru.presentation.airquality.presentation.AirQualityScreen

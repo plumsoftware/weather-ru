@@ -170,30 +170,7 @@ private fun badIconToGoodIcon(icon: Int, isNight: Boolean): Pair<ImageVector, Co
     }
 }
 
-object UI {
-    //    val weather_icons = listOf<Int>(
-//        R.drawable.clear_day,
-//        R.drawable.dark_mode_48px,
-//        R.drawable.cloudy_1_day,
-//        R.drawable.cloudy_1_night,
-//        R.drawable.cloudy_2_day,
-//        R.drawable.cloudy_2_night,
-//        R.drawable.cloudy_3_day,
-//        R.drawable.cloudy_3_night,
-//        R.drawable.dust,
-//        R.drawable.fog_day,
-//        R.drawable.fog_night,
-//        R.drawable.haze_day,
-//        R.drawable.haze_night,
-//        R.drawable.hurricane,
-//        R.drawable.isolated_thunderstorms_day,
-//        R.drawable.isolated_thunderstorms_night,
-//        R.drawable.rainy_3,
-//        R.drawable.rainy_3_day,
-//        R.drawable.rainy_3_night,
-//        R.drawable.snowy_3_day,
-//        R.drawable.snowy_3_night
-//    )
+private object UI {
     val weather_icons = listOf<Pair<ImageVector, Color>>(
         Pair(PlumsoftwareIconPack.Weather.Sunny, Color(red = 246, green = 226, blue = 49)),
         Pair(PlumsoftwareIconPack.Weather.Moon, Color(227, 227, 227)),

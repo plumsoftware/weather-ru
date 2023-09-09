@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.AllIcons
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.Settings
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.Weather
+import ru.plumsoftware.uicomponents.plumsoftwareiconpack.Widget
 import kotlin.collections.List as ____KtList
 
 public object PlumsoftwareIconPack
@@ -15,6 +16,6 @@ public val PlumsoftwareIconPack.AllIcons: ____KtList<ImageVector>
     if (__AllIcons != null) {
       return __AllIcons!!
     }
-    __AllIcons= Settings.AllIcons + Weather.AllIcons + listOf()
+    __AllIcons= Settings.AllIcons + Weather.AllIcons + Widget.AllIcons + listOf()
     return __AllIcons!!
   }

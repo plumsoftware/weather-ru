@@ -7,6 +7,7 @@ object ExtensionSize {
         val _20dp = 20.dp
         val _24dp = 24.dp
         val _34dp = 34.dp
+        val _44dp = 44.dp
         val _64dp = 64.dp
     }
 
@@ -28,5 +29,10 @@ object ExtensionSize {
 
     object PieChart {
         val height = 300.dp
+    }
+
+    object Widgets {
+        val width_1 = 180.dp
+        val height_1 = 110.dp
     }
 }

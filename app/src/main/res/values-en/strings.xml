@@ -68,4 +68,7 @@
     <!--    Errors-->
     <string name="error_desc">Bad connection with internet</string>
     <string name="error_code">Error:</string>
+
+    <!--    Widgets-->
+    <string name="simple_widget_description">Widget with current temperature (minimum and maximum). Everything you need</string>
 </resources>
