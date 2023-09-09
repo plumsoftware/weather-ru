@@ -6,5 +6,5 @@ import ru.plumsoftware.weatherforecastru.widgets.presentation.SimpleBlueAppWidge
 
 class SimpleBlueAppWidgetReceiver :
     GlanceAppWidgetReceiver() {
-    override val glanceAppWidget: GlanceAppWidget = SimpleBlueAppWidget
+    override val glanceAppWidget: GlanceAppWidget = SimpleBlueAppWidget()
 }

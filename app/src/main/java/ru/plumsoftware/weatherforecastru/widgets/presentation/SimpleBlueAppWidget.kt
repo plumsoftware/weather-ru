@@ -44,6 +44,8 @@ import org.koin.core.component.KoinComponent
 import ru.plumsoftware.weatherforecastru.application.MainApplicationActivity
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
+import ru.plumsoftware.weatherforecastru.data.utilities.logd
+import ru.plumsoftware.weatherforecastru.data.utilities.showToast
 import ru.plumsoftware.uicomponents.R as UI
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionSize
@@ -54,7 +56,7 @@ import ru.plumsoftware.weatherforecastru.widgets.material.PlumsoftwareWidgetThem
 import ru.plumsoftware.weatherforecastru.widgets.utilites.badIconToGoodIcon
 
 
-object SimpleBlueAppWidget : GlanceAppWidget(), KoinComponent {
+class SimpleBlueAppWidget : GlanceAppWidget(), KoinComponent {
 
     private val currentDegreeKey = doublePreferencesKey(name = Keys.Simple.CURRENT_DEGREE)
     private val currentMinDegreeKey = doublePreferencesKey(name = Keys.Simple.CURRENT_MIN_DEGREE)
@@ -87,7 +89,7 @@ object SimpleBlueAppWidget : GlanceAppWidget(), KoinComponent {
         val context = LocalContext.current
 
         val manager = GlanceAppWidgetManager(context)
-        val widget = SimpleBlueAppWidget
+        val widget = SimpleBlueAppWidget()
 //        endregion
 
         coroutine.launch {
@@ -102,7 +104,7 @@ object SimpleBlueAppWidget : GlanceAppWidget(), KoinComponent {
             modifier = GlanceModifier
                 .fillMaxSize()
                 .background(imageProvider = ImageProvider(resId = UI.drawable.widget_default_blue_shape))
-                .clickable(onClick = actionRunCallback(Update::class.java)),
+                .clickable(onClick = actionRunCallback<RefreshAction>()),
             contentAlignment = Alignment.Center
         ) {
             if (currentDegree == 0.001) {
@@ -116,7 +118,8 @@ object SimpleBlueAppWidget : GlanceAppWidget(), KoinComponent {
                     Image(
                         provider = ImageProvider(resId = badIconToGoodIcon(icon = currentIconId)),
                         contentDescription = null,
-                        modifier = GlanceModifier.size(size = ExtensionSize.IconSize._44dp),
+                        modifier = GlanceModifier
+                            .size(size = ExtensionSize.IconSize._44dp),
                         colorFilter = ColorFilter.tint(GlanceTheme.colors.onSecondaryContainer),
                     )
                     Spacer(modifier = GlanceModifier.width(width = ExtensionPaddingValues._10dp))
@@ -154,25 +157,7 @@ object SimpleBlueAppWidget : GlanceAppWidget(), KoinComponent {
         }
     }
 
-    class Update : ActionCallback {
-        override suspend fun onAction(
-            context: Context,
-            glanceId: GlanceId,
-            parameters: ActionParameters
-        ) {
-            val manager = GlanceAppWidgetManager(context)
-            val widget = SimpleBlueAppWidget
-
-            val httpResponse: Pair<Pair<HttpStatusCode, HttpStatusCode>, Pair<OwmResponse, WeatherApiResponse>> =
-                doHttpResponse(WidgetDI.httpClientStorage)
-            val owmResponse: OwmResponse = httpResponse.second.first
-
-            update(manager = manager, widget = widget, context = context, owmResponse = owmResponse)
-        }
-
-    }
-
-    private suspend fun update(
+    suspend fun update(
         manager: GlanceAppWidgetManager,
         widget: GlanceAppWidget,
         context: Context,
@@ -181,38 +166,64 @@ object SimpleBlueAppWidget : GlanceAppWidget(), KoinComponent {
         val glanceIds = manager.getGlanceIds(widget::class.java)
         glanceIds.forEach { glanceId ->
             updateAppWidgetState(context, glanceId) { prefs ->
-                val current = prefs[SimpleBlueAppWidget.currentDegreeKey]
-                val min = prefs[SimpleBlueAppWidget.currentMinDegreeKey]
-                val max = prefs[SimpleBlueAppWidget.currentMaxDegreeKey]
-                val iconId = prefs[SimpleBlueAppWidget.currentIconIdKey]
+                val current = prefs[SimpleBlueAppWidget().currentDegreeKey]
+                val min = prefs[SimpleBlueAppWidget().currentMinDegreeKey]
+                val max = prefs[SimpleBlueAppWidget().currentMaxDegreeKey]
+                val iconId = prefs[SimpleBlueAppWidget().currentIconIdKey]
+
+                prefs[SimpleBlueAppWidget().currentDegreeKey] = 0.001
 
                 if (current != null) {
-                    prefs[SimpleBlueAppWidget.currentDegreeKey] = owmResponse.main!!.temp!!
+                    prefs[SimpleBlueAppWidget().currentDegreeKey] = owmResponse.main!!.temp!!
                 } else {
-                    prefs[SimpleBlueAppWidget.currentDegreeKey] = 0.001
+                    prefs[SimpleBlueAppWidget().currentDegreeKey] = 0.001
                 }
 
                 if (min != null) {
-                    prefs[SimpleBlueAppWidget.currentMinDegreeKey] =
+                    prefs[SimpleBlueAppWidget().currentMinDegreeKey] =
                         owmResponse.main!!.tempMin!!
                 } else {
-                    prefs[SimpleBlueAppWidget.currentMinDegreeKey] = 0.001
+                    prefs[SimpleBlueAppWidget().currentMinDegreeKey] = 0.001
                 }
 
                 if (max != null) {
-                    prefs[SimpleBlueAppWidget.currentMaxDegreeKey] =
+                    prefs[SimpleBlueAppWidget().currentMaxDegreeKey] =
                         owmResponse.main!!.tempMax!!
                 } else {
-                    prefs[SimpleBlueAppWidget.currentMaxDegreeKey] = 0.001
+                    prefs[SimpleBlueAppWidget().currentMaxDegreeKey] = 0.001
                 }
 
                 if (iconId != null) {
-                    prefs[SimpleBlueAppWidget.currentIconIdKey] = owmResponse.weather[0].id!!
+                    prefs[SimpleBlueAppWidget().currentIconIdKey] = owmResponse.weather[0].id!!
                 } else {
-                    prefs[SimpleBlueAppWidget.currentIconIdKey] = UI.drawable.clear_day
+                    prefs[SimpleBlueAppWidget().currentIconIdKey] = UI.drawable.clear_day
                 }
             }
             widget.update(context, glanceId)
+        }
+    }
+}
+
+class RefreshAction : ActionCallback {
+    override suspend fun onAction(
+        context: Context,
+        glanceId: GlanceId,
+        parameters: ActionParameters
+    ) {
+        val manager = GlanceAppWidgetManager(context)
+        val widget = SimpleBlueAppWidget()
+
+        val httpResponse: Pair<Pair<HttpStatusCode, HttpStatusCode>, Pair<OwmResponse, WeatherApiResponse>> =
+            doHttpResponse(WidgetDI.httpClientStorage)
+        val owmResponse: OwmResponse = httpResponse.second.first
+
+        CoroutineScope(Dispatchers.Main).launch {
+            SimpleBlueAppWidget().update(
+                manager = manager,
+                widget = widget,
+                context = context,
+                owmResponse = owmResponse
+            )
         }
     }
 }
