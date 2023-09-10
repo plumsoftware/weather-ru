@@ -8,5 +8,6 @@
     android:previewLayout="@layout/glance_default_loading_layout"
     android:widgetCategory="home_screen|keyguard|searchbox"
     android:initialLayout="@layout/glance_default_loading_layout"
+    android:previewImage="@drawable/widget_preview"
     android:initialKeyguardLayout="@layout/glance_default_loading_layout">
 </appwidget-provider>

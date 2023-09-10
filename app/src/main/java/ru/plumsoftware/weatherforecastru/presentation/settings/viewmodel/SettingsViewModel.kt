@@ -42,5 +42,6 @@ class SettingsViewModel(
         object OpenSetting : Output()
         object LeaveFeedBack : Output()
         object Share : Output()
+        object OpenWidgetConfig : Output()
     }
 }

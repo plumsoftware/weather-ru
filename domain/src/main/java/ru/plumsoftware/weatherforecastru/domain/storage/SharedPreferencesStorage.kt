@@ -4,6 +4,7 @@ import ru.plumsoftware.weatherforecastru.domain.models.location.Location
 import ru.plumsoftware.weatherforecastru.domain.models.settings.UserSettings
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WindSpeed
+import ru.plumsoftware.weatherforecastru.domain.models.widget.WidgetConfig
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetUserSettingsShowTipsUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetUserSettingsUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsAppThemeUseCase
@@ -12,6 +13,8 @@ import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSetting
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsWeatherUnitsUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsWindUnitsUseCase
+import ru.plumsoftware.weatherforecastru.domain.usecase.widget.GetWidgetConfigUseCase
+import ru.plumsoftware.weatherforecastru.domain.usecase.widget.SaveWidgetConfigUseCase
 
 class SharedPreferencesStorage
     (
@@ -24,7 +27,10 @@ class SharedPreferencesStorage
     private val saveUserSettingsLocationUseCase: SaveUserSettingsLocationUseCase,
 
     private val saveUserSettingsWeatherUnitsUseCase: SaveUserSettingsWeatherUnitsUseCase,
-    private val saveUserSettingsWindUnitsUseCase: SaveUserSettingsWindUnitsUseCase
+    private val saveUserSettingsWindUnitsUseCase: SaveUserSettingsWindUnitsUseCase,
+
+    private val saveWidgetConfigUseCase: SaveWidgetConfigUseCase,
+    private val getWidgetConfigUseCase: GetWidgetConfigUseCase
 ) {
     fun get(): UserSettings {
         val execute = getUserSettingsUseCase.execute()
@@ -58,5 +64,14 @@ class SharedPreferencesStorage
 
     fun saveLocation(location: Location) {
         saveUserSettingsLocationUseCase.execute(value = location)
+    }
+
+    fun saveWidget(widgetConfig: WidgetConfig) {
+        saveWidgetConfigUseCase.execute(widgetConfig = widgetConfig)
+    }
+
+    fun getWidget(): WidgetConfig {
+        val widgetConfig = getWidgetConfigUseCase.execute()
+        return widgetConfig
     }
 }

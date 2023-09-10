@@ -2,12 +2,14 @@ package ru.plumsoftware.weatherforecastru.data.repository
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Color
 import ru.plumsoftware.weatherforecastru.domain.constants.Constants
 import ru.plumsoftware.weatherforecastru.data.utilities.logd
 import ru.plumsoftware.weatherforecastru.domain.models.location.Location
 import ru.plumsoftware.weatherforecastru.domain.models.settings.UserSettings
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WindSpeed
+import ru.plumsoftware.weatherforecastru.domain.models.widget.WidgetConfig
 import ru.plumsoftware.weatherforecastru.domain.repository.SharedPreferencesRepository
 
 class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPreferencesRepository {
@@ -106,6 +108,30 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
         return showTips
     }
 
+    override fun getWidgetConfig(): WidgetConfig {
+        val widgetConfig = WidgetConfig(
+            radius = sharedPreferences.getInt(
+                Constants.SharedPreferences.SHARED_PREF_APP_WIDGET_RADIUS,
+                20
+            ),
+            red = sharedPreferences.getInt(
+                Constants.SharedPreferences.SHARED_PREF_APP_WIDGET_COLOR_RED,
+                255
+            ),
+            green = sharedPreferences.getInt(
+                Constants.SharedPreferences.SHARED_PREF_APP_WIDGET_COLOR_GREEN,
+                255
+            ),
+            blue = sharedPreferences.getInt(
+                Constants.SharedPreferences.SHARED_PREF_APP_WIDGET_COLOR_BLUE,
+                255
+            )
+        )
+        logd("Widget color: ${widgetConfig.red}, ${widgetConfig.green}, ${widgetConfig.blue}")
+        logd("Widget radius: ${widgetConfig.radius}")
+        return widgetConfig
+    }
+
     override fun saveUserSettingsAppTheme(appTheme: Boolean) {
         sharedPreferences.edit()
             .putBoolean(Constants.SharedPreferences.SHARED_PREF_THEME, appTheme)
@@ -154,6 +180,18 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
                 .edit()
                 .putString(Constants.SharedPreferences.SHARED_PREF_CITY, city)
                 .putString(Constants.SharedPreferences.SHARED_PREF_COUNTRY, country)
+                .apply()
+        }
+    }
+
+    override fun saveWidgetConfig(widgetConfig: WidgetConfig) {
+        with(widgetConfig) {
+            sharedPreferences
+                .edit()
+                .putInt(Constants.SharedPreferences.SHARED_PREF_APP_WIDGET_RADIUS, radius)
+                .putInt(Constants.SharedPreferences.SHARED_PREF_APP_WIDGET_COLOR_RED, red)
+                .putInt(Constants.SharedPreferences.SHARED_PREF_APP_WIDGET_COLOR_GREEN, green)
+                .putInt(Constants.SharedPreferences.SHARED_PREF_APP_WIDGET_COLOR_BLUE, blue)
                 .apply()
         }
     }

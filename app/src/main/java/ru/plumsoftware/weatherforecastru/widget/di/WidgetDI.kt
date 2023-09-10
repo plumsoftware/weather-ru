@@ -1,4 +1,4 @@
-package ru.plumsoftware.weatherforecastru.widgets.di
+package ru.plumsoftware.weatherforecastru.widget.di
 
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

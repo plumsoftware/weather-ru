@@ -1,7 +1,5 @@
 package ru.plumsoftware.weatherforecastru.presentation.settings.presentation
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Share
@@ -36,19 +35,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import ru.plumsoftware.uicomponents.PlumsoftwareIconPack
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.Settings
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.settings.Darkmode
-import ru.plumsoftware.weatherforecast.BuildConfig
 import ru.plumsoftware.weatherforecast.R
-import ru.plumsoftware.weatherforecastru.application.App
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecastru.material.components.TopBar
 import ru.plumsoftware.weatherforecastru.presentation.settings.viewmodel.SettingsViewModel
@@ -86,6 +80,10 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel) {
 
                 is SettingsStore.Label.SettingsChange -> {
                     settingsViewModel.onOutput(SettingsViewModel.Output.OnSettingsChange)
+                }
+
+                SettingsStore.Label.WidgetConfigureSettings -> {
+                    settingsViewModel.onOutput(SettingsViewModel.Output.OpenWidgetConfig)
                 }
             }
         }
@@ -266,6 +264,47 @@ private fun SettingsScreen(
                                     })
                             }
 
+//                            Widget config
+                            Button(
+                                onClick = {
+                                    event(SettingsStore.Intent.WidgetConfigureSettings)
+                                },
+                                contentPadding = PaddingValues(
+                                    horizontal = _14dp,
+                                    vertical = _24dp
+                                ),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.Transparent,
+                                    contentColor = MaterialTheme.colorScheme.onSurface
+                                ),
+                                shape = RoundedCornerShape(size = 0.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight()
+                            ) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(
+                                        space = _14dp,
+                                        alignment = Alignment.Start
+                                    ),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Build,
+                                        contentDescription = stringResource(id = R.string.widget_icon_hint)
+                                    )
+                                    Text(
+                                        text = stringResource(id = R.string.widget_hint),
+                                        style = MaterialTheme.typography.labelMedium,
+                                        modifier = Modifier.weight(weight = 1.0f)
+                                    )
+                                    Icon(
+                                        imageVector = Icons.Rounded.KeyboardArrowRight,
+                                        contentDescription = stringResource(id = R.string.button_arrow)
+                                    )
+                                }
+                            }
 
 //                            About app
                             Button(

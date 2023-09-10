@@ -68,6 +68,8 @@ import ru.plumsoftware.weatherforecastru.presentation.settings.presentation.Sett
 import ru.plumsoftware.weatherforecastru.presentation.settings.viewmodel.SettingsViewModel
 import ru.plumsoftware.weatherforecastru.presentation.ui.SetupUIController
 import ru.plumsoftware.weatherforecastru.presentation.ui.WeatherAppTheme
+import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.presentation.WidgetConfig
+import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.viewmodel.WidgetConfigViewModel
 
 class MainApplicationActivity : ComponentActivity(), KoinComponent {
     private var isDarkTheme = mutableStateOf(false)
@@ -112,6 +114,23 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                     // Permission Denied: Do something
                     CoroutineScope(Dispatchers.Main).launch {
                         navController.navigate(route = Screens.Location)
+                    }
+                }
+            }
+            val launcherReadExtStorage = rememberLauncherForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+                if (isGranted) {
+                    // Permission Accepted: Do something
+                    CoroutineScope(Dispatchers.IO).launch {
+                        CoroutineScope(Dispatchers.Main).launch {
+                            navController.navigate(route = Screens.WidgetConfig)
+                        }
+                    }
+                } else {
+                    // Permission Denied: Do something
+                    CoroutineScope(Dispatchers.Main).launch {
+
                     }
                 }
             }
@@ -366,6 +385,14 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                                     null
                                                 )
                                             }
+
+                                            SettingsViewModel.Output.OpenWidgetConfig -> {
+                                                if (checkReadStoragePermission()) {
+                                                    launcherReadExtStorage.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+                                                } else {
+                                                    navController.navigate(route = Screens.WidgetConfig)
+                                                }
+                                            }
                                         }
                                     }
                                 )
@@ -403,11 +430,31 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                         composable(route = Screens.NoConnection) {
                             NoConnection()
                         }
+                        composable(route = Screens.WidgetConfig) {
+                            WidgetConfig(
+                                widgetConfigViewModel = WidgetConfigViewModel(
+                                    storeFactory = DefaultStoreFactory(),
+                                    sharedPreferencesStorage = sharedPreferencesStorage,
+                                    output = { output ->
+                                        when (output) {
+                                            WidgetConfigViewModel.Output.BackStackClicked -> {
+                                                navController.popBackStack()
+                                            }
+                                        }
+                                    }
+                                )
+                            )
+                        }
                     }
                 }
             }
         }
     }
+
+    private fun checkReadStoragePermission(): Boolean = ContextCompat.checkSelfPermission(
+        App.INSTANCE.applicationContext,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    ) != PackageManager.PERMISSION_GRANTED
 
     override fun onBackPressed() {
         super.onBackPressed()

@@ -14,6 +14,7 @@ interface SettingsStore :
         object ChangeWindUnits : Intent
         data class CheckBoxValue(val value: Boolean) : Intent
         object AboutApp : Intent
+        object WidgetConfigureSettings : Intent
         object Share : Intent
         object LeaveFeedBack : Intent
 
@@ -39,5 +40,6 @@ interface SettingsStore :
         object AboutApp : Label
         object Share : Label
         object LeaveFeedBack : Label
+        object WidgetConfigureSettings : Label
     }
 }

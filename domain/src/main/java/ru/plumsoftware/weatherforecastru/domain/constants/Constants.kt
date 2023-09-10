@@ -14,6 +14,14 @@ sealed class Constants {
         const val SHARED_PREF_WIND_SPEED_VALUE = "ru.plumsoftware.main.sharedpref.wind_speed.value"
         const val SHARED_PREF_WIND_SPEED_PRESENTATION =
             "ru.plumsoftware.main.sharedpref.wind_speed.presentation"
+        const val SHARED_PREF_APP_WIDGET_RADIUS =
+            "ru.plumsoftware.widget.sharedpref.radius"
+        const val SHARED_PREF_APP_WIDGET_COLOR_RED =
+            "ru.plumsoftware.widget.sharedpref.color.red"
+        const val SHARED_PREF_APP_WIDGET_COLOR_GREEN =
+            "ru.plumsoftware.widget.sharedpref.color.green"
+        const val SHARED_PREF_APP_WIDGET_COLOR_BLUE =
+            "ru.plumsoftware.widget.sharedpref.color.blue"
     }
 
     object Settings {

@@ -71,4 +71,9 @@
 
     <!--    Widgets-->
     <string name="simple_widget_description">Widget with current temperature (minimum and maximum). Everything you need</string>
+    <string name="widget_icon_hint">Widget setting icon</string>
+    <string name="widget_hint">Widget settings</string>
+    <string name="radius">Radius</string>
+    <string name="color">Color</string>
+    <string name="wallpaper_image_hint">Wallpaper image on phone</string>
 </resources>

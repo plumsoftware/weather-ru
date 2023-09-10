@@ -32,7 +32,7 @@ object ExtensionSize {
     }
 
     object Widgets {
-        val width_1 = 180.dp
-        val height_1 = 110.dp
+        val width_1 = 190.dp
+        val height_1 = 100.dp
     }
 }

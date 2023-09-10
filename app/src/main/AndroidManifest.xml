@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
@@ -44,25 +45,14 @@
             android:value="false" />
 
         <receiver
-            android:name="ru.plumsoftware.weatherforecastru.widgets.receivers.SimpleBlueAppWidgetReceiver"
+            android:name="ru.plumsoftware.weatherforecastru.widget.receivers.SimpleAppWidgetReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/simple_blue_app_widget_info" />
-        </receiver>
-
-        <receiver
-            android:name="ru.plumsoftware.weatherforecastru.widgets.receivers.SimpleDarkAppWidgetReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/simple_dark_app_widget_info" />
+                android:resource="@xml/simple_app_widget_info" />
         </receiver>
 
     </application>

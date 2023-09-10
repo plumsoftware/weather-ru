@@ -121,6 +121,7 @@ class SettingsStoreFactory(
 
                 SettingsStore.Intent.LeaveFeedBack -> publish(SettingsStore.Label.LeaveFeedBack)
                 SettingsStore.Intent.Share -> publish(SettingsStore.Label.Share)
+                SettingsStore.Intent.WidgetConfigureSettings -> publish(SettingsStore.Label.WidgetConfigureSettings)
             }
 
         override fun executeAction(

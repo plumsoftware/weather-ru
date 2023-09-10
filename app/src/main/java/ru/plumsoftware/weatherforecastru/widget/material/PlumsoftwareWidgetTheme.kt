@@ -1,4 +1,4 @@
-package ru.plumsoftware.weatherforecastru.widgets.material
+package ru.plumsoftware.weatherforecastru.widget.material
 
 import androidx.compose.ui.unit.sp
 import androidx.glance.material3.ColorProviders
