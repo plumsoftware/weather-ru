@@ -70,5 +70,5 @@
     <string name="error_code">Ошибка:</string>
 
     <!--    Widgets-->
-    <string name="simple_widget_description">Виджет с текущей температурой (минимальной и максимальной). Всё, что необходимо</string>
+    <string name="simple_widget_description">Виджет с текущей температурой (минимальной и максимальной). Всё, что необходимо!</string>
 </resources>

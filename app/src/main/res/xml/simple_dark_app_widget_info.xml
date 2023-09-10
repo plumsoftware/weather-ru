@@ -3,6 +3,8 @@
     android:resizeMode="horizontal"
     android:minWidth="110dp"
     android:minHeight="40dp"
+    android:description="@string/simple_widget_description"
+    android:updatePeriodMillis="21600000"
     android:previewLayout="@layout/glance_default_loading_layout"
     android:widgetCategory="home_screen|keyguard|searchbox"
     android:initialLayout="@layout/glance_default_loading_layout"
