@@ -26,6 +26,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.common.MobileAds
@@ -74,6 +77,7 @@ import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.viewmodel.Wid
 class MainApplicationActivity : ComponentActivity(), KoinComponent {
     private var isDarkTheme = mutableStateOf(false)
     private lateinit var navController: NavHostController
+    private lateinit var analytics: FirebaseAnalytics
 
     //    region:Override
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -89,6 +93,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
             val context = LocalContext.current
             val sharedDesc = stringResource(id = R.string.share_description)
 
+            analytics = Firebase.analytics
             isDarkTheme =
                 remember { mutableStateOf(value = sharedPreferencesStorage.get().isDarkTheme) }
             navController = rememberNavController()
