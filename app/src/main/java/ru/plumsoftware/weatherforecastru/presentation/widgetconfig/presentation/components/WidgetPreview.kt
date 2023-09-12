@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -32,13 +33,14 @@ import ru.plumsoftware.weatherforecastru.widget.utilites.darkerColor
 import ru.plumsoftware.weatherforecastru.widget.utilites.makeColorDarker
 
 @Composable
-fun WidgetPreview(corners: Int, background: Color) {
+fun BoxScope.WidgetPreview(corners: Int, background: Color) {
 
     Box(
         modifier = Modifier
             .size(width = ExtensionSize.Widgets.width_1, height = ExtensionSize.Widgets.height_1)
             .clip(shape = RoundedCornerShape(corners.dp))
-            .background(color = background),
+            .background(color = background)
+            .align(alignment = Alignment.TopCenter),
         contentAlignment = Alignment.Center
     ) {
         Row(

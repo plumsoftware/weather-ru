@@ -76,4 +76,5 @@
     <string name="radius">Radius</string>
     <string name="color">Color</string>
     <string name="wallpaper_image_hint">Wallpaper image on phone</string>
+    <string name="radius_settings">Setting the widget radius is available for Android OS version 12 and higher</string>
 </resources>

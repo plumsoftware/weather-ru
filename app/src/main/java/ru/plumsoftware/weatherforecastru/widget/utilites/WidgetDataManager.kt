@@ -4,6 +4,10 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.compose.ui.graphics.Color
+import androidx.core.graphics.alpha
+import androidx.core.graphics.blue
+import androidx.core.graphics.green
+import androidx.core.graphics.red
 import com.google.gson.Gson
 import io.ktor.http.HttpStatusCode
 import io.ktor.util.date.GMTDate
@@ -161,7 +165,13 @@ fun makeColorDarker(color: Color, amount: Float = 0.6f): Color {
     val darkerGreen = (green * amount).coerceIn(0f, 1f)
     val darkerBlue = (blue * amount).coerceIn(0f, 1f)
 
-    return Color(red = darkerRed, green = darkerGreen, blue = darkerBlue)
+    val resColor = Color(red = darkerRed, green = darkerGreen, blue = darkerBlue)
+
+    return if (isDarkColor(resColor)) {
+        val c = lightenColor(color = color.value.toInt())
+        Color(red = c.red, green = c.green, blue = c.blue, alpha = 140)
+    } else
+        resColor
 }
 
 fun darkerColor(color: Color): Color {
@@ -173,10 +183,32 @@ fun darkerColor(color: Color): Color {
     val newGreen = (green * 0.25).toInt()
     val newBlue = (blue * 0.25).toInt()
 
-    return Color(
+    val resColor = Color(
         red = newRed / 255f,
         green = newGreen / 255f,
         blue = newBlue / 255f,
         alpha = color.alpha
     )
+    return if (isDarkColor(resColor)) {
+        val lightenColor: Int = lightenColor(color = color.value.toInt())
+        Color(color = lightenColor)
+    } else
+        resColor
+}
+
+private fun lightenColor(color: Int): Int {
+    val red = (color shr 16) and 0xFF
+    val green = (color shr 8) and 0xFF
+    val blue = color and 0xFF
+
+    val lightRed = red + ((255 - red) / 2)
+    val lightGreen = green + ((255 - green) / 2)
+    val lightBlue = blue + ((255 - blue) / 2)
+
+    return (0xFF shl 24) or (lightRed shl 16) or (lightGreen shl 8) or lightBlue
+}
+
+private fun isDarkColor(color: Color): Boolean {
+    val luminance = (0.299 * color.red + 0.587 * color.green + 0.114 * color.blue)
+    return luminance < 0.12
 }

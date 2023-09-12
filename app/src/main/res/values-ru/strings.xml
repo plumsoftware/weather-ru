@@ -76,4 +76,5 @@
     <string name="radius">Радиус</string>
     <string name="color">Цвет</string>
     <string name="wallpaper_image_hint">Картинка обои на телефоне</string>
+    <string name="radius_settings">Настройка радиуса закругления виджета доступна для версии ОС Android 12 и больше</string>
 </resources>
