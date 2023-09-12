@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "28545728718",
+    "project_id": "weatherru-jetpackcompose",
+    "storage_bucket": "weatherru-jetpackcompose.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28545728718:android:0d5a6b5d082a413e4f909f",
+        "android_client_info": {
+          "package_name": "ru.plumsoftware.weatherforecastru"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1vnJqZrorenqtfK4cs2Pzp1TiftGx7Bw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
