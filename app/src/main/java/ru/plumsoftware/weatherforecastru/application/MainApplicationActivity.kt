@@ -1,6 +1,9 @@
 package ru.plumsoftware.weatherforecastru.application
 
 import android.Manifest
+import android.app.job.JobInfo
+import android.app.job.JobScheduler
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -74,6 +77,8 @@ import ru.plumsoftware.weatherforecastru.presentation.ui.SetupUIController
 import ru.plumsoftware.weatherforecastru.presentation.ui.WeatherAppTheme
 import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.presentation.WidgetConfig
 import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.viewmodel.WidgetConfigViewModel
+import ru.plumsoftware.weatherforecastru.service.JOB_ID
+import ru.plumsoftware.weatherforecastru.service.MyJobService
 
 class MainApplicationActivity : ComponentActivity(), KoinComponent {
     private var isDarkTheme = mutableStateOf(false)
@@ -84,6 +89,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        scheduleBackgroundJob()
         setContent {
 
 //            region::Variables
@@ -559,6 +565,19 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
             return false
         }
         return true
+    }
+
+    private fun scheduleBackgroundJob() {
+        val jobScheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+
+        val serviceName = ComponentName(this, MyJobService::class.java)
+
+        val jobInfo = JobInfo.Builder(JOB_ID, serviceName)
+            .setPersisted(true) // Для сохранения задачи после перезагрузки устройства
+            .setPeriodic(6 * 60 * 60 * 1000) // Обновление каждые 6 часов
+            .build()
+
+        jobScheduler.schedule(jobInfo)
     }
 //    endregion
 }

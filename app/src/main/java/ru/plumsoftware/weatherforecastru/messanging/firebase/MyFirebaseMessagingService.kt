@@ -1,4 +1,4 @@
-package ru.plumsoftware.weatherforecastru.messanging
+package ru.plumsoftware.weatherforecastru.messanging.firebase
 
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
