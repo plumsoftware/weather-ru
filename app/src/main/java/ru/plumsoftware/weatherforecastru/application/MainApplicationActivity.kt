@@ -54,7 +54,7 @@ import ru.plumsoftware.weatherforecastru.domain.remote.dto.either.WeatherEither
 import ru.plumsoftware.weatherforecastru.domain.storage.HttpClientStorage
 import ru.plumsoftware.weatherforecastru.domain.storage.LocationStorage
 import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
-import ru.plumsoftware.weatherforecastru.presentation.noconnection.NoConnection
+import ru.plumsoftware.weatherforecastru.presentation.noconnection.presentation.NoConnection
 import ru.plumsoftware.weatherforecastru.presentation.aboutapp.presentation.AboutApp
 import ru.plumsoftware.weatherforecastru.presentation.aboutapp.viewmodel.AboutAppViewModel
 import ru.plumsoftware.weatherforecastru.presentation.airquality.presentation.AirQualityScreen
@@ -67,6 +67,7 @@ import ru.plumsoftware.weatherforecastru.presentation.location.presentation.Loca
 import ru.plumsoftware.weatherforecastru.presentation.location.viewmodel.LocationViewModel
 import ru.plumsoftware.weatherforecastru.presentation.main.presentation.MainScreen
 import ru.plumsoftware.weatherforecastru.presentation.main.viewmodel.MainViewModel
+import ru.plumsoftware.weatherforecastru.presentation.noconnection.viewmodel.NoConnectionViewModel
 import ru.plumsoftware.weatherforecastru.presentation.settings.presentation.SettingsScreen
 import ru.plumsoftware.weatherforecastru.presentation.settings.viewmodel.SettingsViewModel
 import ru.plumsoftware.weatherforecastru.presentation.ui.SetupUIController
@@ -433,7 +434,30 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                             ))
                         }
                         composable(route = Screens.NoConnection) {
-                            NoConnection()
+                            NoConnection(noConnectionViewModel = NoConnectionViewModel(
+                                storeFactory = DefaultStoreFactory(),
+                                output = { output ->
+                                    when (output) {
+                                        NoConnectionViewModel.Output.TryInternetConnection -> {
+                                            CoroutineScope(Dispatchers.IO).launch {
+                                                with(
+                                                    doHttpResponse(
+                                                        httpClientStorage = httpClientStorage,
+                                                        launch = false
+                                                    )
+                                                ) {
+                                                    OWM_VALUE.value = second.first
+
+                                                    owmHttpCode.value = first.first.value
+                                                }
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    navController.popBackStack()
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ))
                         }
                         composable(route = Screens.WidgetConfig) {
                             WidgetConfig(
