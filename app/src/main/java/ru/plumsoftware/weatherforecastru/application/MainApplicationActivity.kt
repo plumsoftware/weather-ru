@@ -199,24 +199,26 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                     appOpenAdLoader.loadAd(adRequestConfiguration)
 //                    endregion
 //                    region::Native ads
-                    val nativeAdsLoader = NativeBulkAdLoader(context).apply {
-                        setNativeBulkAdLoadListener(object : NativeBulkAdLoadListener {
-                            override fun onAdsLoaded(p0: MutableList<NativeAd>) {
-                                list.value = p0
-                                adsError.value = false
-                            }
+                    if (ru.plumsoftware.data.BuildConfig.showNativeAd.toBoolean()) {
+                        val nativeAdsLoader = NativeBulkAdLoader(context).apply {
+                            setNativeBulkAdLoadListener(object : NativeBulkAdLoadListener {
+                                override fun onAdsLoaded(p0: MutableList<NativeAd>) {
+                                    list.value = p0
+                                    adsError.value = false
+                                }
 
-                            override fun onAdsFailedToLoad(p0: AdRequestError) {
-                                logd(p0.toString())
-                                adsError.value = true
-                                isAdsLoading.value = false
-                            }
-                        })
+                                override fun onAdsFailedToLoad(p0: AdRequestError) {
+                                    logd(p0.toString())
+                                    adsError.value = true
+                                    isAdsLoading.value = false
+                                }
+                            })
+                        }
+                        val adRequestConfiguration =
+                            NativeAdRequestConfiguration.Builder("demo-native-content-yandex") //TODO(Replase)
+                                .build()
+                        nativeAdsLoader.loadAds(adRequestConfiguration, 1)
                     }
-                    val adRequestConfiguration =
-                        NativeAdRequestConfiguration.Builder("demo-native-content-yandex") //TODO(Replase)
-                            .build()
-                    nativeAdsLoader.loadAds(adRequestConfiguration, 1)
 //                    endregion
                 }
             }

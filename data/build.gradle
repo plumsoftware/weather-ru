@@ -33,12 +33,14 @@ android {
             buildConfigField "String", "OWM_API_KEY", "\"${properties.getProperty("OWM_API_KEY")}\""
             buildConfigField "String", "WEATHER_API", "\"${properties.getProperty("WEATHER_API")}\""
             buildConfigField "String", "platform", "\"${properties.getProperty("platform")}\""
+            buildConfigField "String", "showNativeAd", "\"${properties.getProperty("showNativeAd")}\""
         }
         debug {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
             buildConfigField "String", "OWM_API_KEY", "\"${properties.getProperty("OWM_API_KEY")}\""
             buildConfigField "String", "WEATHER_API", "\"${properties.getProperty("WEATHER_API")}\""
             buildConfigField "String", "platform", "\"${properties.getProperty("platform")}\""
+            buildConfigField "String", "showNativeAd", "\"${properties.getProperty("showNativeAd")}\""
         }
     }
 
