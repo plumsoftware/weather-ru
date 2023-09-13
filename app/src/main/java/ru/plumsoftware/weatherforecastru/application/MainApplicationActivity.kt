@@ -33,7 +33,14 @@ import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
+import com.yandex.mobile.ads.appopenad.AppOpenAd
+import com.yandex.mobile.ads.appopenad.AppOpenAdEventListener
+import com.yandex.mobile.ads.appopenad.AppOpenAdLoadListener
+import com.yandex.mobile.ads.appopenad.AppOpenAdLoader
+import com.yandex.mobile.ads.common.AdError
+import com.yandex.mobile.ads.common.AdRequestConfiguration
 import com.yandex.mobile.ads.common.AdRequestError
+import com.yandex.mobile.ads.common.ImpressionData
 import com.yandex.mobile.ads.common.MobileAds
 import com.yandex.mobile.ads.nativeads.NativeAd
 import com.yandex.mobile.ads.nativeads.NativeAdRequestConfiguration
@@ -84,6 +91,8 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
     private var isDarkTheme = mutableStateOf(false)
     private lateinit var navController: NavHostController
     private lateinit var analytics: FirebaseAnalytics
+    private val appOpenAdEventListener = AdEventListener()
+    private var myAppOpenAd: AppOpenAd? = null
 
     //    region:Override
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,6 +107,9 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
             val httpClientStorage by inject<HttpClientStorage>()
             val context = LocalContext.current
             val sharedDesc = stringResource(id = R.string.share_description)
+            val appOpenAdLoader: AppOpenAdLoader = AppOpenAdLoader(application)
+            val AD_UNIT_ID = "demo-appopenad-yandex" //TODO()
+            val adRequestConfiguration = AdRequestConfiguration.Builder(AD_UNIT_ID).build()
 
             analytics = Firebase.analytics
             isDarkTheme =
@@ -155,6 +167,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                 mutableStateOf(true)
             }
 
+
 //            endregion
 
 //            region::Coroutines
@@ -166,12 +179,31 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                     }
 
                     isAdsLoading.value = true
+//                    region::Open app ads
+                    val appOpenAdLoadListener = object : AppOpenAdLoadListener {
+                        override fun onAdLoaded(appOpenAd: AppOpenAd) {
+                            // The ad was loaded successfully. Now you can show loaded ad.
+                            myAppOpenAd = appOpenAd
+                            myAppOpenAd?.show(this@MainApplicationActivity)
+                            isAdsLoading.value = false
+                        }
+
+                        override fun onAdFailedToLoad(adRequestError: AdRequestError) {
+                            // Ad failed to load with AdRequestError.
+                            // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
+                        }
+                    }
+
+                    myAppOpenAd?.setAdEventListener(appOpenAdEventListener)
+                    appOpenAdLoader.setAdLoadListener(appOpenAdLoadListener)
+                    appOpenAdLoader.loadAd(adRequestConfiguration)
+//                    endregion
+//                    region::Native ads
                     val nativeAdsLoader = NativeBulkAdLoader(context).apply {
                         setNativeBulkAdLoadListener(object : NativeBulkAdLoadListener {
                             override fun onAdsLoaded(p0: MutableList<NativeAd>) {
                                 list.value = p0
                                 adsError.value = false
-                                isAdsLoading.value = false
                             }
 
                             override fun onAdsFailedToLoad(p0: AdRequestError) {
@@ -185,6 +217,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                         NativeAdRequestConfiguration.Builder("demo-native-content-yandex") //TODO(Replase)
                             .build()
                     nativeAdsLoader.loadAds(adRequestConfiguration, 1)
+//                    endregion
                 }
             }
 
@@ -575,14 +608,45 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         val jobScheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
 
         val serviceName = ComponentName(this, MyJobService::class.java)
-        val updatePeriod: Long = 21600000
+        val updatePeriod: Long = 86400000
+        val flexMillis: Long = 1 * 60 * 60 * 1000L
 
         val jobInfo = JobInfo.Builder(JOB_ID, serviceName)
             .setPersisted(true) // Для сохранения задачи после перезагрузки устройства
-            .setPeriodic(updatePeriod) // Обновление каждые 6 часов
+            .setPeriodic(updatePeriod, flexMillis) // Обновление каждые 6 часов
             .build()
 
         jobScheduler.schedule(jobInfo)
     }
+
+    private fun clearAppOpenAd() {
+        myAppOpenAd?.setAdEventListener(null)
+//        appOpenAd = null
+    }
 //    endregion
+
+    private inner class AdEventListener : AppOpenAdEventListener {
+        override fun onAdShown() {
+            // Called when ad is shown.
+        }
+
+        override fun onAdFailedToShow(adError: AdError) {
+            // Called when ad failed to show.
+        }
+
+        override fun onAdDismissed() {
+            // Called when ad is dismissed.
+            // Clean resources after dismiss and preload new ad.
+            clearAppOpenAd()
+        }
+
+        override fun onAdClicked() {
+            // Called when a click is recorded for an ad.
+        }
+
+        override fun onAdImpression(impressionData: ImpressionData?) {
+            // Called when an impression is recorded for an ad.
+            // Get Impression Level Revenue Data in argument.
+        }
+    }
 }
