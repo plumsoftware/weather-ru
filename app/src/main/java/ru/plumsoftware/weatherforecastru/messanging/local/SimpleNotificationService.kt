@@ -54,7 +54,7 @@ class SimpleNotificationService(private val context: Context) {
                         val notification =
                             NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
                                 .setSmallIcon(UI.drawable.logo)
-                                .setContentTitle("\uD83D\uDD14 ${title.toInt()}${context.getString(R.string.degree_sign)}")
+                                .setContentTitle("${title.toInt()}${context.getString(R.string.degree_sign)}")
                                 .setLargeIcon(largeIcon)
                                 .setStyle(NotificationCompat.BigTextStyle())
                                 .setContentText(
