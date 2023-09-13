@@ -108,8 +108,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
             val context = LocalContext.current
             val sharedDesc = stringResource(id = R.string.share_description)
             val appOpenAdLoader: AppOpenAdLoader = AppOpenAdLoader(application)
-            val AD_UNIT_ID = "demo-appopenad-yandex" //TODO()
-            val adRequestConfiguration = AdRequestConfiguration.Builder(AD_UNIT_ID).build()
+            val adRequestConfigurationOpenAds = AdRequestConfiguration.Builder(ru.plumsoftware.data.BuildConfig.OPEN_ADS_ID).build()
 
             analytics = Firebase.analytics
             isDarkTheme =
@@ -189,6 +188,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                         }
 
                         override fun onAdFailedToLoad(adRequestError: AdRequestError) {
+                            isAdsLoading.value = false
                             // Ad failed to load with AdRequestError.
                             // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
                         }
@@ -196,7 +196,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
 
                     myAppOpenAd?.setAdEventListener(appOpenAdEventListener)
                     appOpenAdLoader.setAdLoadListener(appOpenAdLoadListener)
-                    appOpenAdLoader.loadAd(adRequestConfiguration)
+                    appOpenAdLoader.loadAd(adRequestConfigurationOpenAds)
 //                    endregion
 //                    region::Native ads
                     if (ru.plumsoftware.data.BuildConfig.showNativeAd.toBoolean()) {
@@ -214,10 +214,10 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                 }
                             })
                         }
-                        val adRequestConfiguration =
-                            NativeAdRequestConfiguration.Builder("demo-native-content-yandex") //TODO(Replase)
+                        val adRequestConfigurationNativeAds =
+                            NativeAdRequestConfiguration.Builder(ru.plumsoftware.data.BuildConfig.NATIVE_ADS_ID)
                                 .build()
-                        nativeAdsLoader.loadAds(adRequestConfiguration, 1)
+                        nativeAdsLoader.loadAds(adRequestConfigurationNativeAds, 1)
                     }
 //                    endregion
                 }

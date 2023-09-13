@@ -39,6 +39,7 @@ import com.yandex.mobile.ads.common.AdRequest
 import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.common.ImpressionData
 import kotlinx.coroutines.launch
+import ru.plumsoftware.data.BuildConfig
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecastru.application.App
 import ru.plumsoftware.weatherforecastru.material.components.TopBar
@@ -233,7 +234,7 @@ private fun AirQualityScreen(
                 val context = App.INSTANCE.applicationContext
 
                 bannerAd!!.setAdSize(BannerAdSize.fixedSize(context, 300, 100))
-                bannerAd.setAdUnitId("demo-banner-yandex")
+                bannerAd.setAdUnitId(BuildConfig.BANNER_ADS_ID)
                 bannerAd.setBannerAdEventListener(object : BannerAdEventListener {
                     override fun onAdLoaded() {
 
