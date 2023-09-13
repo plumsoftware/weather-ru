@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import ru.plumsoftware.weatherforecast.R
+import ru.plumsoftware.uicomponents.R as UI
 import ru.plumsoftware.weatherforecastru.application.MainApplicationActivity
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
@@ -52,7 +53,7 @@ class SimpleNotificationService(private val context: Context) {
 
                         val notification =
                             NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-                                .setSmallIcon(ru.plumsoftware.uicomponents.R.drawable.rustore_logo)
+                                .setSmallIcon(UI.drawable.logo)
                                 .setContentTitle("\uD83D\uDD14 ${title.toInt()}${context.getString(R.string.degree_sign)}")
                                 .setLargeIcon(largeIcon)
                                 .setStyle(NotificationCompat.BigTextStyle())
