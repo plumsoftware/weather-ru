@@ -575,7 +575,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         val jobScheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
 
         val serviceName = ComponentName(this, MyJobService::class.java)
-        val updatePeriod: Long = (6 * 60 * 60 * 1000L)
+        val updatePeriod: Long = 21600000
 
         val jobInfo = JobInfo.Builder(JOB_ID, serviceName)
             .setPersisted(true) // Для сохранения задачи после перезагрузки устройства
