@@ -80,4 +80,9 @@
 
     <!--    No connection-->
     <string name="refresh_icon_hint">Кнопка обновления экрана</string>
+
+    <!--    Messaging-->
+    <string name="simple_notification_title">Температура сейчас %d</string>
+    <string name="see_more">Подробнее</string>
+    <string name="dot">•</string>
 </resources>

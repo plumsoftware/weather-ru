@@ -80,4 +80,9 @@
 
     <!--    No connection-->
     <string name="refresh_icon_hint">Screen refresh icon button</string>
+
+    <!--    Messaging-->
+    <string name="simple_notification_title">The temperature is now %d</string>
+    <string name="see_more">See more</string>
+    <string name="dot">•</string>
 </resources>

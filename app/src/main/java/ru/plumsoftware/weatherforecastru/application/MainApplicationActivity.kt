@@ -89,7 +89,6 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        scheduleBackgroundJob()
         setContent {
 
 //            region::Variables
@@ -486,6 +485,11 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        scheduleBackgroundJob()
+    }
+
     private fun checkReadStoragePermission(): Boolean = ContextCompat.checkSelfPermission(
         App.INSTANCE.applicationContext,
         Manifest.permission.READ_EXTERNAL_STORAGE
@@ -571,10 +575,11 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         val jobScheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
 
         val serviceName = ComponentName(this, MyJobService::class.java)
+        val updatePeriod: Long = (6 * 60 * 60 * 1000L)
 
         val jobInfo = JobInfo.Builder(JOB_ID, serviceName)
             .setPersisted(true) // Для сохранения задачи после перезагрузки устройства
-            .setPeriodic(6 * 60 * 60 * 1000) // Обновление каждые 6 часов
+            .setPeriodic(updatePeriod) // Обновление каждые 6 часов
             .build()
 
         jobScheduler.schedule(jobInfo)

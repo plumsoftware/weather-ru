@@ -4,20 +4,23 @@ import android.app.job.JobParameters
 import android.app.job.JobService
 import android.os.Handler
 import android.os.Looper
-import android.widget.Toast
+import ru.plumsoftware.weatherforecastru.application.App
+import ru.plumsoftware.weatherforecastru.messanging.local.SimpleNotificationService
 
 const val JOB_ID = 123
 
 class MyJobService : JobService() {
 
     private val uiHandler = Handler(Looper.getMainLooper())
+    private val context = App.INSTANCE.applicationContext
 
     override fun onStartJob(params: JobParameters?): Boolean {
         // Выполнение фоновых операций здесь
 
         // Обновление интерфейса пользователя в главном потоке
         uiHandler.post {
-            Toast.makeText(applicationContext, "Сервис обновляется", Toast.LENGTH_SHORT).show()
+            val service = SimpleNotificationService(context = context)
+            service.showNotification()
         }
 
         // Переходите на false, если выполнение задачи закончено
