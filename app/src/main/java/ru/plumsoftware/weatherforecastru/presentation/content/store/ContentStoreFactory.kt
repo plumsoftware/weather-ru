@@ -240,6 +240,14 @@ class ContentStoreFactory(
         private fun initAds(list: MutableList<NativeAd>) {
             scope.launch {
                 dispatch(ContentStoreFactory.Msg.AdsList(value = list))
+
+//                val first = sharedPreferencesStorage.getFirst()
+
+//                if (first) {
+//                    sharedPreferencesStorage.saveFirst(first = false)
+//                } else {
+//                    dispatch(ContentStoreFactory.Msg.AdsList(value = list))
+//                }
             }
         }
 

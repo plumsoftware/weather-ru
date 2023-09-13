@@ -3,6 +3,7 @@ package ru.plumsoftware.weatherforecastru.data.repository
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Color
+import androidx.core.content.edit
 import ru.plumsoftware.weatherforecastru.domain.constants.Constants
 import ru.plumsoftware.weatherforecastru.data.utilities.logd
 import ru.plumsoftware.weatherforecastru.domain.models.location.Location
@@ -132,6 +133,12 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
         return widgetConfig
     }
 
+    override fun getFirst(): Boolean {
+        val first: Boolean =
+            sharedPreferences.getBoolean(Constants.SharedPreferences.SHARED_PREF_FIRST, true)
+        return first
+    }
+
     override fun saveUserSettingsAppTheme(appTheme: Boolean) {
         sharedPreferences.edit()
             .putBoolean(Constants.SharedPreferences.SHARED_PREF_THEME, appTheme)
@@ -194,5 +201,12 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
                 .putInt(Constants.SharedPreferences.SHARED_PREF_APP_WIDGET_COLOR_BLUE, blue)
                 .apply()
         }
+    }
+
+    override fun saveFist(first: Boolean) {
+        sharedPreferences
+            .edit()
+            .putBoolean(Constants.SharedPreferences.SHARED_PREF_FIRST, first)
+            .apply()
     }
 }

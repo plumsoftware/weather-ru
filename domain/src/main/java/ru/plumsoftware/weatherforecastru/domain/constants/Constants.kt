@@ -22,6 +22,8 @@ sealed class Constants {
             "ru.plumsoftware.widget.sharedpref.color.green"
         const val SHARED_PREF_APP_WIDGET_COLOR_BLUE =
             "ru.plumsoftware.widget.sharedpref.color.blue"
+        const val SHARED_PREF_FIRST =
+            "ru.plumsoftware.widget.sharedpref.first"
     }
 
     object Settings {

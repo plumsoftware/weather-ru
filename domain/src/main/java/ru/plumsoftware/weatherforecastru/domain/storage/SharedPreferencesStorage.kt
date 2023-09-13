@@ -5,8 +5,10 @@ import ru.plumsoftware.weatherforecastru.domain.models.settings.UserSettings
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WindSpeed
 import ru.plumsoftware.weatherforecastru.domain.models.widget.WidgetConfig
+import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetFirstUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetUserSettingsShowTipsUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetUserSettingsUseCase
+import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveFirstUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsAppThemeUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsLocationUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsShowTipsUseCase
@@ -20,11 +22,13 @@ class SharedPreferencesStorage
     (
     private val getUserSettingsUseCase: GetUserSettingsUseCase,
     private val getUserSettingsShowTipsUseCase: GetUserSettingsShowTipsUseCase,
+    private val getFirstUseCase: GetFirstUseCase,
 
     private val saveUserSettingsUseCase: SaveUserSettingsUseCase,
     private val saveUserSettingsAppThemeUseCase: SaveUserSettingsAppThemeUseCase,
     private val saveUserSettingsShowTipsUseCase: SaveUserSettingsShowTipsUseCase,
     private val saveUserSettingsLocationUseCase: SaveUserSettingsLocationUseCase,
+    private val saveFirstUseCase: SaveFirstUseCase,
 
     private val saveUserSettingsWeatherUnitsUseCase: SaveUserSettingsWeatherUnitsUseCase,
     private val saveUserSettingsWindUnitsUseCase: SaveUserSettingsWindUnitsUseCase,
@@ -44,6 +48,10 @@ class SharedPreferencesStorage
 
     fun save(userSettings: UserSettings) {
         saveUserSettingsUseCase.execute(userSettings = userSettings)
+    }
+
+    fun saveFirst(first: Boolean) {
+        saveFirstUseCase.execute(value = first)
     }
 
     fun saveAppTheme(applicationTheme: Boolean) {
@@ -73,5 +81,10 @@ class SharedPreferencesStorage
     fun getWidget(): WidgetConfig {
         val widgetConfig = getWidgetConfigUseCase.execute()
         return widgetConfig
+    }
+
+    fun getFirst() : Boolean {
+        val first = getFirstUseCase.execute()
+        return first
     }
 }

@@ -11,6 +11,7 @@ interface SharedPreferencesRepository {
     fun getUserSettings(): UserSettings
     fun getShowTips() : Boolean
     fun getWidgetConfig() : WidgetConfig
+    fun getFirst() : Boolean
 
     fun saveUserSettingsAppTheme(appTheme: Boolean)
     fun saveUserSettingsShowTips(showTips: Boolean)
@@ -18,4 +19,5 @@ interface SharedPreferencesRepository {
     fun saveUserSettingsWindSpeed(windSpeed: WindSpeed)
     fun saveLocation(location: Location)
     fun saveWidgetConfig(widgetConfig: WidgetConfig)
+    fun saveFist(first: Boolean)
 }

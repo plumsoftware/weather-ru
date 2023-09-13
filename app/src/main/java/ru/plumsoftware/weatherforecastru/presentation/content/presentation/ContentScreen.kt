@@ -204,59 +204,63 @@ private fun ContentScreen(
                 Spacer(modifier = Modifier.height(height = ExtensionPaddingValues._2dp))
 
 //            region::ADS
-                AndroidView(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                    factory = { context ->
-                        val themedContext = ContextThemeWrapper(context, R.style.Theme_Погода)
-                        val inflate =
-                            LayoutInflater.from(themedContext).inflate(R.layout.native_ads, null)
-                        inflate
-                    },
-                    update = { view ->
-                        view.apply {
-                            val mNativeAdView = findViewById<NativeAdView>(R.id.nativeAdView)
-                            val mediaView = findViewById<MediaView>(R.id.media)
-                            val age = findViewById<TextView>(R.id.age)
-                            val bodyView = findViewById<TextView>(R.id.tvAdvertiser)
-                            val call_to_action = findViewById<TextView>(R.id.btnVisitSite)
-                            val domain = findViewById<TextView>(R.id.textViewDomain)
-                            val favicon = findViewById<ImageView>(R.id.adsPromo)
-                            val imageViewFeedback = findViewById<ImageView>(R.id.imageViewFeedback)
-                            val priceView = findViewById<TextView>(R.id.priceView)
-                            val storeView = findViewById<TextView>(R.id.storeView)
-                            val tvHeadline = findViewById<TextView>(R.id.tvHeadline)
-                            val warning = findViewById<TextView>(R.id.textViewWarning)
-                            val adsCard = view.findViewById<CardView>(R.id.cardView2)
+                if (state.adsList.isNotEmpty()) {
+                    AndroidView(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                        factory = { context ->
+                            val themedContext = ContextThemeWrapper(context, R.style.Theme_Погода)
+                            val inflate =
+                                LayoutInflater.from(themedContext)
+                                    .inflate(R.layout.native_ads, null)
+                            inflate
+                        },
+                        update = { view ->
+                            view.apply {
+                                val mNativeAdView = findViewById<NativeAdView>(R.id.nativeAdView)
+                                val mediaView = findViewById<MediaView>(R.id.media)
+                                val age = findViewById<TextView>(R.id.age)
+                                val bodyView = findViewById<TextView>(R.id.tvAdvertiser)
+                                val call_to_action = findViewById<TextView>(R.id.btnVisitSite)
+                                val domain = findViewById<TextView>(R.id.textViewDomain)
+                                val favicon = findViewById<ImageView>(R.id.adsPromo)
+                                val imageViewFeedback =
+                                    findViewById<ImageView>(R.id.imageViewFeedback)
+                                val priceView = findViewById<TextView>(R.id.priceView)
+                                val storeView = findViewById<TextView>(R.id.storeView)
+                                val tvHeadline = findViewById<TextView>(R.id.tvHeadline)
+                                val warning = findViewById<TextView>(R.id.textViewWarning)
+                                val adsCard = view.findViewById<CardView>(R.id.cardView2)
 //                    val rating = view.findViewById<RatingBar>(R.id.rating)
 
 
 //                    region::Load ad
-                            coroutine.launch {
-                                for (nativeAd in state.adsList) {
-                                    showAd(
-                                        nativeAd,
-                                        mNativeAdView,
-                                        age,
-                                        bodyView,
-                                        call_to_action,
-                                        domain,
-                                        favicon,
-                                        imageViewFeedback,
-                                        mediaView,
-                                        priceView,
-                                        storeView,
-                                        tvHeadline,
-                                        warning
-                                    )
+                                coroutine.launch {
+                                    for (nativeAd in state.adsList) {
+                                        showAd(
+                                            nativeAd,
+                                            mNativeAdView,
+                                            age,
+                                            bodyView,
+                                            call_to_action,
+                                            domain,
+                                            favicon,
+                                            imageViewFeedback,
+                                            mediaView,
+                                            priceView,
+                                            storeView,
+                                            tvHeadline,
+                                            warning
+                                        )
+                                    }
                                 }
                             }
-                        }
 //                    endregion
 
-                    }
-                )
+                        }
+                    )
+                }
 //            endregion
 
                 if (state.weatherApiCode in 300..599) {
