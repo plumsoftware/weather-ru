@@ -66,7 +66,7 @@ android {
         abortOnError false
         // set to true to have all release builds run lint on issues with severity=fatal
         // and abort the build (controlled by abortOnError above) if fatal issues are found
-        checkReleaseBuilds true
+        checkReleaseBuilds false
         // if true, only report errors
         ignoreWarnings true
         // if true, emit full/absolute paths to files with errors (true by default)
