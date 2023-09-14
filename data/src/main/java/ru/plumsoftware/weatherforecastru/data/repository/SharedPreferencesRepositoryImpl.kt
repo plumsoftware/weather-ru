@@ -59,7 +59,7 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
             val showTips =
                 getBoolean(
                     Constants.SharedPreferences.SHARED_PREF_SHOW_TIPS,
-                    true
+                    false
                 )
 
             val weatherUnits: WeatherUnits = WeatherUnits(

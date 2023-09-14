@@ -164,30 +164,30 @@ fun CityComponent(
                         onCLickOpenAirQuality()
                     })
 
-                    Divider(modifier = Modifier.height(height = ExtensionSize.Divider.height))
-                    DropdownMenuItem(text = {
-                        Row(
-                            horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Checkbox(
-                                checked = checkBoxValue,
-                                onCheckedChange = onCheckedChange
-                            )
-                            Spacer(modifier = Modifier.width(width = ExtensionPaddingValues._10dp))
-                            Text(
-                                text = stringResource(id = R.string.tips),
-                                style = MaterialTheme.typography.labelMedium,
-                                modifier = Modifier
-                                    .padding(end = ExtensionPaddingValues._10dp)
-                                    .fillMaxWidth(),
-                                textAlign = TextAlign.Start
-                            )
-                        }
-                    }, onClick = {
-                        onCheckedChange(!checkBoxValue)
-                        onCloseDropDownMenu()
-                    })
+//                    Divider(modifier = Modifier.height(height = ExtensionSize.Divider.height))
+//                    DropdownMenuItem(text = {
+//                        Row(
+//                            horizontalArrangement = Arrangement.Start,
+//                            verticalAlignment = Alignment.CenterVertically
+//                        ) {
+//                            Checkbox(
+//                                checked = checkBoxValue,
+//                                onCheckedChange = onCheckedChange
+//                            )
+//                            Spacer(modifier = Modifier.width(width = ExtensionPaddingValues._10dp))
+//                            Text(
+//                                text = stringResource(id = R.string.tips),
+//                                style = MaterialTheme.typography.labelMedium,
+//                                modifier = Modifier
+//                                    .padding(end = ExtensionPaddingValues._10dp)
+//                                    .fillMaxWidth(),
+//                                textAlign = TextAlign.Start
+//                            )
+//                        }
+//                    }, onClick = {
+//                        onCheckedChange(!checkBoxValue)
+//                        onCloseDropDownMenu()
+//                    })
                 }
             }
         }
