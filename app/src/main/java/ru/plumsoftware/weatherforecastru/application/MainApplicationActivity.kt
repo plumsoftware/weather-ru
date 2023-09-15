@@ -225,27 +225,6 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
 //                    endregion
                 }
             }
-
-//            when (httpHolder.value) {
-//                1 -> {
-                    LaunchedEffect(true) {
-                        coroutine.launch {
-                            with(
-                                doHttpResponse(
-                                    httpClientStorage = httpClientStorage,
-                                    launch = true
-                                )
-                            ) {
-                                OWM_VALUE.value = second.first
-                                WEATHER_API_VALUE.value = second.second
-
-                                owmHttpCode.value = first.first.value
-                                weatherApiHttpCode.value = first.second.value
-                            }
-                        }
-                    }
-//                }
-//            }
 //            endregion
 
             WeatherAppTheme(darkTheme = isDarkTheme.value) {
@@ -257,6 +236,20 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                         if (sharedPreferencesStorage.get().city!!.isEmpty()) {
                             Screens.Authorization
                         } else {
+                            coroutine.launch {
+                                with(
+                                    doHttpResponse(
+                                        httpClientStorage = httpClientStorage,
+                                        launch = true
+                                    )
+                                ) {
+                                    OWM_VALUE.value = second.first
+                                    WEATHER_API_VALUE.value = second.second
+
+                                    owmHttpCode.value = first.first.value
+                                    weatherApiHttpCode.value = first.second.value
+                                }
+                            }
                             Screens.Content
                         }
                     ) {
@@ -329,8 +322,10 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                                             )
                                                         ) {
                                                             OWM_VALUE.value = second.first
+                                                            WEATHER_API_VALUE.value = second.second
 
                                                             owmHttpCode.value = first.first.value
+                                                            weatherApiHttpCode.value = first.second.value
                                                         }
                                                     }
 
