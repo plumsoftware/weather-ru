@@ -6,6 +6,8 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
+import ru.plumsoftware.weatherforecastru.application.App
+import ru.plumsoftware.weatherforecastru.data.utilities.showToast
 import ru.plumsoftware.weatherforecastru.domain.storage.HttpClientStorage
 
 class MainStoreFactory(

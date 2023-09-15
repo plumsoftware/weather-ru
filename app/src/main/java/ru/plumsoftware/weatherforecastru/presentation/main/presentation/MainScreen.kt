@@ -10,6 +10,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import ru.plumsoftware.weatherforecastru.application.App
+import ru.plumsoftware.weatherforecastru.data.utilities.showToast
 import ru.plumsoftware.weatherforecastru.presentation.main.store.MainStore
 import ru.plumsoftware.weatherforecastru.presentation.main.viewmodel.MainViewModel
 
@@ -21,7 +23,6 @@ fun MainScreen(mainViewModel: MainViewModel) {
     LaunchedEffect(mainViewModel) {
         mainViewModel.label.collect { label ->
             when (label) {
-
                 is MainStore.Label.OpenAuthorization -> {
                     mainViewModel.onOutput(MainViewModel.Output.OpenAuthorizationScreen)
                 }

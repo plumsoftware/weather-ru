@@ -59,6 +59,7 @@ import ru.plumsoftware.weatherforecastru.data.models.location.LocationItemDao
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
 import ru.plumsoftware.weatherforecastru.data.utilities.logd
+import ru.plumsoftware.weatherforecastru.data.utilities.showToast
 import ru.plumsoftware.weatherforecastru.domain.constants.Constants
 import ru.plumsoftware.weatherforecastru.domain.remote.dto.either.WeatherEither
 import ru.plumsoftware.weatherforecastru.domain.storage.HttpClientStorage
@@ -76,6 +77,7 @@ import ru.plumsoftware.weatherforecastru.presentation.content.viewmodel.ContentV
 import ru.plumsoftware.weatherforecastru.presentation.location.presentation.LocationScreen
 import ru.plumsoftware.weatherforecastru.presentation.location.viewmodel.LocationViewModel
 import ru.plumsoftware.weatherforecastru.presentation.main.presentation.MainScreen
+import ru.plumsoftware.weatherforecastru.presentation.main.store.MainStore
 import ru.plumsoftware.weatherforecastru.presentation.main.viewmodel.MainViewModel
 import ru.plumsoftware.weatherforecastru.presentation.noconnection.viewmodel.NoConnectionViewModel
 import ru.plumsoftware.weatherforecastru.presentation.settings.presentation.SettingsScreen
@@ -108,7 +110,8 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
             val context = LocalContext.current
             val sharedDesc = stringResource(id = R.string.share_description)
             val appOpenAdLoader: AppOpenAdLoader = AppOpenAdLoader(application)
-            val adRequestConfigurationOpenAds = AdRequestConfiguration.Builder(ru.plumsoftware.data.BuildConfig.OPEN_ADS_ID).build()
+            val adRequestConfigurationOpenAds =
+                AdRequestConfiguration.Builder(ru.plumsoftware.data.BuildConfig.OPEN_ADS_ID).build()
 
             analytics = Firebase.analytics
             isDarkTheme =
@@ -223,8 +226,8 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                 }
             }
 
-            when (httpHolder.value) {
-                1 -> {
+//            when (httpHolder.value) {
+//                1 -> {
                     LaunchedEffect(true) {
                         coroutine.launch {
                             with(
@@ -241,8 +244,8 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                             }
                         }
                     }
-                }
-            }
+//                }
+//            }
 //            endregion
 
             WeatherAppTheme(darkTheme = isDarkTheme.value) {
@@ -250,7 +253,12 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                 Surface {
                     NavHost(
                         navController = navController,
-                        startDestination = Screens.Main
+                        startDestination =
+                        if (sharedPreferencesStorage.get().city!!.isEmpty()) {
+                            Screens.Authorization
+                        } else {
+                            Screens.Content
+                        }
                     ) {
                         composable(route = Screens.Main) {
                             MainScreen(
@@ -533,7 +541,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
     override fun onBackPressed() {
         super.onBackPressed()
         when (navController.currentDestination!!.route) {
-            Screens.Main -> {
+            Screens.Content -> {
                 finish()
             }
         }
