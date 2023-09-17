@@ -81,13 +81,13 @@ fun WeatherStatus(
                         imageVector = first,
                         contentDescription = stringResource(id = T.string.weather_status_logo),
                         tint = second,
-                        modifier = Modifier.size(size = ExtensionSize.IconSize._34dp),
+                        modifier = Modifier.size(size = ExtensionSize.IconSize._44dp),
                     )
                     Spacer(modifier = Modifier.width(width = ExtensionPaddingValues._10dp))
                     Text(
                         text = "$temp°${weatherUnit.uppercase()}",
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleLarge.copy(fontSize = 54.sp)
+                        style = MaterialTheme.typography.titleLarge.copy(fontSize = 64.sp)
                     )
                 }
             }
@@ -172,7 +172,7 @@ private fun badIconToGoodIcon(icon: Int, isNight: Boolean): Pair<ImageVector, Co
 
 private object UI {
     val weather_icons = listOf<Pair<ImageVector, Color>>(
-        Pair(PlumsoftwareIconPack.Weather.Sunny, Color(red = 246, green = 226, blue = 49)),
+        Pair(PlumsoftwareIconPack.Weather.Sunny, Color(red = 250, green = 150, blue = 10)),
         Pair(PlumsoftwareIconPack.Weather.Moon, Color(227, 227, 227)),
 
         Pair(PlumsoftwareIconPack.Weather.Cloud, Color(227, 227, 227)),
