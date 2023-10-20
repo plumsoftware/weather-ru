@@ -10,6 +10,7 @@ import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -325,7 +326,8 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                                             WEATHER_API_VALUE.value = second.second
 
                                                             owmHttpCode.value = first.first.value
-                                                            weatherApiHttpCode.value = first.second.value
+                                                            weatherApiHttpCode.value =
+                                                                first.second.value
                                                         }
                                                     }
 
@@ -594,17 +596,25 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
     private fun checkInternetConnection(context: Context): Boolean {
         val connectivityManager =
             context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val network = connectivityManager.activeNetwork
-        val capabilities = connectivityManager.getNetworkCapabilities(network)
+        val network = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            connectivityManager.activeNetwork
+        } else {
+            null
+        }
+        if (network != null) {
+            val capabilities = connectivityManager.getNetworkCapabilities(network)
 
-        if (capabilities != null) {
-            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                return true
-            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-                return true
+            if (capabilities != null) {
+                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                    return true
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                    return true
+                }
+            } else {
+                return false
             }
         } else {
-            return false
+            return true
         }
         return true
     }

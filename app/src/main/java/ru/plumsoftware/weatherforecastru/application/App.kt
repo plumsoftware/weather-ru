@@ -4,6 +4,8 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -28,18 +30,25 @@ class App : Application() {
             modules(listOf(domainModuleDI, databaseModule, httpClientModel))
         }
 
-        createNotificationChannel()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            createNotificationChannel()
+        }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel() {
-        val channel = NotificationChannel (
-            SimpleNotificationService.NOTIFICATION_CHANNEL_ID,
-            "ru.plumsoftware.weatherforecastru.simplenotification",
-            NotificationManager.IMPORTANCE_DEFAULT
-        )
+        val channel =
+            NotificationChannel(
+                SimpleNotificationService.NOTIFICATION_CHANNEL_ID,
+                "ru.plumsoftware.weatherforecastru.simplenotification",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+
         channel.description = "Notification with current weather and icon"
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.createNotificationChannel(channel)
+
     }
 }

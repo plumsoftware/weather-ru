@@ -1,5 +1,6 @@
 package ru.plumsoftware.weatherforecastru.presentation.content.store
 
+import android.os.Build
 import com.arkivanov.mvikotlin.core.store.Store
 import com.yandex.mobile.ads.nativeads.NativeAd
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
@@ -7,6 +8,7 @@ import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiRe
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WindSpeed
 import java.time.LocalDateTime
+import java.util.Calendar
 
 
 interface ContentStore :
@@ -50,11 +52,15 @@ interface ContentStore :
         val adsList: MutableList<NativeAd> = mutableListOf(),
         val isAdsLoading: Boolean = true,
         val hourlyState: Int = 0,
-        val scrollToItem: Int = LocalDateTime.now().hour,
+        val scrollToItem: Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            LocalDateTime.now().hour
+        } else {
+            Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        },
         val needScroll: Boolean = true,
         val isDark: Boolean = false,
         val owmCode: Int = -1,
-        val weatherApiCode:Int = -1
+        val weatherApiCode: Int = -1
     )
 
     sealed interface Label {

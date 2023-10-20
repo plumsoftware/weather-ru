@@ -13,10 +13,10 @@ android {
 
     defaultConfig {
         applicationId "ru.plumsoftware.weatherforecastru"
-        minSdk 26
+        minSdk 22
         targetSdk 34
-        versionCode 4
-        versionName "1.0.4"
+        versionCode 7
+        versionName "1.0.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -198,6 +198,7 @@ dependencies {
 //    Navigation
     implementation ("androidx.navigation:navigation-common:$nav_version")
     implementation "androidx.navigation:navigation-compose:$nav_version"
+
 //    Koin
     implementation "io.insert-koin:koin-android:$koin_version"
     implementation "io.insert-koin:koin-core:$koin_version"
@@ -238,14 +239,14 @@ dependencies {
 
 //    РСЯ
     implementation "com.yandex.android:mobileads:$yandex_ads_version"
-    implementation "com.yandex.ads.mediation:mobileads-mytarget:$mytarget_version"
+//    implementation "com.yandex.ads.mediation:mobileads-mytarget:$mytarget_version"
 
 //    Glance widget
     implementation "androidx.glance:glance-appwidget:$glance_version"
     implementation "androidx.glance:glance-material3:$glance_material_version"
 
 //    Charts
-    implementation "co.yml:ycharts:$ycharts_version"
+//    implementation "co.yml:ycharts:$ycharts_version"
 
 //    Modules
     implementation project(path: ":domain")

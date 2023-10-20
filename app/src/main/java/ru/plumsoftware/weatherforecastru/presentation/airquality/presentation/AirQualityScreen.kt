@@ -29,9 +29,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import co.yml.charts.common.model.PlotType
-import co.yml.charts.ui.piechart.models.PieChartConfig
-import co.yml.charts.ui.piechart.models.PieChartData
+//import co.yml.charts.common.model.PlotType
+//import co.yml.charts.ui.piechart.models.PieChartConfig
+//import co.yml.charts.ui.piechart.models.PieChartData
 import com.yandex.mobile.ads.banner.BannerAdEventListener
 import com.yandex.mobile.ads.banner.BannerAdSize
 import com.yandex.mobile.ads.banner.BannerAdView
@@ -113,49 +113,57 @@ private fun AirQualityScreen(
 
 
     val pieChartData = with(state.airQuality) {
-        PieChartData(
-            slices = listOf(
-                PieChartData.Slice(
-                    label = "CO",
-                    value = (co!!.toFloat() * 100) / sum,
-                    color = color1
-                ),
-                PieChartData.Slice(
-                    label = "NO₂",
-                    value = (no2!!.toFloat() * 100) / sum,
-                    color = color2
-                ),
-                PieChartData.Slice(
-                    label = "O₃",
-                    value = (o3!!.toFloat() * 100) / sum,
-                    color = color3
-                ),
-                PieChartData.Slice(
-                    label = "SO₂",
-                    value = (so2!!.toFloat() * 100) / sum,
-                    color = color4
-                ),
-                PieChartData.Slice(
-                    label = "PM₂₅",
-                    value = (pm25!!.toFloat() * 100) / sum,
-                    color = color5
-                ),
-                PieChartData.Slice(
-                    label = "PM₁₀",
-                    value = (pm10!!.toFloat() * 100) / sum,
-                    color = color6
-                )
-            ),
-            plotType = PlotType.Pie
+        listOf<Pair<String, Float>>(
+            Pair("CO", (co!!.toFloat() * 100) / sum),
+            Pair("NO₂", (no2!!.toFloat() * 100) / sum),
+            Pair("O₃", (o3!!.toFloat() * 100) / sum),
+            Pair("SO₂", (so2!!.toFloat() * 100) / sum),
+            Pair("PM₂₅", (pm25!!.toFloat() * 100) / sum),
+            Pair("PM₁₀", (pm10!!.toFloat() * 100) / sum)
         )
+//        PieChartData(
+//            slices = listOf(
+//                PieChartData.Slice(
+//                    label = ,
+//                    value = ,
+//                    color = color1
+//                ),
+//                PieChartData.Slice(
+//                    label = "",
+//                    value = ,
+//                    color = color2
+//                ),
+//                PieChartData.Slice(
+//                    label = "",
+//                    value = ,
+//                    color = color3
+//                ),
+//                PieChartData.Slice(
+//                    label = "",
+//                    value = ,
+//                    color = color4
+//                ),
+//                PieChartData.Slice(
+//                    label = "",
+//                    value = ,
+//                    color = color5
+//                ),
+//                PieChartData.Slice(
+//                    label = "",
+//                    value = ,
+//                    color = color6
+//                )
+//            ),
+//            plotType = PlotType.Pie
+//        )
     }
 
-    val pieChartConfig = PieChartConfig(
-        isAnimationEnable = true,
-        showSliceLabels = false,
-        activeSliceAlpha = 0.5f,
-        animationDuration = 800
-    )
+//    val pieChartConfig = PieChartConfig(
+//        isAnimationEnable = true,
+//        showSliceLabels = false,
+//        activeSliceAlpha = 0.5f,
+//        animationDuration = 800
+//    )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -197,7 +205,7 @@ private fun AirQualityScreen(
                     alignment = Alignment.Start
                 )
             ) {
-                itemsIndexed(pieChartData.slices) { index, slice ->
+                itemsIndexed(pieChartData) { index, item ->
                     Card(
                         colors = CardDefaults.cardColors(
                             containerColor = colorPairs[index].first,
@@ -206,11 +214,11 @@ private fun AirQualityScreen(
                         modifier = Modifier
                             .wrapContentHeight()
                             .widthIn(min = 200.dp)
-                            .width(width = (slice.value).toInt().dp)
+                            .width(width = (item.second).toInt().dp)
                             .padding()
                     ) {
                         Text(
-                            text = "${slice.label} ${slice.value.toInt()}%",
+                            text = "${item.first} ${item.second.toInt()}%",
                             style = MaterialTheme.typography.labelMedium,
                             modifier = Modifier.padding(all = ExtensionPaddingValues._14dp)
                         )

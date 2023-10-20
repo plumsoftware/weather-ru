@@ -1,5 +1,6 @@
 package ru.plumsoftware.weatherforecastru.presentation.content.store
 
+import android.os.Build
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
@@ -18,6 +19,8 @@ import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiRe
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WindSpeed
 import java.time.LocalDateTime
+import java.util.Calendar
+import java.util.Date
 
 class ContentStoreFactory(
     private val storeFactory: StoreFactory,
@@ -151,7 +154,15 @@ class ContentStoreFactory(
 
                 is ContentStore.Intent.ChangeHourly -> {
                     dispatch(Msg.ChangeHourly(value = intent.value))
-                    dispatch(Msg.ScrollToItem(value = if (intent.value == 0) LocalDateTime.now().hour else 0))
+                    dispatch(
+                        Msg.ScrollToItem(
+                            value = if (intent.value == 0) if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                LocalDateTime.now().hour
+                            } else {
+                                Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+                            } else 0
+                        )
+                    )
                     dispatch(Msg.NeedScroll(value = intent.value == 0))
                 }
 

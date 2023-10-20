@@ -1,5 +1,6 @@
 package ru.plumsoftware.weatherforecastru.presentation.content.presentation.components
 
+import android.os.Build
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,6 +37,7 @@ import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionSize
 import java.time.LocalTime
+import java.util.Calendar
 
 @Composable
 fun HourlyForecastItem(
@@ -57,7 +59,13 @@ fun HourlyForecastItem(
                 in 9..11 -> Seasons.AUTUMN
                 else -> Seasons.UNSPECIFIED
             }
-        val time_ = if (LocalTime.now().hour >= 18 || LocalTime.now().hour <= 6) {
+        val time_ = if (if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                LocalTime.now().hour >= 18 || LocalTime.now().hour <= 6
+            } else {
+                Calendar.getInstance().get(Calendar.HOUR_OF_DAY) >= 18 || Calendar.getInstance()
+                    .get(Calendar.HOUR_OF_DAY) <= 6
+            }
+        ) {
             Time.EVENING
         } else {
             Time.DAY
