@@ -14,5 +14,9 @@ data class UserSettings(
     val windSpeed: WindSpeed = WindSpeed(
         windPresentation = Constants.Settings.M_S.first,
         windValue = Constants.Settings.M_S.second
-    )
+    ),
+    val notificationItem: NotificationItem = NotificationItem(
+        namingResId = -1,
+        period = 21600000
+    ),
 )

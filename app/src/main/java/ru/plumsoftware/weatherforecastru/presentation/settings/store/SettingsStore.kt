@@ -1,6 +1,8 @@
 package ru.plumsoftware.weatherforecastru.presentation.settings.store
 
 import com.arkivanov.mvikotlin.core.store.Store
+import ru.plumsoftware.weatherforecast.R
+import ru.plumsoftware.weatherforecastru.domain.models.settings.NotificationItem
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WindSpeed
 
@@ -17,6 +19,8 @@ interface SettingsStore :
         object WidgetConfigureSettings : Intent
         object Share : Intent
         object LeaveFeedBack : Intent
+        data class ChangeDropDownExpanded(val value: Boolean) : Intent
+        data class ChangeNotificationItem(val value: NotificationItem) : Intent
 
     }
 
@@ -29,7 +33,12 @@ interface SettingsStore :
         val windSpeed: WindSpeed = WindSpeed(
             windPresentation = "",
             windValue = 0.0f
-        )
+        ),
+        val notificationItem: NotificationItem = NotificationItem(
+            namingResId = R.string.every_six_hours,
+            period = 21600000
+        ),
+        val expandedDropDownMenu: Boolean = false
     )
 
     sealed interface Label {

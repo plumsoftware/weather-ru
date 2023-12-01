@@ -1,14 +1,17 @@
 package ru.plumsoftware.weatherforecastru.domain.storage
 
 import ru.plumsoftware.weatherforecastru.domain.models.location.Location
+import ru.plumsoftware.weatherforecastru.domain.models.settings.NotificationItem
 import ru.plumsoftware.weatherforecastru.domain.models.settings.UserSettings
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WindSpeed
 import ru.plumsoftware.weatherforecastru.domain.models.widget.WidgetConfig
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetFirstUseCase
+import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetNotificationItemUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetUserSettingsShowTipsUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetUserSettingsUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveFirstUseCase
+import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveNotificationItemUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsAppThemeUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsLocationUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsShowTipsUseCase
@@ -34,7 +37,10 @@ class SharedPreferencesStorage
     private val saveUserSettingsWindUnitsUseCase: SaveUserSettingsWindUnitsUseCase,
 
     private val saveWidgetConfigUseCase: SaveWidgetConfigUseCase,
-    private val getWidgetConfigUseCase: GetWidgetConfigUseCase
+    private val getWidgetConfigUseCase: GetWidgetConfigUseCase,
+
+    private val getNotificationItemUseCase: GetNotificationItemUseCase,
+    private val saveNotificationItemUseCase: SaveNotificationItemUseCase,
 ) {
     fun get(): UserSettings {
         val execute = getUserSettingsUseCase.execute()
@@ -83,8 +89,17 @@ class SharedPreferencesStorage
         return widgetConfig
     }
 
-    fun getFirst() : Boolean {
+    fun getFirst(): Boolean {
         val first = getFirstUseCase.execute()
         return first
+    }
+
+    fun getNotificationItem(): NotificationItem {
+        val notificationItem = getNotificationItemUseCase.execute()
+        return notificationItem
+    }
+
+    fun saveNotificationItem(notificationItem: NotificationItem) {
+        saveNotificationItemUseCase.execute(notificationItem = notificationItem)
     }
 }

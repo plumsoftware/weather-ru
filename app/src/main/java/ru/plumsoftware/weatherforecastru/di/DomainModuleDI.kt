@@ -9,9 +9,11 @@ import ru.plumsoftware.weatherforecastru.domain.storage.LocationStorage
 import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecastru.domain.usecase.location.GetLastKnownLocationUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetFirstUseCase
+import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetNotificationItemUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetUserSettingsShowTipsUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetUserSettingsUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveFirstUseCase
+import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveNotificationItemUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsAppThemeUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsLocationUseCase
 import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsShowTipsUseCase
@@ -57,7 +59,11 @@ internal val domainModuleDI = module {
             ),
             saveFirstUseCase = SaveFirstUseCase(sharedPreferencesRepository = get()),
             saveWidgetConfigUseCase = SaveWidgetConfigUseCase(sharedPreferencesRepository = get()),
-            getWidgetConfigUseCase = GetWidgetConfigUseCase(sharedPreferencesRepository = get())
+            getWidgetConfigUseCase = GetWidgetConfigUseCase(sharedPreferencesRepository = get()),
+            getNotificationItemUseCase = GetNotificationItemUseCase(sharedPreferencesRepository = get()),
+            saveNotificationItemUseCase = SaveNotificationItemUseCase(
+                sharedPreferencesRepository = get()
+            )
         )
     }
 }

@@ -2,11 +2,10 @@ package ru.plumsoftware.weatherforecastru.data.repository
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.graphics.Color
-import androidx.core.content.edit
 import ru.plumsoftware.weatherforecastru.domain.constants.Constants
 import ru.plumsoftware.weatherforecastru.data.utilities.logd
 import ru.plumsoftware.weatherforecastru.domain.models.location.Location
+import ru.plumsoftware.weatherforecastru.domain.models.settings.NotificationItem
 import ru.plumsoftware.weatherforecastru.domain.models.settings.UserSettings
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WindSpeed
@@ -139,6 +138,21 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
         return first
     }
 
+    override fun getNotificationPeriod(): NotificationItem {
+        val period = sharedPreferences.getLong(
+            Constants.SharedPreferences.SHARED_PREF_NOTIFICATION_PERIOD,
+            21600000
+        )
+        val notificationNaming = sharedPreferences.getInt(
+            Constants.SharedPreferences.SHARED_PREF_NOTIFICATION_NAMING,
+            0
+        )
+        return NotificationItem(
+            namingResId = notificationNaming,
+            period = period
+        )
+    }
+
     override fun saveUserSettingsAppTheme(appTheme: Boolean) {
         sharedPreferences.edit()
             .putBoolean(Constants.SharedPreferences.SHARED_PREF_THEME, appTheme)
@@ -207,6 +221,20 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
         sharedPreferences
             .edit()
             .putBoolean(Constants.SharedPreferences.SHARED_PREF_FIRST, first)
+            .apply()
+    }
+
+    override fun saveNotificationPeriod(notificationItem: NotificationItem) {
+        sharedPreferences
+            .edit()
+            .putLong(
+                Constants.SharedPreferences.SHARED_PREF_NOTIFICATION_PERIOD,
+                notificationItem.period
+            )
+            .putInt(
+                Constants.SharedPreferences.SHARED_PREF_NOTIFICATION_NAMING,
+                notificationItem.namingResId
+            )
             .apply()
     }
 }

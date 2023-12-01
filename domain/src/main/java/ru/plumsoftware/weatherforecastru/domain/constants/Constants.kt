@@ -24,6 +24,10 @@ sealed class Constants {
             "ru.plumsoftware.widget.sharedpref.color.blue"
         const val SHARED_PREF_FIRST =
             "ru.plumsoftware.widget.sharedpref.first"
+        const val SHARED_PREF_NOTIFICATION_PERIOD =
+            "ru.plumsoftware.widget.sharedpref.notif_period"
+        const val SHARED_PREF_NOTIFICATION_NAMING =
+            "ru.plumsoftware.widget.sharedpref.notif_naming"
     }
 
     object Settings {

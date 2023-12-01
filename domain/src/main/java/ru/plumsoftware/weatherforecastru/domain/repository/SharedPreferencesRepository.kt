@@ -1,6 +1,7 @@
 package ru.plumsoftware.weatherforecastru.domain.repository
 
 import ru.plumsoftware.weatherforecastru.domain.models.location.Location
+import ru.plumsoftware.weatherforecastru.domain.models.settings.NotificationItem
 import ru.plumsoftware.weatherforecastru.domain.models.settings.UserSettings
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WindSpeed
@@ -12,6 +13,7 @@ interface SharedPreferencesRepository {
     fun getShowTips() : Boolean
     fun getWidgetConfig() : WidgetConfig
     fun getFirst() : Boolean
+    fun getNotificationPeriod() : NotificationItem
 
     fun saveUserSettingsAppTheme(appTheme: Boolean)
     fun saveUserSettingsShowTips(showTips: Boolean)
@@ -20,4 +22,5 @@ interface SharedPreferencesRepository {
     fun saveLocation(location: Location)
     fun saveWidgetConfig(widgetConfig: WidgetConfig)
     fun saveFist(first: Boolean)
+    fun saveNotificationPeriod(notificationItem: NotificationItem)
 }

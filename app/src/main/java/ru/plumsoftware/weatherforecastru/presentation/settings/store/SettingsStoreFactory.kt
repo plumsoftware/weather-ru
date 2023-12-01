@@ -8,6 +8,7 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
 import ru.plumsoftware.weatherforecastru.domain.constants.Constants
+import ru.plumsoftware.weatherforecastru.domain.models.settings.NotificationItem
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.domain.models.settings.WindSpeed
 import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
@@ -40,6 +41,10 @@ class SettingsStoreFactory(
         data class CheckBoxValue(val value: Boolean) : Msg
         data class WeatherUnit(val value: WeatherUnits) : Msg
         data class WindUnit(val value: WindSpeed) : Msg
+        data class NotificationItem(val value: ru.plumsoftware.weatherforecastru.domain.models.settings.NotificationItem) :
+            Msg
+
+        data class ExpandedDropDownMenu(val value: Boolean) : Msg
     }
 
     private object ReducerImpl : Reducer<SettingsStore.State, SettingsStoreFactory.Msg> {
@@ -56,6 +61,14 @@ class SettingsStoreFactory(
 
                 is Msg.WindUnit -> copy(
                     windSpeed = msg.value
+                )
+
+                is Msg.NotificationItem -> copy(
+                    notificationItem = msg.value
+                )
+
+                is Msg.ExpandedDropDownMenu -> copy(
+                    expandedDropDownMenu = !msg.value
                 )
             }
     }
@@ -122,6 +135,21 @@ class SettingsStoreFactory(
                 SettingsStore.Intent.LeaveFeedBack -> publish(SettingsStore.Label.LeaveFeedBack)
                 SettingsStore.Intent.Share -> publish(SettingsStore.Label.Share)
                 SettingsStore.Intent.WidgetConfigureSettings -> publish(SettingsStore.Label.WidgetConfigureSettings)
+                is SettingsStore.Intent.ChangeDropDownExpanded -> {
+                    dispatch(Msg.ExpandedDropDownMenu(value = intent.value))
+                }
+
+                is SettingsStore.Intent.ChangeNotificationItem -> {
+                    val notificationItem = NotificationItem(
+                        period = intent.value.period,
+                        namingResId = intent.value.namingResId
+                    )
+                    dispatch(Msg.NotificationItem(value = notificationItem))
+                    saveNotificationItem(
+                        notificationItem = notificationItem
+                    )
+                    publish(SettingsStore.Label.SettingsChange)
+                }
             }
 
         override fun executeAction(
@@ -155,6 +183,16 @@ class SettingsStoreFactory(
                     )
 //                    endregion
                 }
+                with(sharedPreferencesStorage.getNotificationItem()) {
+                    dispatch(
+                        Msg.NotificationItem(
+                            value = NotificationItem(
+                                period = period,
+                                namingResId = namingResId
+                            )
+                        )
+                    )
+                }
             }
         }
 
@@ -174,6 +212,12 @@ class SettingsStoreFactory(
             value: WindSpeed
         ) {
             sharedPreferencesStorage.saveWindUnits(windSpeed = value)
+        }
+
+        private fun saveNotificationItem(
+            notificationItem: NotificationItem
+        ) {
+            sharedPreferencesStorage.saveNotificationItem(notificationItem = notificationItem)
         }
     }
 }

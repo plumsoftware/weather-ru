@@ -49,14 +49,20 @@
     <string name="application_theme_icon">Иконка темы приложения</string>
     <string name="theme_desc">Тёмная тема</string>
     <string name="about_application_icon">Иконка информации о приложении</string>
-    <string name="share_application">Иконка поделить приложением</string>
+    <string name="share_application">Иконка поделиться приложением</string>
+    <string name="notification_icon">Иконка настройки уведомлений в приложением</string>
     <string name="share_">Поделиться</string>
     <string name="feedback">Обратная связь</string>
     <string name="rustore_logo">Логотип магазина приложений RuStore</string>
     <string name="rustore_review">Отзыв в RuStore</string>
+    <string name="notifications">Уведомления</string>
 
     <!--    Settings-->
     <string name="settings">Настройки</string>
+    <string name="every_six_hours">Каждые 6 часов</string>
+    <string name="every_three_hours">Каждые 3 часа</string>
+    <string name="every_hour">Каждый час</string>
+    <string name="never_notify">Никогда</string>
 
     <!--    Air quality-->
     <string name="air_quality">Состав воздуха</string>
