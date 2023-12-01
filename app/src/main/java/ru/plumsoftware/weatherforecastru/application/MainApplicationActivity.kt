@@ -96,6 +96,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
     private lateinit var analytics: FirebaseAnalytics
     private val appOpenAdEventListener = AdEventListener()
     private var myAppOpenAd: AppOpenAd? = null
+    private val sharedPreferencesStorage by inject<SharedPreferencesStorage>()
 
     //    region:Override
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -104,7 +105,6 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         setContent {
 
 //            region::Variables
-            val sharedPreferencesStorage by inject<SharedPreferencesStorage>()
             val locationItemDao by inject<LocationItemDao>()
             val locationStorage by inject<LocationStorage>()
             val httpClientStorage by inject<HttpClientStorage>()
@@ -527,7 +527,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
 
     override fun onDestroy() {
         super.onDestroy()
-        scheduleBackgroundJob()
+        scheduleBackgroundJob(sharedPreferencesStorage = sharedPreferencesStorage)
     }
 
     private fun checkReadStoragePermission(): Boolean = ContextCompat.checkSelfPermission(
@@ -619,20 +619,31 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         return true
     }
 
-    private fun scheduleBackgroundJob() {
-        val jobScheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+    private fun scheduleBackgroundJob(sharedPreferencesStorage: SharedPreferencesStorage) {
+        if (sharedPreferencesStorage.getNotificationItem().period > 0) {
+            logd(sharedPreferencesStorage.getNotificationItem().period.toString())
+            val jobScheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
 
-        val serviceName = ComponentName(this, MyJobService::class.java)
-//        val updatePeriod: Long = 86400000 1 day
-        val updatePeriod: Long = 21600000 //6 hours
-//        val flexMillis: Long = 1 * 60 * 60 * 1000L
+            val serviceName = ComponentName(this, MyJobService::class.java)
 
-        val jobInfo = JobInfo.Builder(JOB_ID, serviceName)
-            .setPersisted(true) // Для сохранения задачи после перезагрузки устройства
-            .setPeriodic(updatePeriod)
-            .build()
+            val updatePeriod: Long = sharedPreferencesStorage.getNotificationItem().period
 
-        jobScheduler.schedule(jobInfo)
+            val jobInfo =
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    JobInfo.Builder(JOB_ID, serviceName)
+                        .setPersisted(true)
+                        .setExpedited(true)
+                        .setPeriodic(updatePeriod)
+                        .build()
+                } else {
+                    JobInfo.Builder(JOB_ID, serviceName)
+                        .setPersisted(true)
+                        .setPeriodic(updatePeriod)
+                        .build()
+                }
+
+            jobScheduler.schedule(jobInfo)
+        }
     }
 
     private fun clearAppOpenAd() {
