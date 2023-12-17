@@ -19,12 +19,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -133,358 +131,385 @@ private fun ContentScreen(
             CircularProgressIndicator()
         }
     } else {
-        Column(
+        LazyColumn(
             verticalArrangement = Arrangement.spacedBy(
                 space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
             ),
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            CityComponent(Location(city = state.city, country = state.country),
-                dropDownMenuExpanded = state.dropDownState,
-                onCLickMoreVert = {
-                    contentViewModel.onEvent(
-                        event = ContentStore.Intent.DropDownMenuChange(
-                            value = state.dropDownState
+                .fillMaxSize(),
+            content = {
+
+                item {
+                    CityComponent(Location(city = state.city, country = state.country),
+                        dropDownMenuExpanded = state.dropDownState,
+                        onCLickMoreVert = {
+                            contentViewModel.onEvent(
+                                event = ContentStore.Intent.DropDownMenuChange(
+                                    value = state.dropDownState
+                                )
+                            )
+                        },
+                        onCloseDropDownMenu = {
+                            contentViewModel.onEvent(
+                                event = ContentStore.Intent.DropDownMenuChange(
+                                    value = state.dropDownState
+                                )
+                            )
+                        },
+                        checkBoxValue = state.checkBoxState,
+                        onCheckedChange = { value ->
+                            contentViewModel.onEvent(
+                                event = ContentStore.Intent.CheckBoxChange(
+                                    value = value
+                                )
+                            )
+                        },
+                        onClickOpenLocation = {
+                            contentViewModel.onEvent(
+                                event = ContentStore.Intent.OpenLocation
+                            )
+                        },
+                        onClickOpenSettings = {
+                            contentViewModel.onEvent(
+                                event = ContentStore.Intent.OpenSettings
+                            )
+                        },
+                        onCLickOpenAirQuality = {
+                            contentViewModel.onEvent(
+                                event = ContentStore.Intent.OpenAirQuality
+                            )
+                        })
+                }
+
+                item {
+                    with(state.owmResponse) {
+                        WeatherStatus(
+                            description = weather[0].description!!,
+                            temp = main!!.temp!!.toInt().toString(),
+                            tempMax = main!!.tempMax!!.toInt().toString(),
+                            tempMin = main!!.tempMin!!.toInt().toString(),
+                            tempFeelsLike = main!!.feelsLike!!.toInt().toString(),
+                            weatherUnit = "",
+                            iconId = weather[0].id!!,
+                            base = base!!,
+                            httpCode = state.owmCode
                         )
-                    )
-                },
-                onCloseDropDownMenu = {
-                    contentViewModel.onEvent(
-                        event = ContentStore.Intent.DropDownMenuChange(
-                            value = state.dropDownState
-                        )
-                    )
-                },
-                checkBoxValue = state.checkBoxState,
-                onCheckedChange = { value ->
-                    contentViewModel.onEvent(
-                        event = ContentStore.Intent.CheckBoxChange(
-                            value = value
-                        )
-                    )
-                },
-                onClickOpenLocation = {
-                    contentViewModel.onEvent(
-                        event = ContentStore.Intent.OpenLocation
-                    )
-                },
-                onClickOpenSettings = {
-                    contentViewModel.onEvent(
-                        event = ContentStore.Intent.OpenSettings
-                    )
-                },
-                onCLickOpenAirQuality = {
-                    contentViewModel.onEvent(
-                        event = ContentStore.Intent.OpenAirQuality
-                    )
-                })
-            with(state.owmResponse) {
-                WeatherStatus(
-                    description = weather[0].description!!,
-                    temp = main!!.temp!!.toInt().toString(),
-                    tempMax = main!!.tempMax!!.toInt().toString(),
-                    tempMin = main!!.tempMin!!.toInt().toString(),
-                    tempFeelsLike = main!!.feelsLike!!.toInt().toString(),
-                    weatherUnit = "",
-                    iconId = weather[0].id!!,
-                    base = base!!,
-                    httpCode = state.owmCode
-                )
-            }
-            Column(
-                verticalArrangement = Arrangement.spacedBy(
-                    space = ExtensionPaddingValues._24dp, alignment = Alignment.Top
-                ),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(horizontal = ExtensionPaddingValues._10dp)
-            ) {
-                Spacer(modifier = Modifier.height(height = ExtensionPaddingValues._2dp))
+                    }
+                }
+
+                item {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(
+                            space = ExtensionPaddingValues._24dp, alignment = Alignment.Top
+                        ),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.padding(horizontal = ExtensionPaddingValues._10dp)
+                    ) {
+                        Spacer(modifier = Modifier.height(height = ExtensionPaddingValues._2dp))
 
 //            region::ADS
-                if (state.adsList.isNotEmpty()) {
-                    AndroidView(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        factory = { context ->
-                            val themedContext = ContextThemeWrapper(context, R.style.Theme_Погода)
-                            val inflate =
-                                LayoutInflater.from(themedContext)
-                                    .inflate(R.layout.native_ads, null)
-                            inflate
-                        },
-                        update = { view ->
-                            view.apply {
-                                val mNativeAdView = findViewById<NativeAdView>(R.id.nativeAdView)
-                                val mediaView = findViewById<MediaView>(R.id.media)
-                                val age = findViewById<TextView>(R.id.age)
-                                val bodyView = findViewById<TextView>(R.id.tvAdvertiser)
-                                val call_to_action = findViewById<TextView>(R.id.btnVisitSite)
-                                val domain = findViewById<TextView>(R.id.textViewDomain)
-                                val favicon = findViewById<ImageView>(R.id.adsPromo)
-                                val imageViewFeedback =
-                                    findViewById<ImageView>(R.id.imageViewFeedback)
-                                val priceView = findViewById<TextView>(R.id.priceView)
-                                val storeView = findViewById<TextView>(R.id.storeView)
-                                val tvHeadline = findViewById<TextView>(R.id.tvHeadline)
-                                val warning = findViewById<TextView>(R.id.textViewWarning)
-                                val adsCard = view.findViewById<CardView>(R.id.cardView2)
+                        if (state.adsList.isNotEmpty()) {
+                            AndroidView(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight(),
+                                factory = { context ->
+                                    val themedContext =
+                                        ContextThemeWrapper(context, R.style.Theme_Погода)
+                                    val inflate =
+                                        LayoutInflater.from(themedContext)
+                                            .inflate(R.layout.native_ads, null)
+                                    inflate
+                                },
+                                update = { view ->
+                                    view.apply {
+                                        val mNativeAdView =
+                                            findViewById<NativeAdView>(R.id.nativeAdView)
+                                        val mediaView = findViewById<MediaView>(R.id.media)
+                                        val age = findViewById<TextView>(R.id.age)
+                                        val bodyView = findViewById<TextView>(R.id.tvAdvertiser)
+                                        val call_to_action =
+                                            findViewById<TextView>(R.id.btnVisitSite)
+                                        val domain = findViewById<TextView>(R.id.textViewDomain)
+                                        val favicon = findViewById<ImageView>(R.id.adsPromo)
+                                        val imageViewFeedback =
+                                            findViewById<ImageView>(R.id.imageViewFeedback)
+                                        val priceView = findViewById<TextView>(R.id.priceView)
+                                        val storeView = findViewById<TextView>(R.id.storeView)
+                                        val tvHeadline = findViewById<TextView>(R.id.tvHeadline)
+                                        val warning = findViewById<TextView>(R.id.textViewWarning)
+                                        val adsCard = view.findViewById<CardView>(R.id.cardView2)
 //                    val rating = view.findViewById<RatingBar>(R.id.rating)
 
 
 //                    region::Load ad
-                                coroutine.launch {
-                                    for (nativeAd in state.adsList) {
-                                        showAd(
-                                            nativeAd,
-                                            mNativeAdView,
-                                            age,
-                                            bodyView,
-                                            call_to_action,
-                                            domain,
-                                            favicon,
-                                            imageViewFeedback,
-                                            mediaView,
-                                            priceView,
-                                            storeView,
-                                            tvHeadline,
-                                            warning
+                                        coroutine.launch {
+                                            for (nativeAd in state.adsList) {
+                                                showAd(
+                                                    nativeAd,
+                                                    mNativeAdView,
+                                                    age,
+                                                    bodyView,
+                                                    call_to_action,
+                                                    domain,
+                                                    favicon,
+                                                    imageViewFeedback,
+                                                    mediaView,
+                                                    priceView,
+                                                    storeView,
+                                                    tvHeadline,
+                                                    warning
+                                                )
+                                            }
+                                        }
+                                    }
+//                    endregion
+
+                                }
+                            )
+                        }
+//            endregion
+
+                        if (state.weatherApiCode in 300..599) {
+                            HttpErrorComponent(state.weatherApiCode)
+                        } else {
+//            region::Alerts
+                            if (state.weatherApiResponse.alerts!!.alert.isNotEmpty()) {
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(
+                                        space = ExtensionPaddingValues._10dp,
+                                        alignment = Alignment.Top
+                                    ), horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.alerts),
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
+                                    )
+                                    Column(
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .background(
+                                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                                shape = MaterialTheme.shapes.large
+                                            )
+                                            .padding(all = ExtensionPaddingValues._14dp)
+                                    ) {
+                                        state.weatherApiResponse.alerts!!.alert.forEachIndexed { index, alert ->
+                                            Text(
+                                                text = alert.desc!!,
+                                                style = MaterialTheme.typography.labelLarge.copy(
+                                                    color = MaterialTheme.colorScheme.onSecondaryContainer
+                                                )
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+//            endregion
+
+//            region::Tips
+                            if (state.showTips)
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(
+                                        space = ExtensionPaddingValues._10dp,
+                                        alignment = Alignment.Top
+                                    ), horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.tips),
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier.fillMaxWidth(),
+                                        style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
+                                    )
+                                    TipsComponent(base = state.owmResponse.base!!)
+                                }
+//            endregion
+
+//            region::Hourly forecast
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(
+                                    space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
+                                ), horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.hourly_weather_forecast),
+                                    textAlign = TextAlign.Start,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
+                                )
+
+                                HourlyWeatherForecast(
+                                    list = state.weatherApiResponse.forecast!!.forecastday[state.hourlyState].hour,
+                                    weatherUnits = state.weatherUnits,
+                                    scrollToItem = state.scrollToItem,
+                                    needScroll = state.needScroll,
+                                    index = state.hourlyState,
+                                    onClick = { index ->
+                                        contentViewModel.onEvent(
+                                            ContentStore.Intent.ChangeHourly(
+                                                value = index
+                                            )
+                                        )
+                                    }
+                                )
+                            }
+//            endregion
+
+//            region::Details
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(
+                                    space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
+                                ),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.details),
+                                    textAlign = TextAlign.Start,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
+                                )
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(
+                                        space = ExtensionPaddingValues._10dp,
+                                        alignment = Alignment.Top
+                                    ),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.Top,
+                                        horizontalArrangement = Arrangement.spacedBy(
+                                            space = ExtensionPaddingValues._10dp,
+                                            alignment = Alignment.CenterHorizontally
+                                        )
+                                    ) {
+                                        DetailComponent(
+                                            title = "${state.owmResponse.visibility}м",
+                                            description = stringResource(id = R.string.visibility),
+                                            pair = Pair(
+                                                PlumsoftwareIconPack.Weather.Hazzy,
+                                                md_theme_visibility_color
+                                            )
+                                        )
+
+                                        DetailComponent(
+                                            title = "${state.owmResponse.main!!.humidity}%",
+                                            description = stringResource(id = R.string.humidity),
+                                            pair = Pair(
+                                                PlumsoftwareIconPack.Weather.Drops,
+                                                md_theme_humidity_color
+                                            )
+                                        )
+                                    }
+                                    Row(
+                                        verticalAlignment = Alignment.Top,
+                                        horizontalArrangement = Arrangement.spacedBy(
+                                            space = ExtensionPaddingValues._10dp,
+                                            alignment = Alignment.CenterHorizontally
+                                        )
+                                    ) {
+                                        DetailComponent(
+                                            title = calculateUVIndex(state.weatherApiResponse.current!!.uv!!),
+                                            description = stringResource(id = R.string.uv_index),
+                                            pair = Pair(
+                                                PlumsoftwareIconPack.Weather.Sunny,
+                                                md_theme_sunny_color
+                                            )
+                                        )
+
+                                        DetailComponent(
+                                            title = "${state.owmResponse.wind!!.speed!!.toInt()} ${state.windSpeed.windPresentation}",
+                                            description = windDirectionFull(state.owmResponse.wind!!.deg!!),
+                                            pair = Pair(
+                                                PlumsoftwareIconPack.Weather.Windy,
+                                                md_theme_wind_color
+                                            )
                                         )
                                     }
                                 }
                             }
-//                    endregion
-
-                        }
-                    )
-                }
-//            endregion
-
-                if (state.weatherApiCode in 300..599) {
-                    HttpErrorComponent(state.weatherApiCode)
-                } else {
-//            region::Alerts
-                    if (state.weatherApiResponse.alerts!!.alert.isNotEmpty()) {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(
-                                space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
-                            ), horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.alerts),
-                                textAlign = TextAlign.Start,
-                                modifier = Modifier.fillMaxWidth(),
-                                style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
-                            )
-                            Column(
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .background(
-                                        color = MaterialTheme.colorScheme.secondaryContainer,
-                                        shape = MaterialTheme.shapes.large
-                                    )
-                                    .padding(all = ExtensionPaddingValues._14dp)
-                            ) {
-                                state.weatherApiResponse.alerts!!.alert.forEachIndexed { index, alert ->
-                                    Text(
-                                        text = alert.desc!!,
-                                        style = MaterialTheme.typography.labelLarge.copy(color = MaterialTheme.colorScheme.onSecondaryContainer)
-                                    )
-                                }
-                            }
-                        }
-                    }
-//            endregion
-
-//            region::Tips
-                    if (state.showTips)
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(
-                                space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
-                            ), horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = stringResource(id = R.string.tips),
-                                textAlign = TextAlign.Start,
-                                modifier = Modifier.fillMaxWidth(),
-                                style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
-                            )
-                            TipsComponent(base = state.owmResponse.base!!)
-                        }
-//            endregion
-
-//            region::Hourly forecast
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(
-                            space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
-                        ), horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.hourly_weather_forecast),
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
-                        )
-
-                        HourlyWeatherForecast(
-                            list = state.weatherApiResponse.forecast!!.forecastday[state.hourlyState].hour,
-                            weatherUnits = state.weatherUnits,
-                            scrollToItem = state.scrollToItem,
-                            needScroll = state.needScroll,
-                            index = state.hourlyState,
-                            onClick = { index ->
-                                contentViewModel.onEvent(ContentStore.Intent.ChangeHourly(value = index))
-                            }
-                        )
-                    }
-//            endregion
-
-//            region::Details
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(
-                            space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
-                        ),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.details),
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
-                        )
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(
-                                space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
-                            ),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.Top,
-                                horizontalArrangement = Arrangement.spacedBy(
-                                    space = ExtensionPaddingValues._10dp,
-                                    alignment = Alignment.CenterHorizontally
-                                )
-                            ) {
-                                DetailComponent(
-                                    title = "${state.owmResponse.visibility}м",
-                                    description = stringResource(id = R.string.visibility),
-                                    pair = Pair(
-                                        PlumsoftwareIconPack.Weather.Hazzy,
-                                        md_theme_visibility_color
-                                    )
-                                )
-
-                                DetailComponent(
-                                    title = "${state.owmResponse.main!!.humidity}%",
-                                    description = stringResource(id = R.string.humidity),
-                                    pair = Pair(
-                                        PlumsoftwareIconPack.Weather.Drops, md_theme_humidity_color
-                                    )
-                                )
-                            }
-                            Row(
-                                verticalAlignment = Alignment.Top,
-                                horizontalArrangement = Arrangement.spacedBy(
-                                    space = ExtensionPaddingValues._10dp,
-                                    alignment = Alignment.CenterHorizontally
-                                )
-                            ) {
-                                DetailComponent(
-                                    title = calculateUVIndex(state.weatherApiResponse.current!!.uv!!),
-                                    description = stringResource(id = R.string.uv_index),
-                                    pair = Pair(
-                                        PlumsoftwareIconPack.Weather.Sunny, md_theme_sunny_color
-                                    )
-                                )
-
-                                DetailComponent(
-                                    title = "${state.owmResponse.wind!!.speed!!.toInt()} ${state.windSpeed.windPresentation}",
-                                    description = windDirectionFull(state.owmResponse.wind!!.deg!!),
-                                    pair = Pair(
-                                        PlumsoftwareIconPack.Weather.Windy, md_theme_wind_color
-                                    )
-                                )
-                            }
-                        }
-                    }
 //            endregion
 
 //                region::Astronomy
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(
-                            space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
-                        ),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.astronomy),
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier.fillMaxWidth(),
-                            style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
-                        )
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(
-                                space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
-                            ),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            Row(
-                                verticalAlignment = Alignment.Top,
-                                horizontalArrangement = Arrangement.spacedBy(
-                                    space = ExtensionPaddingValues._10dp,
-                                    alignment = Alignment.CenterHorizontally
-                                )
+                            Column(
+                                verticalArrangement = Arrangement.spacedBy(
+                                    space = ExtensionPaddingValues._10dp, alignment = Alignment.Top
+                                ),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier
+                                    .fillMaxWidth()
                             ) {
-                                DetailComponent(
-                                    title = state.weatherApiResponse.forecast!!.forecastday[0].astro!!.sunrise!!,
-                                    description = stringResource(id = R.string.sunrise),
-                                    pair = Pair(
-                                        PlumsoftwareIconPack.Weather.Sunrise, md_theme_sunny_color
-                                    )
+                                Text(
+                                    text = stringResource(id = R.string.astronomy),
+                                    textAlign = TextAlign.Start,
+                                    modifier = Modifier.fillMaxWidth(),
+                                    style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
                                 )
-                                DetailComponent(
-                                    title = state.weatherApiResponse.forecast!!.forecastday[0].astro!!.sunset!!,
-                                    description = stringResource(id = R.string.sunset),
-                                    pair = Pair(
-                                        PlumsoftwareIconPack.Weather.Sunset, md_theme_sunny_color
-                                    )
-                                )
-                            }
-                            Row(
-                                verticalAlignment = Alignment.Top,
-                                horizontalArrangement = Arrangement.spacedBy(
-                                    space = ExtensionPaddingValues._10dp,
-                                    alignment = Alignment.CenterHorizontally
-                                )
-                            ) {
-                                DetailComponent(
-                                    title = translateMoonPhase(
-                                        languageTag = Locale.current.language,
-                                        moonPhase = state.weatherApiResponse.forecast!!.forecastday[0].astro!!.moonPhase!!
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(
+                                        space = ExtensionPaddingValues._10dp,
+                                        alignment = Alignment.Top
                                     ),
-                                    description = stringResource(id = R.string.moon_phase),
-                                    pair = Pair(
-                                        PlumsoftwareIconPack.Weather.CleanNight, md_theme_moon_phase
-                                    )
-                                )
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.Top,
+                                        horizontalArrangement = Arrangement.spacedBy(
+                                            space = ExtensionPaddingValues._10dp,
+                                            alignment = Alignment.CenterHorizontally
+                                        )
+                                    ) {
+                                        DetailComponent(
+                                            title = state.weatherApiResponse.forecast!!.forecastday[0].astro!!.sunrise!!,
+                                            description = stringResource(id = R.string.sunrise),
+                                            pair = Pair(
+                                                PlumsoftwareIconPack.Weather.Sunrise,
+                                                md_theme_sunny_color
+                                            )
+                                        )
+                                        DetailComponent(
+                                            title = state.weatherApiResponse.forecast!!.forecastday[0].astro!!.sunset!!,
+                                            description = stringResource(id = R.string.sunset),
+                                            pair = Pair(
+                                                PlumsoftwareIconPack.Weather.Sunset,
+                                                md_theme_sunny_color
+                                            )
+                                        )
+                                    }
+                                    Row(
+                                        verticalAlignment = Alignment.Top,
+                                        horizontalArrangement = Arrangement.spacedBy(
+                                            space = ExtensionPaddingValues._10dp,
+                                            alignment = Alignment.CenterHorizontally
+                                        )
+                                    ) {
+                                        DetailComponent(
+                                            title = translateMoonPhase(
+                                                languageTag = Locale.current.language,
+                                                moonPhase = state.weatherApiResponse.forecast!!.forecastday[0].astro!!.moonPhase!!
+                                            ),
+                                            description = stringResource(id = R.string.moon_phase),
+                                            pair = Pair(
+                                                PlumsoftwareIconPack.Weather.CleanNight,
+                                                md_theme_moon_phase
+                                            )
+                                        )
+                                    }
+                                }
                             }
-                        }
-                    }
 //                endregion
-                }
+                        }
 
-                Spacer(modifier = Modifier.height(height = ExtensionPaddingValues._14dp))
-            }
-        }
+                        Spacer(modifier = Modifier.height(height = ExtensionPaddingValues._14dp))
+                    }
+                }
+            })
     }
 }
 

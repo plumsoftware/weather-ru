@@ -1,12 +1,16 @@
 package ru.plumsoftware.weatherforecastru.application
 
 import android.Manifest
+import android.app.PendingIntent
 import android.app.job.JobInfo
 import android.app.job.JobScheduler
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ShortcutInfo
+import android.content.pm.ShortcutManager
+import android.graphics.drawable.Icon
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.Uri
@@ -16,6 +20,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +30,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
+import androidx.core.content.pm.ShortcutInfoCompat
+import androidx.core.content.pm.ShortcutManagerCompat
+import androidx.core.graphics.drawable.IconCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -54,13 +62,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import ru.plumsoftware.weatherforecast.BuildConfig
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecastru.data.models.location.LocationItemDao
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
 import ru.plumsoftware.weatherforecastru.data.utilities.logd
-import ru.plumsoftware.weatherforecastru.data.utilities.showToast
 import ru.plumsoftware.weatherforecastru.domain.constants.Constants
 import ru.plumsoftware.weatherforecastru.domain.remote.dto.either.WeatherEither
 import ru.plumsoftware.weatherforecastru.domain.storage.HttpClientStorage
@@ -78,7 +84,6 @@ import ru.plumsoftware.weatherforecastru.presentation.content.viewmodel.ContentV
 import ru.plumsoftware.weatherforecastru.presentation.location.presentation.LocationScreen
 import ru.plumsoftware.weatherforecastru.presentation.location.viewmodel.LocationViewModel
 import ru.plumsoftware.weatherforecastru.presentation.main.presentation.MainScreen
-import ru.plumsoftware.weatherforecastru.presentation.main.store.MainStore
 import ru.plumsoftware.weatherforecastru.presentation.main.viewmodel.MainViewModel
 import ru.plumsoftware.weatherforecastru.presentation.noconnection.viewmodel.NoConnectionViewModel
 import ru.plumsoftware.weatherforecastru.presentation.settings.presentation.SettingsScreen
@@ -89,6 +94,7 @@ import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.presentation.
 import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.viewmodel.WidgetConfigViewModel
 import ru.plumsoftware.weatherforecastru.service.JOB_ID
 import ru.plumsoftware.weatherforecastru.service.MyJobService
+import ru.plumsoftware.weatherforecastru.service.ShortcutReceiver
 
 class MainApplicationActivity : ComponentActivity(), KoinComponent {
     private var isDarkTheme = mutableStateOf(false)
@@ -101,6 +107,14 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
     //    region:Override
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+//        region::Add shortcuts
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//            addShortcutApiBefore26(context = this@MainApplicationActivity)
+//        } else {
+//            addShortcutApiAfter26(context = this@MainApplicationActivity)
+//        }
+//        endregion
 
         setContent {
 
@@ -467,7 +481,6 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                         composable(route = Screens.AboutApp) {
                             AboutApp(aboutAppViewModel = AboutAppViewModel(
                                 storeFactory = DefaultStoreFactory(),
-                                version = BuildConfig.VERSION_NAME,
                                 appName = stringResource(id = R.string.app_name),
                                 output = { output ->
                                     when (output) {
@@ -623,6 +636,11 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         if (sharedPreferencesStorage.getNotificationItem().period > 0) {
             logd(sharedPreferencesStorage.getNotificationItem().period.toString())
             val jobScheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
+            val pendingJob = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                jobScheduler.getPendingJob(JOB_ID)
+            } else {
+                null
+            }
 
             val serviceName = ComponentName(this, MyJobService::class.java)
 
@@ -641,6 +659,13 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                         .setPeriodic(updatePeriod)
                         .build()
                 }
+
+            if (pendingJob != null) {
+                // Сервис уже запущен
+                jobScheduler.cancel(JOB_ID)
+            } else {
+                // Сервис еще не запущен
+            }
 
             jobScheduler.schedule(jobInfo)
         }
@@ -676,4 +701,50 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
             // Get Impression Level Revenue Data in argument.
         }
     }
+
+//    region::Future releases
+//private fun addShortcutApiAfter26 (context: Context) {
+//    if (ShortcutManagerCompat.isRequestPinShortcutSupported(context)) {
+//        val shortcutInfo = ShortcutInfoCompat.Builder(context, "shortcut1")
+//            .setShortLabel("Shortcut 1")
+//            .setIcon(IconCompat.createWithResource(context, R.drawable.weather_logo))
+//            .setIntent(Intent(context, MainApplicationActivity::class.java))
+//            .build()
+//
+//        val pinnedShortcutCallbackIntent =
+//            ShortcutManagerCompat.createShortcutResultIntent(context, shortcutInfo)
+//
+//        val successCallback = PendingIntent.getBroadcast(
+//            context,
+//            0,
+//            pinnedShortcutCallbackIntent,
+//            PendingIntent.FLAG_UPDATE_CURRENT
+//        )
+//
+//        ShortcutManagerCompat.requestPinShortcut(context, shortcutInfo, successCallback.intentSender)
+//    }
+//}
+//
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    private fun addShortcutApiBefore26(context: Context){
+//        val shortcutManager = getSystemService(ShortcutManager::class.java)
+//
+//        if (shortcutManager.isRequestPinShortcutSupported()) {
+//            val shortcutInfo = ShortcutInfo.Builder(context, "shortcut1")
+//                .setShortLabel("Shortcut 1")
+//                .setIcon(Icon.createWithResource(context, R.drawable.weather_logo))
+//                .setIntent(Intent(context, MainApplicationActivity::class.java))
+//                .build()
+//
+//            val successCallback = PendingIntent.getBroadcast(
+//                context,
+//                0,
+//                Intent(context, ShortcutReceiver::class.java),
+//                PendingIntent.FLAG_UPDATE_CURRENT
+//            )
+//
+//            shortcutManager.requestPinShortcut(shortcutInfo, successCallback.intentSender)
+//        }
+//    }
+//    endregion
 }

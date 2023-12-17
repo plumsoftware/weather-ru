@@ -7,10 +7,10 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
+import ru.plumsoftware.weatherforecast.BuildConfig
 
 class AboutAppStoreFactory(
     private val storeFactory: StoreFactory,
-    private val version: String,
     private val appName: String
 ) {
 
@@ -21,7 +21,7 @@ class AboutAppStoreFactory(
                 name = "About",
                 initialState = AboutAppStore.State(),
                 bootstrapper = coroutineBootstrapper {
-                    launch { dispatch(Action.AboutAction(version, appName)) }
+                    launch { dispatch(Action.AboutAction(appName)) }
                 },
                 reducer = ReducerImpl,
                 executorFactory = ::ExecutorImpl
@@ -29,7 +29,7 @@ class AboutAppStoreFactory(
         }
 
     sealed interface Action {
-        data class AboutAction(val version: String, val appName: String) : Action
+        data class AboutAction(val appName: String) : Action
     }
 
     sealed interface Msg {
@@ -65,12 +65,12 @@ class AboutAppStoreFactory(
             getState: () -> AboutAppStore.State
         ) =
             when (action) {
-                is Action.AboutAction -> initAirQuality(version, appName)
+                is Action.AboutAction -> initAppInfo(appName)
             }
 
-        private fun initAirQuality(version: String, appName: String) {
+        private fun initAppInfo(appName: String) {
             scope.launch {
-                dispatch(Msg.AboutMsg(version, appName))
+                dispatch(Msg.AboutMsg(version= BuildConfig.VERSION_NAME, appName = "Погода в вашем городе"))
             }
         }
     }

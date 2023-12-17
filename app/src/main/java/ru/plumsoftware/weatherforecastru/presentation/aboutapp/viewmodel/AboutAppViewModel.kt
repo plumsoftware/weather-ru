@@ -13,12 +13,10 @@ import ru.plumsoftware.weatherforecastru.presentation.aboutapp.store.AboutAppSto
 class AboutAppViewModel(
     storeFactory: StoreFactory,
     private val output: (Output) -> Unit,
-    version: String,
     appName: String
 ) : ViewModel() {
     private val aboutAppStoreFactory = AboutAppStoreFactory(
         storeFactory = storeFactory,
-        version = version,
         appName = appName
     ).create()
 
