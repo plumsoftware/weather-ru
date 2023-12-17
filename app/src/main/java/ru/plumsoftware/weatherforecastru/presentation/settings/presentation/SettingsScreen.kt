@@ -117,545 +117,549 @@ private fun SettingsScreen(
         with(ExtensionPaddingValues) {
 
 //            MARK: Back
-            Box(modifier = Modifier.padding(all = _24dp)) {
+            Box(modifier = Modifier.padding(start = _24dp, end = _24dp, top = _24dp)) {
                 TopBar(textResId = R.string.settings, onBackClick = {
                     event(SettingsStore.Intent.BackButtonClicked)
                 })
             }
-            Spacer(modifier = Modifier.height(height = _14dp))
 
 //            MARK: Content
-            Column(
+
+            androidx.compose.foundation.lazy.LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(
                     space = _24dp,
                     alignment = Alignment.Top
                 ),
                 horizontalAlignment = Alignment.Start,
                 modifier = Modifier
-                    .verticalScroll(state = rememberScrollState())
                     .weight(weight = 1f, fill = false)
-                    .padding(horizontal = _24dp)
-            ) {
-
-//                MARK: Units
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = stringResource(id = R.string.weather_units),
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier
-                            .padding(horizontal = _24dp)
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Start
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .height(height = _10dp)
-                            .fillMaxWidth()
-                    )
-                    Card {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(
-                                space = _24dp,
-                                alignment = Alignment.CenterVertically
-                            ),
-                            horizontalAlignment = Alignment.Start,
-                            modifier = Modifier
-                                .padding(all = _14dp)
-                                .fillMaxWidth()
-                        ) {
+                    .padding(horizontal = _24dp),
+                content = {
+                    item {
+//                        MARK: Units
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = stringResource(id = R.string.weather_units),
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier
+                                    .padding(horizontal = _24dp)
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.Start
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .height(height = _10dp)
+                                    .fillMaxWidth()
+                            )
+                            Card {
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(
+                                        space = _24dp,
+                                        alignment = Alignment.CenterVertically
+                                    ),
+                                    horizontalAlignment = Alignment.Start,
+                                    modifier = Modifier
+                                        .padding(all = _14dp)
+                                        .fillMaxWidth()
+                                ) {
 
 //                                Weather
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(
-                                    space = _24dp,
-                                    alignment = Alignment.Start
-                                ),
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = stringResource(id = R.string.weather),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    modifier = Modifier.weight(weight = 1.0f)
-                                )
-                                Button(
-                                    onClick = {
-                                        event(SettingsStore.Intent.ChangeWeatherUnits)
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(
+                                            space = _24dp,
+                                            alignment = Alignment.Start
+                                        ),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            text = stringResource(id = R.string.weather),
+                                            style = MaterialTheme.typography.labelMedium,
+                                            modifier = Modifier.weight(weight = 1.0f)
+                                        )
+                                        Button(
+                                            onClick = {
+                                                event(SettingsStore.Intent.ChangeWeatherUnits)
+                                            }
+                                        ) {
+                                            Text(
+                                                text = state.weatherUnit.unitsPresentation.uppercase()
+                                            )
+                                        }
                                     }
-                                ) {
-                                    Text(
-                                        text = state.weatherUnit.unitsPresentation.uppercase()
-                                    )
-                                }
-                            }
 
 //                                Wind speed
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(
-                                    space = _24dp,
-                                    alignment = Alignment.Start
-                                ),
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = stringResource(id = R.string.wind_speed),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    modifier = Modifier.weight(weight = 1.0f)
-                                )
-                                Button(
-                                    onClick = {
-                                        event(SettingsStore.Intent.ChangeWindUnits)
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(
+                                            space = _24dp,
+                                            alignment = Alignment.Start
+                                        ),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            text = stringResource(id = R.string.wind_speed),
+                                            style = MaterialTheme.typography.labelMedium,
+                                            modifier = Modifier.weight(weight = 1.0f)
+                                        )
+                                        Button(
+                                            onClick = {
+                                                event(SettingsStore.Intent.ChangeWindUnits)
+                                            }
+                                        ) {
+                                            Text(
+                                                text = state.windSpeed.windPresentation.uppercase()
+                                            )
+                                        }
                                     }
-                                ) {
-                                    Text(
-                                        text = state.windSpeed.windPresentation.uppercase()
-                                    )
                                 }
                             }
                         }
                     }
-                }
-
-//                MARK: Application
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = stringResource(id = R.string.application),
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier
-                            .padding(horizontal = _24dp)
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Start
-                    )
-                    Spacer(
-                        modifier = Modifier
-                            .height(height = _10dp)
-                            .fillMaxWidth()
-                    )
-                    Card {
-                        Column(
-                            verticalArrangement = Arrangement.Top,
-                            horizontalAlignment = Alignment.Start,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        ) {
-
-//                            Dark theme
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(
-                                    space = _14dp,
-                                    alignment = Alignment.Start
-                                ),
-                                verticalAlignment = Alignment.CenterVertically,
+                    item {
+//                        MARK: Application
+                        Column(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = stringResource(id = R.string.application),
+                                style = MaterialTheme.typography.titleSmall,
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(
-                                        start = _14dp,
-                                        end = _14dp,
-                                        top = _14dp,
-                                        bottom = _14dp
-                                    )
-                            ) {
-                                Icon(
-                                    imageVector = PlumsoftwareIconPack.Settings.Darkmode,
-                                    modifier = Modifier.size(size = ExtensionSize.IconSize._24dp),
-                                    contentDescription = stringResource(id = R.string.application_theme_icon)
-                                )
-                                Text(
-                                    text = stringResource(id = R.string.theme_desc),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    modifier = Modifier.weight(weight = 1.0f)
-                                )
-                                Checkbox(
-                                    checked = state.checkBoxValue,
-                                    onCheckedChange = {
-                                        event(SettingsStore.Intent.CheckBoxValue(value = it))
-                                    })
-                            }
-
-//                            Widget config
-                            Button(
-                                onClick = {
-                                    event(SettingsStore.Intent.WidgetConfigureSettings)
-                                },
-                                contentPadding = PaddingValues(
-                                    horizontal = _14dp,
-                                    vertical = _24dp
-                                ),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent,
-                                    contentColor = MaterialTheme.colorScheme.onSurface
-                                ),
-                                shape = RoundedCornerShape(size = 0.dp),
+                                    .padding(horizontal = _24dp)
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.Start
+                            )
+                            Spacer(
                                 modifier = Modifier
+                                    .height(height = _10dp)
                                     .fillMaxWidth()
-                                    .wrapContentHeight()
-                            ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(
-                                        space = _14dp,
-                                        alignment = Alignment.Start
-                                    ),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.Build,
-                                        contentDescription = stringResource(id = R.string.widget_icon_hint)
-                                    )
-                                    Text(
-                                        text = stringResource(id = R.string.widget_hint),
-                                        style = MaterialTheme.typography.labelMedium,
-                                        modifier = Modifier.weight(weight = 1.0f)
-                                    )
-                                    Icon(
-                                        imageVector = Icons.Rounded.KeyboardArrowRight,
-                                        contentDescription = stringResource(id = R.string.button_arrow)
-                                    )
-                                }
-                            }
-
-//                            About app
-                            Button(
-                                onClick = {
-                                    event(SettingsStore.Intent.AboutApp)
-                                },
-                                contentPadding = PaddingValues(
-                                    horizontal = _14dp,
-                                    vertical = _24dp
-                                ),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent,
-                                    contentColor = MaterialTheme.colorScheme.onSurface
-                                ),
-                                shape = RoundedCornerShape(size = 0.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                            ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(
-                                        space = _14dp,
-                                        alignment = Alignment.Start
-                                    ),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.Info,
-                                        contentDescription = stringResource(id = R.string.about_application_icon)
-                                    )
-                                    Text(
-                                        text = stringResource(id = R.string.about_app),
-                                        style = MaterialTheme.typography.labelMedium,
-                                        modifier = Modifier.weight(weight = 1.0f)
-                                    )
-                                    Icon(
-                                        imageVector = Icons.Rounded.KeyboardArrowRight,
-                                        contentDescription = stringResource(id = R.string.button_arrow)
-                                    )
-                                }
-                            }
-
-//                            Notifications
-                            Button(
-                                onClick = {
-                                    event(SettingsStore.Intent.ChangeDropDownExpanded(value = state.expandedDropDownMenu))
-                                },
-                                contentPadding = PaddingValues(
-                                    horizontal = _14dp,
-                                    vertical = _24dp
-                                ),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.Transparent,
-                                    contentColor = MaterialTheme.colorScheme.onSurface
-                                ),
-                                shape = RoundedCornerShape(size = 0.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                            ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(
-                                        space = _14dp,
-                                        alignment = Alignment.Start
-                                    ),
-                                    verticalAlignment = Alignment.CenterVertically,
+                            )
+                            Card {
+                                Column(
+                                    verticalArrangement = Arrangement.Top,
+                                    horizontalAlignment = Alignment.Start,
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .fillMaxHeight()
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Rounded.Notifications,
-                                        contentDescription = stringResource(id = R.string.notification_icon)
-                                    )
-                                    Column(
-                                        verticalArrangement = Arrangement.spacedBy(
-                                            space = _8dp,
-                                            alignment = Alignment.CenterVertically
+
+//                            Dark theme
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(
+                                            space = _14dp,
+                                            alignment = Alignment.Start
                                         ),
-                                        horizontalAlignment = Alignment.Start
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(
+                                                start = _14dp,
+                                                end = _14dp,
+                                                top = _14dp,
+                                                bottom = _14dp
+                                            )
                                     ) {
+                                        Icon(
+                                            imageVector = PlumsoftwareIconPack.Settings.Darkmode,
+                                            modifier = Modifier.size(size = ExtensionSize.IconSize._24dp),
+                                            contentDescription = stringResource(id = R.string.application_theme_icon)
+                                        )
                                         Text(
-                                            text = stringResource(id = R.string.notifications),
+                                            text = stringResource(id = R.string.theme_desc),
                                             style = MaterialTheme.typography.labelMedium,
+                                            modifier = Modifier.weight(weight = 1.0f)
+                                        )
+                                        Checkbox(
+                                            checked = state.checkBoxValue,
+                                            onCheckedChange = {
+                                                event(SettingsStore.Intent.CheckBoxValue(value = it))
+                                            })
+                                    }
+
+//                            Widget config
+                                    Button(
+                                        onClick = {
+                                            event(SettingsStore.Intent.WidgetConfigureSettings)
+                                        },
+                                        contentPadding = PaddingValues(
+                                            horizontal = _14dp,
+                                            vertical = _24dp
+                                        ),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color.Transparent,
+                                            contentColor = MaterialTheme.colorScheme.onSurface
+                                        ),
+                                        shape = RoundedCornerShape(size = 0.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight()
+                                    ) {
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(
+                                                space = _14dp,
+                                                alignment = Alignment.Start
+                                            ),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Rounded.Build,
+                                                contentDescription = stringResource(id = R.string.widget_icon_hint)
+                                            )
+                                            Text(
+                                                text = stringResource(id = R.string.widget_hint),
+                                                style = MaterialTheme.typography.labelMedium,
+                                                modifier = Modifier.weight(weight = 1.0f)
+                                            )
+                                            Icon(
+                                                imageVector = Icons.Rounded.KeyboardArrowRight,
+                                                contentDescription = stringResource(id = R.string.button_arrow)
+                                            )
+                                        }
+                                    }
+
+//                            About app
+                                    Button(
+                                        onClick = {
+                                            event(SettingsStore.Intent.AboutApp)
+                                        },
+                                        contentPadding = PaddingValues(
+                                            horizontal = _14dp,
+                                            vertical = _24dp
+                                        ),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color.Transparent,
+                                            contentColor = MaterialTheme.colorScheme.onSurface
+                                        ),
+                                        shape = RoundedCornerShape(size = 0.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight()
+                                    ) {
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(
+                                                space = _14dp,
+                                                alignment = Alignment.Start
+                                            ),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Rounded.Info,
+                                                contentDescription = stringResource(id = R.string.about_application_icon)
+                                            )
+                                            Text(
+                                                text = stringResource(id = R.string.about_app),
+                                                style = MaterialTheme.typography.labelMedium,
+                                                modifier = Modifier.weight(weight = 1.0f)
+                                            )
+                                            Icon(
+                                                imageVector = Icons.Rounded.KeyboardArrowRight,
+                                                contentDescription = stringResource(id = R.string.button_arrow)
+                                            )
+                                        }
+                                    }
+
+//                            Notifications
+                                    Button(
+                                        onClick = {
+                                            event(SettingsStore.Intent.ChangeDropDownExpanded(value = state.expandedDropDownMenu))
+                                        },
+                                        contentPadding = PaddingValues(
+                                            horizontal = _14dp,
+                                            vertical = _24dp
+                                        ),
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = Color.Transparent,
+                                            contentColor = MaterialTheme.colorScheme.onSurface
+                                        ),
+                                        shape = RoundedCornerShape(size = 0.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight()
+                                    ) {
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(
+                                                space = _14dp,
+                                                alignment = Alignment.Start
+                                            ),
+                                            verticalAlignment = Alignment.CenterVertically,
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                        )
-                                        Box(
-                                            modifier = Modifier
+                                                .fillMaxHeight()
                                         ) {
-                                            Text(
-                                                text = if (state.notificationItem.namingResId == 0) stringResource(
-                                                    id = R.string.every_six_hours
-                                                ) else stringResource(
-                                                    id = state.notificationItem.namingResId
-                                                ),
-                                                style = MaterialTheme.typography.labelMedium.copy(
-                                                    color = md_theme_text_cover
-                                                ),
+                                            Icon(
+                                                imageVector = Icons.Rounded.Notifications,
+                                                contentDescription = stringResource(id = R.string.notification_icon)
                                             )
-                                            DropdownMenu(
-                                                expanded = state.expandedDropDownMenu,
-                                                modifier = Modifier.clip(MaterialTheme.shapes.medium),
-                                                onDismissRequest = {
-                                                    event(
-                                                        SettingsStore.Intent.ChangeDropDownExpanded(
-                                                            value = state.expandedDropDownMenu
-                                                        )
-                                                    )
-                                                }) {
-                                                DropdownMenuItem(text = {
+                                            Column(
+                                                verticalArrangement = Arrangement.spacedBy(
+                                                    space = _8dp,
+                                                    alignment = Alignment.CenterVertically
+                                                ),
+                                                horizontalAlignment = Alignment.Start
+                                            ) {
+                                                Text(
+                                                    text = stringResource(id = R.string.notifications),
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                )
+                                                Box(
+                                                    modifier = Modifier
+                                                ) {
                                                     Text(
-                                                        text = stringResource(id = R.string.every_six_hours),
-                                                        style = MaterialTheme.typography.labelMedium,
-                                                        modifier = Modifier
-                                                            .padding(horizontal = _10dp),
-                                                        textAlign = TextAlign.Start
+                                                        text = if (state.notificationItem.namingResId == 0) stringResource(
+                                                            id = R.string.every_six_hours
+                                                        ) else stringResource(
+                                                            id = state.notificationItem.namingResId
+                                                        ),
+                                                        style = MaterialTheme.typography.labelMedium.copy(
+                                                            color = md_theme_text_cover
+                                                        ),
                                                     )
-                                                }, onClick = {
-                                                    event(
-                                                        SettingsStore.Intent.ChangeDropDownExpanded(
-                                                            value = state.expandedDropDownMenu
-                                                        )
-                                                    )
-                                                    event(
-                                                        SettingsStore.Intent.ChangeNotificationItem(
-                                                            value = NotificationItem(
-                                                                period = 21600000,
-                                                                namingResId = R.string.every_six_hours
-                                                            )
-                                                        )
-                                                    )
-                                                })
-
-
-                                                DropdownMenuItem(text = {
-                                                    Text(
-                                                        text = stringResource(id = R.string.every_three_hours),
-                                                        style = MaterialTheme.typography.labelMedium,
-                                                        modifier = Modifier
-                                                            .padding(horizontal = _10dp),
-                                                        textAlign = TextAlign.Start
-                                                    )
-                                                }, onClick = {
-                                                    event(
-                                                        SettingsStore.Intent.ChangeDropDownExpanded(
-                                                            value = state.expandedDropDownMenu
-                                                        )
-                                                    )
-                                                    event(
-                                                        SettingsStore.Intent.ChangeNotificationItem
-                                                            (
-                                                            value = NotificationItem(
-                                                                period = 10800000,
-                                                                namingResId = R.string.every_three_hours
-                                                            )
-                                                        )
-                                                    )
-                                                })
-
-                                                DropdownMenuItem(text = {
-                                                    Text(
-                                                        text = stringResource(id = R.string.every_hour),
-                                                        style = MaterialTheme.typography.labelMedium,
-                                                        modifier = Modifier
-                                                            .padding(horizontal = _10dp),
-                                                        textAlign = TextAlign.Start
-                                                    )
-                                                }, onClick = {
-                                                    event(
-                                                        SettingsStore.Intent.ChangeDropDownExpanded(
-                                                            value = state.expandedDropDownMenu
-                                                        )
-                                                    )
-                                                    event(
-                                                        SettingsStore.Intent.ChangeNotificationItem
-                                                            (
-                                                            value = NotificationItem(
-                                                                period = 3600000,
-                                                                namingResId = R.string.every_hour
-                                                            )
-                                                        )
-                                                    )
-                                                })
-
-                                                DropdownMenuItem(
-                                                    leadingIcon = {
-                                                        Icon(
-                                                            painter = painterResource(id = ru.plumsoftware.uicomponents.R.drawable.never_notify),
-                                                            contentDescription = stringResource(
-                                                                id = R.string.never_notify
-                                                            )
-                                                        )
-                                                    },
-                                                    text = {
-                                                        Text(
-                                                            text = stringResource(id = R.string.never_notify),
-                                                            style = MaterialTheme.typography.labelMedium,
-                                                            modifier = Modifier
-                                                                .padding(horizontal = _10dp),
-                                                            textAlign = TextAlign.Start
-                                                        )
-                                                    },
-                                                    onClick = {
-                                                        event(
-                                                            SettingsStore.Intent.ChangeDropDownExpanded(
-                                                                value = state.expandedDropDownMenu
-                                                            )
-                                                        )
-                                                        event(
-                                                            SettingsStore.Intent.ChangeNotificationItem(
-                                                                value = NotificationItem(
-                                                                    period = -1,
-                                                                    namingResId = R.string.never_notify
+                                                    DropdownMenu(
+                                                        expanded = state.expandedDropDownMenu,
+                                                        modifier = Modifier.clip(MaterialTheme.shapes.medium),
+                                                        onDismissRequest = {
+                                                            event(
+                                                                SettingsStore.Intent.ChangeDropDownExpanded(
+                                                                    value = state.expandedDropDownMenu
                                                                 )
                                                             )
-                                                        )
-                                                    })
+                                                        }) {
+                                                        DropdownMenuItem(text = {
+                                                            Text(
+                                                                text = stringResource(id = R.string.every_six_hours),
+                                                                style = MaterialTheme.typography.labelMedium,
+                                                                modifier = Modifier
+                                                                    .padding(horizontal = _10dp),
+                                                                textAlign = TextAlign.Start
+                                                            )
+                                                        }, onClick = {
+                                                            event(
+                                                                SettingsStore.Intent.ChangeDropDownExpanded(
+                                                                    value = state.expandedDropDownMenu
+                                                                )
+                                                            )
+                                                            event(
+                                                                SettingsStore.Intent.ChangeNotificationItem(
+                                                                    value = NotificationItem(
+                                                                        period = 21600000,
+                                                                        namingResId = R.string.every_six_hours
+                                                                    )
+                                                                )
+                                                            )
+                                                        })
+
+
+                                                        DropdownMenuItem(text = {
+                                                            Text(
+                                                                text = stringResource(id = R.string.every_three_hours),
+                                                                style = MaterialTheme.typography.labelMedium,
+                                                                modifier = Modifier
+                                                                    .padding(horizontal = _10dp),
+                                                                textAlign = TextAlign.Start
+                                                            )
+                                                        }, onClick = {
+                                                            event(
+                                                                SettingsStore.Intent.ChangeDropDownExpanded(
+                                                                    value = state.expandedDropDownMenu
+                                                                )
+                                                            )
+                                                            event(
+                                                                SettingsStore.Intent.ChangeNotificationItem
+                                                                    (
+                                                                    value = NotificationItem(
+                                                                        period = 10800000,
+                                                                        namingResId = R.string.every_three_hours
+                                                                    )
+                                                                )
+                                                            )
+                                                        })
+
+                                                        DropdownMenuItem(text = {
+                                                            Text(
+                                                                text = stringResource(id = R.string.every_hour),
+                                                                style = MaterialTheme.typography.labelMedium,
+                                                                modifier = Modifier
+                                                                    .padding(horizontal = _10dp),
+                                                                textAlign = TextAlign.Start
+                                                            )
+                                                        }, onClick = {
+                                                            event(
+                                                                SettingsStore.Intent.ChangeDropDownExpanded(
+                                                                    value = state.expandedDropDownMenu
+                                                                )
+                                                            )
+                                                            event(
+                                                                SettingsStore.Intent.ChangeNotificationItem
+                                                                    (
+                                                                    value = NotificationItem(
+                                                                        period = 3600000,
+                                                                        namingResId = R.string.every_hour
+                                                                    )
+                                                                )
+                                                            )
+                                                        })
+
+                                                        DropdownMenuItem(
+                                                            leadingIcon = {
+                                                                Icon(
+                                                                    painter = painterResource(id = ru.plumsoftware.uicomponents.R.drawable.never_notify),
+                                                                    contentDescription = stringResource(
+                                                                        id = R.string.never_notify
+                                                                    )
+                                                                )
+                                                            },
+                                                            text = {
+                                                                Text(
+                                                                    text = stringResource(id = R.string.never_notify),
+                                                                    style = MaterialTheme.typography.labelMedium,
+                                                                    modifier = Modifier
+                                                                        .padding(horizontal = _10dp),
+                                                                    textAlign = TextAlign.Start
+                                                                )
+                                                            },
+                                                            onClick = {
+                                                                event(
+                                                                    SettingsStore.Intent.ChangeDropDownExpanded(
+                                                                        value = state.expandedDropDownMenu
+                                                                    )
+                                                                )
+                                                                event(
+                                                                    SettingsStore.Intent.ChangeNotificationItem(
+                                                                        value = NotificationItem(
+                                                                            period = -1,
+                                                                            namingResId = R.string.never_notify
+                                                                        )
+                                                                    )
+                                                                )
+                                                            })
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+//                            Share application
+                                    if (ru.plumsoftware.data.BuildConfig.platform == "RuStore")
+                                        Button(
+                                            onClick = { event(SettingsStore.Intent.Share) },
+                                            contentPadding = PaddingValues(
+                                                horizontal = _14dp,
+                                                vertical = _24dp
+                                            ),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = Color.Transparent,
+                                                contentColor = MaterialTheme.colorScheme.onSurface
+                                            ),
+                                            shape = RoundedCornerShape(size = 0.dp),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .wrapContentHeight()
+                                        ) {
+                                            Row(
+                                                horizontalArrangement = Arrangement.spacedBy(
+                                                    space = _14dp,
+                                                    alignment = Alignment.Start
+                                                ),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier.fillMaxWidth()
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Rounded.Share,
+                                                    contentDescription = stringResource(id = R.string.share_application)
+                                                )
+                                                Text(
+                                                    text = stringResource(id = R.string.share_),
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    modifier = Modifier.weight(weight = 1.0f)
+                                                )
+                                                Icon(
+                                                    imageVector = Icons.Rounded.KeyboardArrowRight,
+                                                    contentDescription = stringResource(id = R.string.button_arrow)
+                                                )
+                                            }
+                                        }
+                                }
+                            }
+                        }
+                    }
+                    item {
+//                        MARK: Feedback
+                        if (ru.plumsoftware.data.BuildConfig.platform == "RuStore")
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                Text(
+                                    text = stringResource(id = R.string.feedback),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    modifier = Modifier
+                                        .padding(horizontal = _24dp)
+                                        .fillMaxWidth(),
+                                    textAlign = TextAlign.Start
+                                )
+                                Spacer(
+                                    modifier = Modifier
+                                        .height(height = _10dp)
+                                        .fillMaxWidth()
+                                )
+                                Card {
+                                    Column(
+                                        verticalArrangement = Arrangement.Top,
+                                        horizontalAlignment = Alignment.Start,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                    ) {
+
+//                                Feed back
+                                        Button(
+                                            onClick = { event(SettingsStore.Intent.LeaveFeedBack) },
+                                            contentPadding = PaddingValues(
+                                                horizontal = _14dp,
+                                                vertical = _24dp
+                                            ),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = Color.Transparent,
+                                                contentColor = MaterialTheme.colorScheme.onSurface
+                                            ),
+                                            shape = RoundedCornerShape(size = 0.dp),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .wrapContentHeight()
+                                        ) {
+                                            Row(
+                                                horizontalArrangement = Arrangement.spacedBy(
+                                                    space = _14dp,
+                                                    alignment = Alignment.Start
+                                                ),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier.fillMaxWidth()
+                                            ) {
+                                                Image(
+                                                    painter = painterResource(id = ru.plumsoftware.uicomponents.R.drawable.rustore_logo),
+                                                    modifier = Modifier.size(
+                                                        width = 24.dp,
+                                                        height = 23.29.dp
+                                                    ),
+                                                    contentDescription = stringResource(id = R.string.rustore_logo)
+                                                )
+                                                Text(
+                                                    text = stringResource(id = R.string.rustore_review),
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    modifier = Modifier.weight(weight = 1.0f)
+                                                )
+                                                Icon(
+                                                    imageVector = Icons.Rounded.KeyboardArrowRight,
+                                                    contentDescription = stringResource(id = R.string.button_arrow)
+                                                )
                                             }
                                         }
                                     }
                                 }
                             }
-
-//                            Share application
-                            if (ru.plumsoftware.data.BuildConfig.platform == "RuStore")
-                                Button(
-                                    onClick = { event(SettingsStore.Intent.Share) },
-                                    contentPadding = PaddingValues(
-                                        horizontal = _14dp,
-                                        vertical = _24dp
-                                    ),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                    ),
-                                    shape = RoundedCornerShape(size = 0.dp),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .wrapContentHeight()
-                                ) {
-                                    Row(
-                                        horizontalArrangement = Arrangement.spacedBy(
-                                            space = _14dp,
-                                            alignment = Alignment.Start
-                                        ),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Rounded.Share,
-                                            contentDescription = stringResource(id = R.string.share_application)
-                                        )
-                                        Text(
-                                            text = stringResource(id = R.string.share_),
-                                            style = MaterialTheme.typography.labelMedium,
-                                            modifier = Modifier.weight(weight = 1.0f)
-                                        )
-                                        Icon(
-                                            imageVector = Icons.Rounded.KeyboardArrowRight,
-                                            contentDescription = stringResource(id = R.string.button_arrow)
-                                        )
-                                    }
-                                }
-                        }
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(height = _14dp))
                     }
                 }
-
-//                MARK: Feedback
-                if (ru.plumsoftware.data.BuildConfig.platform == "RuStore")
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = stringResource(id = R.string.feedback),
-                            style = MaterialTheme.typography.titleSmall,
-                            modifier = Modifier
-                                .padding(horizontal = _24dp)
-                                .fillMaxWidth(),
-                            textAlign = TextAlign.Start
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .height(height = _10dp)
-                                .fillMaxWidth()
-                        )
-                        Card {
-                            Column(
-                                verticalArrangement = Arrangement.Top,
-                                horizontalAlignment = Alignment.Start,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
-
-//                                Feed back
-                                Button(
-                                    onClick = { event(SettingsStore.Intent.LeaveFeedBack) },
-                                    contentPadding = PaddingValues(
-                                        horizontal = _14dp,
-                                        vertical = _24dp
-                                    ),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = Color.Transparent,
-                                        contentColor = MaterialTheme.colorScheme.onSurface
-                                    ),
-                                    shape = RoundedCornerShape(size = 0.dp),
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .wrapContentHeight()
-                                ) {
-                                    Row(
-                                        horizontalArrangement = Arrangement.spacedBy(
-                                            space = _14dp,
-                                            alignment = Alignment.Start
-                                        ),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Image(
-                                            painter = painterResource(id = ru.plumsoftware.uicomponents.R.drawable.rustore_logo),
-                                            modifier = Modifier.size(
-                                                width = 24.dp,
-                                                height = 23.29.dp
-                                            ),
-                                            contentDescription = stringResource(id = R.string.rustore_logo)
-                                        )
-                                        Text(
-                                            text = stringResource(id = R.string.rustore_review),
-                                            style = MaterialTheme.typography.labelMedium,
-                                            modifier = Modifier.weight(weight = 1.0f)
-                                        )
-                                        Icon(
-                                            imageVector = Icons.Rounded.KeyboardArrowRight,
-                                            contentDescription = stringResource(id = R.string.button_arrow)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                Spacer(modifier = Modifier.height(height = _14dp))
-            }
+            )
         }
     }
 }
