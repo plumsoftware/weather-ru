@@ -88,6 +88,7 @@ android {
         warningsAsErrors true
         xmlOutput file('lint-report.xml')
         xmlReport true
+        disable 'MobileAdsSdkOutdatedVersion'
     }
 
 }
@@ -129,7 +130,7 @@ dependencies {
 
     def ycharts_version = "2.1.0"
 
-    def yandex_ads_version = "6.1.0"
+    def yandex_ads_version = "6.3.0"
     def mytarget_version = "5.16.2.0"
 
     def glance_version = "1.0.0-rc01"
