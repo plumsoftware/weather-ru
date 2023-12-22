@@ -91,7 +91,11 @@
     <string name="simple_notification_title">Температура сейчас %d</string>
     <string name="see_more">Подробнее</string>
     <string name="dot">•</string>
-    <string name="shortcut1_short_label">shortcut1_short_label</string>
-    <string name="shortcut1_long_label">shortcut1_long_label</string>
-    <string name="shortcut1_disabled_message">shortcut1_disabled_message</string>
+
+
+    <!--    Shortcuts-->
+    <string name="shortcut1_short_label">Виджет</string>
+    <string name="shortcut1_long_label">Настройка виджета</string>
+    <string name="shortcut1_disabled_message">Отмена настройки виджета</string>
+    <string name="title_activity_widget_config">WidgetConfigActivity</string>
 </resources>

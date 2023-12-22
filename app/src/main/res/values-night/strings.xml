@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="shortcut1_short_label">shortcut1_short_label</string>
-    <string name="shortcut1_long_label">shortcut1_long_label</string>
-    <string name="shortcut1_disabled_message">shortcut1_disabled_message</string>
-</resources>

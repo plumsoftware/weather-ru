@@ -111,7 +111,6 @@ private fun AirQualityScreen(
     }
 
 
-
     val pieChartData = with(state.airQuality) {
         listOf<Pair<String, Float>>(
             Pair("CO", (co!!.toFloat() * 100) / sum),
@@ -175,9 +174,12 @@ private fun AirQualityScreen(
         with(ExtensionPaddingValues) {
 //                Back
             Box(modifier = Modifier.padding(all = _24dp)) {
-                TopBar(textResId = R.string.air_quality, onBackClick = {
-                    event(AirQualityStore.Intent.BackButtonClicked)
-                })
+                TopBar(
+                    showBack = true,
+                    textResId = R.string.air_quality,
+                    onBackClick = {
+                        event(AirQualityStore.Intent.BackButtonClicked)
+                    })
             }
             Spacer(modifier = Modifier.height(height = _14dp))
         }

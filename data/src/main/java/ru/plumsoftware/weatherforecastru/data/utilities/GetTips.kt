@@ -1,23 +1,28 @@
 package ru.plumsoftware.weatherforecastru.data.utilities
 
+import android.os.Build
 import java.time.LocalDateTime
 import java.time.Month
 
 fun getOutfitSuggestion(
     localDateTime: LocalDateTime
-): String = when (localDateTime.month!!) {
-    Month.JANUARY -> Tips.Winter().outfits.random()
-    Month.FEBRUARY -> Tips.Winter().outfits.random()
-    Month.MARCH -> Tips.Spring().outfits.random()
-    Month.APRIL -> Tips.Spring().outfits.random()
-    Month.MAY -> Tips.Spring().outfits.random()
-    Month.JUNE -> Tips.Summer().outfits.random()
-    Month.JULY -> Tips.Summer().outfits.random()
-    Month.AUGUST -> Tips.Summer().outfits.random()
-    Month.SEPTEMBER -> Tips.Autumn().outfits.random()
-    Month.OCTOBER -> Tips.Autumn().outfits.random()
-    Month.NOVEMBER -> Tips.Autumn().outfits.random()
-    Month.DECEMBER -> Tips.Winter().outfits.random()
+): String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    when (localDateTime.month!!) {
+        Month.JANUARY -> Tips.Winter().outfits.random()
+        Month.FEBRUARY -> Tips.Winter().outfits.random()
+        Month.MARCH -> Tips.Spring().outfits.random()
+        Month.APRIL -> Tips.Spring().outfits.random()
+        Month.MAY -> Tips.Spring().outfits.random()
+        Month.JUNE -> Tips.Summer().outfits.random()
+        Month.JULY -> Tips.Summer().outfits.random()
+        Month.AUGUST -> Tips.Summer().outfits.random()
+        Month.SEPTEMBER -> Tips.Autumn().outfits.random()
+        Month.OCTOBER -> Tips.Autumn().outfits.random()
+        Month.NOVEMBER -> Tips.Autumn().outfits.random()
+        Month.DECEMBER -> Tips.Winter().outfits.random()
+    }
+} else {
+    TODO("VERSION.SDK_INT < O")
 }
 
 internal sealed interface Tips {

@@ -91,7 +91,11 @@
     <string name="simple_notification_title">The temperature is now %d</string>
     <string name="see_more">See more</string>
     <string name="dot">•</string>
-    <string name="shortcut1_short_label">shortcut1_short_label</string>
-    <string name="shortcut1_long_label">shortcut1_long_label</string>
-    <string name="shortcut1_disabled_message">shortcut1_disabled_message</string>
+
+
+    <!--    Shortcuts-->
+    <string name="shortcut1_short_label">Widget</string>
+    <string name="shortcut1_long_label">Widget config</string>
+    <string name="shortcut1_disabled_message">Cansel widget config</string>
+    <string name="title_activity_widget_config">WidgetConfigActivity</string>
 </resources>

@@ -167,6 +167,7 @@ private fun LocationScreen(
         ) {
             with(ExtensionPaddingValues) {
                 TopBar(
+                    showBack = true,
                     textResId = R.string.location,
                     onBackClick = { event(LocationStore.Intent.BackButtonClicked) })
                 Spacer(modifier = Modifier.height(height = _10dp))

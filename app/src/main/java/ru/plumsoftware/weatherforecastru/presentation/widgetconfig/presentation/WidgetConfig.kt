@@ -1,8 +1,5 @@
 package ru.plumsoftware.weatherforecastru.presentation.widgetconfig.presentation
 
-import android.app.WallpaperManager
-import android.content.Context
-import android.graphics.drawable.BitmapDrawable
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,16 +25,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import ru.plumsoftware.weatherforecast.R
-import ru.plumsoftware.weatherforecastru.application.App
 import ru.plumsoftware.weatherforecastru.material.components.TopBar
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
-import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionSize
 import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.presentation.components.SliderItem
 import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.presentation.components.WidgetPreview
 import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.presentation.components.uiblue.theme.AppThemeBlue
@@ -45,6 +38,7 @@ import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.presentation.
 import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.presentation.components.uired.theme.AppThemeRed
 import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.store.WidgetConfigStore
 import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.viewmodel.WidgetConfigViewModel
+import ru.plumsoftware.weatherforecastru.utilites.getWallpaper
 
 @Composable
 fun WidgetConfig(widgetConfigViewModel: WidgetConfigViewModel) {
@@ -89,7 +83,9 @@ fun WidgetConfig(
     ) {
         with(ExtensionPaddingValues) {
 //            Back
-            TopBar(textResId = R.string.widget_hint,
+            TopBar(
+                showBack = true,
+                textResId = R.string.widget_hint,
                 onBackClick = {
                     event(WidgetConfigStore.Intent.BackButtonClicked)
                 })
@@ -101,7 +97,7 @@ fun WidgetConfig(
                     .fillMaxSize()
             ) {
                 Image(
-                    bitmap = getWallpaper(context = App.INSTANCE.applicationContext),
+                    bitmap = getWallpaper(context = context),
                     contentDescription = stringResource(id = R.string.wallpaper_image_hint),
                     contentScale = ContentScale.FillBounds,
                     modifier = Modifier
@@ -215,14 +211,4 @@ fun WidgetConfig(
             }
         }
     }
-}
-
-private fun getWallpaper(context: Context): ImageBitmap {
-    val wallpaperManager = WallpaperManager.getInstance(context)
-    val wallpaperDrawable = wallpaperManager.drawable
-
-    val bitmap = (wallpaperDrawable as BitmapDrawable).bitmap
-    val imageBitmap = bitmap.asImageBitmap()
-
-    return imageBitmap
 }

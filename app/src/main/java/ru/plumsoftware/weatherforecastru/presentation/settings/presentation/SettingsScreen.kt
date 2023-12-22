@@ -118,9 +118,12 @@ private fun SettingsScreen(
 
 //            MARK: Back
             Box(modifier = Modifier.padding(start = _24dp, end = _24dp, top = _24dp)) {
-                TopBar(textResId = R.string.settings, onBackClick = {
-                    event(SettingsStore.Intent.BackButtonClicked)
-                })
+                TopBar(
+                    showBack = true,
+                    textResId = R.string.settings,
+                    onBackClick = {
+                        event(SettingsStore.Intent.BackButtonClicked)
+                    })
             }
 
 //            MARK: Content

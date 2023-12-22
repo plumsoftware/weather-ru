@@ -19,7 +19,7 @@ import ru.plumsoftware.weatherforecastru.application.App
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
 
 @Composable
-fun TopBar(textResId: Int, onBackClick: () -> Unit) {
+fun TopBar(showBack: Boolean, textResId: Int, onBackClick: () -> Unit) {
     with(ExtensionPaddingValues) {
         Row(
             horizontalArrangement = Arrangement.Center,
@@ -32,9 +32,9 @@ fun TopBar(textResId: Int, onBackClick: () -> Unit) {
                 .fillMaxWidth()
         ) {
             BackArrowButton(
-                modifier = Modifier,
+                modifier = if (showBack) Modifier else Modifier.background(Color.Transparent),
                 onClick = onBackClick,
-                enabled = true
+                enabled = showBack
             )
             Text(
                 text = App.INSTANCE.getString(textResId),
