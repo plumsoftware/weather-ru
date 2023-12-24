@@ -50,6 +50,15 @@
         <meta-data
             android:name="com.yandex.mobile.ads.AUTOMATIC_SDK_INITIALIZATION"
             android:value="false" />
+        <meta-data
+            android:name="ru.rustore.sdk.pushclient.default_notification_icon"
+            android:resource="@drawable/logo" />
+        <meta-data
+            android:name="ru.rustore.sdk.pushclient.default_notification_color"
+            android:resource="@color/rustore_favorite_color" />
+        <meta-data
+            android:name="ru.rustore.sdk.pushclient.default_notification_channel_id"
+            android:value="@string/rustore_push_notification_channel_id" />
 
         <receiver
             android:name="ru.plumsoftware.weatherforecastru.widget.receivers.SimpleAppWidgetReceiver"
@@ -74,6 +83,14 @@
             android:name="ru.plumsoftware.weatherforecastru.service.MyJobService"
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name="ru.plumsoftware.weatherforecastru.messanging.rustore.RuStorePushListenerService"
+            android:exported="true"
+            tools:ignore="ExportedService">
+            <intent-filter>
+                <action android:name="ru.rustore.sdk.pushclient.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
 
         <receiver
             android:name="ru.plumsoftware.weatherforecastru.messanging.local.SimpleNotificationReceiver"

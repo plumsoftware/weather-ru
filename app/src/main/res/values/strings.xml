@@ -97,4 +97,8 @@
     <string name="shortcut1_long_label">Настройка виджета</string>
     <string name="shortcut1_disabled_message">Отмена настройки виджета</string>
     <string name="title_activity_widget_config">WidgetConfigActivity</string>
+
+    <!--    RuStore-->
+    <string name="rustore_push_notification_channel_id">rustore_channel_id_push_notificatin_24122023</string>
+    <string name="rustore_push_notification_channel_name">rustore_channel_name_push_notificatin_24122023</string>
 </resources>

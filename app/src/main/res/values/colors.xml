@@ -60,4 +60,6 @@
     <color name="md_theme_dark_surfaceTint">#FFBAC3FF</color>
     <color name="md_theme_dark_outlineVariant">#FF46464F</color>
     <color name="md_theme_dark_scrim">#FF000000</color>
+
+    <color name="rustore_favorite_color">#FF5773FF</color>
 </resources>
