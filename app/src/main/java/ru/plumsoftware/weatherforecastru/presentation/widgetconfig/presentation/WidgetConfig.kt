@@ -77,7 +77,7 @@ fun WidgetConfig(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
         modifier = Modifier
-            .padding(all = ExtensionPaddingValues._24dp)
+            .padding(all = ExtensionPaddingValues._18dp)
             .fillMaxWidth()
             .fillMaxHeight()
     ) {

@@ -10,6 +10,7 @@ internal object ExtensionPaddingValues {
     val _12dp = 12.dp
     val _14dp = 14.dp
     val _16dp = 16.dp
+    val _18dp = 18.dp
     val _24dp = 24.dp
     val _34dp = 34.dp
 }

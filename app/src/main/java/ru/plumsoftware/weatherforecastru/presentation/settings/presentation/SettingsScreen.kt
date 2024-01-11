@@ -117,7 +117,7 @@ private fun SettingsScreen(
         with(ExtensionPaddingValues) {
 
 //            MARK: Back
-            Box(modifier = Modifier.padding(start = _24dp, end = _24dp, top = _24dp)) {
+            Box(modifier = Modifier.padding(start = _16dp, end = _16dp, top = _24dp)) {
                 TopBar(
                     showBack = true,
                     textResId = R.string.settings,
@@ -136,7 +136,7 @@ private fun SettingsScreen(
                 horizontalAlignment = Alignment.Start,
                 modifier = Modifier
                     .weight(weight = 1f, fill = false)
-                    .padding(horizontal = _24dp),
+                    .padding(horizontal = _18dp),
                 content = {
                     item {
 //                        MARK: Units

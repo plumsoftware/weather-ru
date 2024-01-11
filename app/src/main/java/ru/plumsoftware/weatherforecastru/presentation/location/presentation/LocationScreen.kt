@@ -163,7 +163,7 @@ private fun LocationScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .fillMaxHeight()
-                .padding(all = ExtensionPaddingValues._24dp)
+                .padding(all = ExtensionPaddingValues._18dp)
         ) {
             with(ExtensionPaddingValues) {
                 TopBar(

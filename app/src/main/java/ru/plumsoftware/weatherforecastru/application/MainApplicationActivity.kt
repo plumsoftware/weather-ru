@@ -128,7 +128,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
             val WEATHER_API_VALUE = remember { mutableStateOf(WeatherApiResponse()) }
             val owmHttpCode = remember { mutableStateOf(-1) }
             val weatherApiHttpCode = remember { mutableStateOf(-1) }
-            val httpHolder = remember { mutableStateOf(0) }
+//            val httpHolder = remember { mutableStateOf(0) }
             val launcher = rememberLauncherForActivityResult(
                 ActivityResultContracts.RequestPermission()
             ) { isGranted: Boolean ->
@@ -270,7 +270,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                             }
 
                                             is MainViewModel.Output.DoHttpResponse -> {
-                                                httpHolder.value = 1
+//                                                httpHolder.value = 1
                                             }
                                         }
                                     },
@@ -540,10 +540,12 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
     ) != PackageManager.PERMISSION_GRANTED
 
     override fun onBackPressed() {
-        super.onBackPressed()
         when (navController.currentDestination!!.route) {
             Screens.Content -> {
                 finish()
+            }
+            else -> {
+                navController.popBackStack()
             }
         }
     }

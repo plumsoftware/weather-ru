@@ -15,8 +15,8 @@ android {
         applicationId "ru.plumsoftware.weatherforecastru"
         minSdk 22
         targetSdk 34
-        versionCode 11
-        versionName "2.0.0"
+        versionCode 12
+        versionName "2.0.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -88,7 +88,6 @@ android {
         warningsAsErrors true
         xmlOutput file('lint-report.xml')
         xmlReport true
-        disable 'MobileAdsSdkOutdatedVersion'
     }
 
 }

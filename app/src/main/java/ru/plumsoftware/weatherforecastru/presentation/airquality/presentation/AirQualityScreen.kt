@@ -173,7 +173,7 @@ private fun AirQualityScreen(
     ) {
         with(ExtensionPaddingValues) {
 //                Back
-            Box(modifier = Modifier.padding(all = _24dp)) {
+            Box(modifier = Modifier.padding(all = _18dp)) {
                 TopBar(
                     showBack = true,
                     textResId = R.string.air_quality,
@@ -194,7 +194,7 @@ private fun AirQualityScreen(
             modifier = Modifier
 //                .verticalScroll(state = rememberScrollState())
                 .weight(weight = 1f, fill = false)
-                .padding(horizontal = ExtensionPaddingValues._24dp)
+                .padding(horizontal = ExtensionPaddingValues._14dp)
         ) {
             LazyVerticalStaggeredGrid(
                 columns = StaggeredGridCells.Adaptive(minSize = 90.dp),

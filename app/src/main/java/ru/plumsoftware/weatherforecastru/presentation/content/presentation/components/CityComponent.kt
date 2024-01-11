@@ -57,9 +57,9 @@ fun CityComponent(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
-                top = ExtensionPaddingValues._14dp,
-                end = ExtensionPaddingValues._14dp,
-                start = ExtensionPaddingValues._14dp
+                top = ExtensionPaddingValues._12dp,
+                end = ExtensionPaddingValues._8dp,
+                start = ExtensionPaddingValues._8dp
             )
     ) {
         with(MaterialTheme) {
@@ -84,7 +84,7 @@ fun CityComponent(
             }
             Row(
                 horizontalArrangement = Arrangement.spacedBy(
-                    space = ExtensionPaddingValues._10dp,
+                    space = ExtensionPaddingValues._14dp,
                     alignment = Alignment.CenterHorizontally
                 ),
                 verticalAlignment = Alignment.CenterVertically,

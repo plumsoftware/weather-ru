@@ -92,11 +92,11 @@ fun HourlyWeatherForecast(
                     alignment = Alignment.Bottom
                 ),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(all = ExtensionPaddingValues._14dp)
+                modifier = Modifier.padding(horizontal = ExtensionPaddingValues._8dp, vertical = ExtensionPaddingValues._14dp)
             ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(
-                        space = ExtensionPaddingValues._10dp,
+                        space = ExtensionPaddingValues._8dp,
                         alignment = Alignment.CenterHorizontally
                     ),
                     verticalAlignment = Alignment.CenterVertically,

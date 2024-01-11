@@ -57,7 +57,7 @@ private fun AboutApp(state: AboutAppStore.State, event: (AboutAppStore.Intent) -
     ) {
         with(ExtensionPaddingValues) {
 //            Back
-            Box(modifier = Modifier.padding(all = _24dp)) {
+            Box(modifier = Modifier.padding(all = _18dp)) {
                 TopBar(
                     showBack = true,
                     textResId = R.string.about_app,
