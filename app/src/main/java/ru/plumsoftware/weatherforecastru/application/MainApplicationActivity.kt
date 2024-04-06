@@ -182,53 +182,61 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
             LaunchedEffect(Unit) {
                 coroutine.launch {
 
-                    MobileAds.initialize(context) {
-                        logd(message = "RSY initialized!")
-                    }
+                    if (checkInternetConnection(context = context)) {
+                        MobileAds.initialize(context) {
+                            logd(message = "RSY initialized!")
+                        }
 
-                    isAdsLoading.value = true
+                        isAdsLoading.value = true
 //                    region::Open app ads
-                    val appOpenAdLoadListener = object : AppOpenAdLoadListener {
-                        override fun onAdLoaded(appOpenAd: AppOpenAd) {
-                            // The ad was loaded successfully. Now you can show loaded ad.
-                            myAppOpenAd = appOpenAd
-                            myAppOpenAd?.show(this@MainApplicationActivity)
-                            isAdsLoading.value = false
+                        val appOpenAdLoadListener = object : AppOpenAdLoadListener {
+                            override fun onAdLoaded(appOpenAd: AppOpenAd) {
+                                // The ad was loaded successfully. Now you can show loaded ad.
+                                myAppOpenAd = appOpenAd
+                                myAppOpenAd?.show(this@MainApplicationActivity)
+                                isAdsLoading.value = false
+                            }
+
+                            override fun onAdFailedToLoad(adRequestError: AdRequestError) {
+                                isAdsLoading.value = false
+                                // Ad failed to load with AdRequestError.
+                                // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
+                            }
                         }
 
-                        override fun onAdFailedToLoad(adRequestError: AdRequestError) {
-                            isAdsLoading.value = false
-                            // Ad failed to load with AdRequestError.
-                            // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
-                        }
-                    }
-
-                    myAppOpenAd?.setAdEventListener(appOpenAdEventListener)
-                    appOpenAdLoader.setAdLoadListener(appOpenAdLoadListener)
-                    appOpenAdLoader.loadAd(adRequestConfigurationOpenAds)
+                        myAppOpenAd?.setAdEventListener(appOpenAdEventListener)
+                        appOpenAdLoader.setAdLoadListener(appOpenAdLoadListener)
+                        appOpenAdLoader.loadAd(adRequestConfigurationOpenAds)
 //                    endregion
 //                    region::Native ads
-                    if (ru.plumsoftware.data.BuildConfig.showNativeAd.toBoolean()) {
-                        val nativeAdsLoader = NativeBulkAdLoader(context).apply {
-                            setNativeBulkAdLoadListener(object : NativeBulkAdLoadListener {
-                                override fun onAdsLoaded(p0: MutableList<NativeAd>) {
-                                    list.value = p0
-                                    adsError.value = false
-                                }
+                        if (ru.plumsoftware.data.BuildConfig.showNativeAd.toBoolean()) {
+                            val nativeAdsLoader = NativeBulkAdLoader(context).apply {
+                                setNativeBulkAdLoadListener(object : NativeBulkAdLoadListener {
+//                                    override fun onAdsLoaded(p0: MutableList<NativeAd>) {
+//                                        list.value = p0
+//                                        adsError.value = false
+//                                    }
+//                                    TODO(Slava Deych): Remove later
 
-                                override fun onAdsFailedToLoad(p0: AdRequestError) {
-                                    logd(p0.toString())
-                                    adsError.value = true
-                                    isAdsLoading.value = false
-                                }
-                            })
+                                    override fun onAdsFailedToLoad(p0: AdRequestError) {
+                                        logd(p0.toString())
+                                        adsError.value = true
+                                        isAdsLoading.value = false
+                                    }
+
+                                    override fun onAdsLoaded(nativeAds: List<NativeAd>) {
+                                        list.value = nativeAds.toMutableList()
+                                        adsError.value = false
+                                    }
+                                })
+                            }
+                            val adRequestConfigurationNativeAds =
+                                NativeAdRequestConfiguration.Builder(ru.plumsoftware.data.BuildConfig.NATIVE_ADS_ID)
+                                    .build()
+                            nativeAdsLoader.loadAds(adRequestConfigurationNativeAds, 1)
                         }
-                        val adRequestConfigurationNativeAds =
-                            NativeAdRequestConfiguration.Builder(ru.plumsoftware.data.BuildConfig.NATIVE_ADS_ID)
-                                .build()
-                        nativeAdsLoader.loadAds(adRequestConfigurationNativeAds, 1)
-                    }
 //                    endregion
+                    }
                 }
             }
 //            endregion
@@ -243,17 +251,21 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                             Screens.Authorization
                         } else {
                             coroutine.launch {
-                                with(
-                                    doHttpResponse(
-                                        httpClientStorage = httpClientStorage,
-                                        launch = true
-                                    )
-                                ) {
-                                    OWM_VALUE.value = second.first
-                                    WEATHER_API_VALUE.value = second.second
+                                if (checkInternetConnection(context)) {
+                                    with(
+                                        doHttpResponse(
+                                            httpClientStorage = httpClientStorage,
+                                            launch = true
+                                        )
+                                    ) {
+                                        OWM_VALUE.value = second.first
+                                        WEATHER_API_VALUE.value = second.second
 
-                                    owmHttpCode.value = first.first.value
-                                    weatherApiHttpCode.value = first.second.value
+                                        owmHttpCode.value = first.first.value
+                                        weatherApiHttpCode.value = first.second.value
+                                    }
+                                } else {
+                                    navController.navigate(route = Screens.NoConnection)
                                 }
                             }
                             Screens.Content
@@ -321,18 +333,24 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                                 navController.navigate(route = Screens.Content)
                                                 {
                                                     coroutine.launch {
-                                                        with(
-                                                            doHttpResponse(
-                                                                httpClientStorage = httpClientStorage,
-                                                                launch = false
-                                                            )
-                                                        ) {
-                                                            OWM_VALUE.value = second.first
-                                                            WEATHER_API_VALUE.value = second.second
+                                                        if (checkInternetConnection(context)) {
+                                                            with(
+                                                                doHttpResponse(
+                                                                    httpClientStorage = httpClientStorage,
+                                                                    launch = false
+                                                                )
+                                                            ) {
+                                                                OWM_VALUE.value = second.first
+                                                                WEATHER_API_VALUE.value =
+                                                                    second.second
 
-                                                            owmHttpCode.value = first.first.value
-                                                            weatherApiHttpCode.value =
-                                                                first.second.value
+                                                                owmHttpCode.value =
+                                                                    first.first.value
+                                                                weatherApiHttpCode.value =
+                                                                    first.second.value
+                                                            }
+                                                        } else {
+                                                            navController.navigate(route = Screens.NoConnection)
                                                         }
                                                     }
 
@@ -399,16 +417,18 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
 
                                             is SettingsViewModel.Output.OnSettingsChange -> {
                                                 CoroutineScope(Dispatchers.IO).launch {
-                                                    with(
-                                                        doHttpResponse(
-                                                            httpClientStorage = httpClientStorage,
-                                                            launch = false
-                                                        )
-                                                    ) {
-                                                        OWM_VALUE.value = second.first
+                                                    if (checkInternetConnection(context)) {
+                                                        with(
+                                                            doHttpResponse(
+                                                                httpClientStorage = httpClientStorage,
+                                                                launch = false
+                                                            )
+                                                        ) {
+                                                            OWM_VALUE.value = second.first
 
-                                                        owmHttpCode.value = first.first.value
-                                                    }
+                                                            owmHttpCode.value = first.first.value
+                                                        }
+                                                    } else {navController.navigate(route=Screens.NoConnection)}
                                                 }
                                             }
 
@@ -489,15 +509,19 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                     when (output) {
                                         NoConnectionViewModel.Output.TryInternetConnection -> {
                                             CoroutineScope(Dispatchers.IO).launch {
-                                                with(
-                                                    doHttpResponse(
-                                                        httpClientStorage = httpClientStorage,
-                                                        launch = false
-                                                    )
-                                                ) {
-                                                    OWM_VALUE.value = second.first
+                                                if (checkInternetConnection(context)) {
+                                                    with(
+                                                        doHttpResponse(
+                                                            httpClientStorage = httpClientStorage,
+                                                            launch = false
+                                                        )
+                                                    ) {
+                                                        OWM_VALUE.value = second.first
 
-                                                    owmHttpCode.value = first.first.value
+                                                        owmHttpCode.value = first.first.value
+                                                    }
+                                                } else {
+                                                    navController.navigate(route = Screens.NoConnection)
                                                 }
                                                 CoroutineScope(Dispatchers.Main).launch {
                                                     navController.popBackStack()
@@ -531,7 +555,11 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
 
     override fun onDestroy() {
         super.onDestroy()
-        scheduleBackgroundJob(sharedPreferencesStorage = sharedPreferencesStorage)
+        try {
+            scheduleBackgroundJob(sharedPreferencesStorage = sharedPreferencesStorage)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun checkReadStoragePermission(): Boolean = ContextCompat.checkSelfPermission(
@@ -544,6 +572,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
             Screens.Content -> {
                 finish()
             }
+
             else -> {
                 navController.popBackStack()
             }
