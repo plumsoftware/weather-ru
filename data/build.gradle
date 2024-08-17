@@ -1,9 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
-    id 'kotlin-kapt'
-//    id 'kotlinx-serialization'
-//    id ("org.jetbrains.kotlin.plugin.serialization") version("1.9.10")
+    id 'com.google.devtools.ksp'
 }
 
 android {
@@ -16,11 +14,6 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
-
-//        Kapt
-        kapt {
-            arguments {arg("room.schemaLocation", "$projectDir/schemas")}
-        }
     }
 
     Properties properties = new Properties()
@@ -63,26 +56,26 @@ android {
 
 dependencies {
 
-    def room_version = "2.6.1"
-    def kapt_version = "2.5.2"
+    def room_version = "2.6.0"
 
     def ktor_version = "2.3.3"
     def logback_version = "1.2.11"
     def json_serialization_version = "1.5.1"
 
-    def gson_version = "2.10"
+    def gson_version = "2.10.1"
 
-    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.core:core-ktx:1.13.1'
     testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
 
 //    Location
-    implementation 'com.google.android.gms:play-services-location:21.0.1'
+    implementation 'com.google.android.gms:play-services-location:21.3.0'
 
 //    Room database
     implementation "androidx.room:room-runtime:$room_version"
-    kapt "androidx.room:room-compiler:$kapt_version"
+    ksp "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
+    annotationProcessor("androidx.room:room-compiler:$room_version")
 
 //    Ktor
     implementation("io.ktor:ktor-client-core:$ktor_version")
