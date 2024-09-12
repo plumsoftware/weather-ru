@@ -483,25 +483,6 @@ private fun ContentScreen(
                                             )
                                         )
                                     }
-                                    Row(
-                                        verticalAlignment = Alignment.Top,
-                                        horizontalArrangement = Arrangement.spacedBy(
-                                            space = ExtensionPaddingValues._10dp,
-                                            alignment = Alignment.CenterHorizontally
-                                        )
-                                    ) {
-                                        DetailComponent(
-                                            title = translateMoonPhase(
-                                                languageTag = Locale.current.language,
-                                                moonPhase = state.weatherApiResponse.forecast!!.forecastday[0].astro!!.moonPhase!!
-                                            ),
-                                            description = stringResource(id = R.string.moon_phase),
-                                            pair = Pair(
-                                                PlumsoftwareIconPack.Weather.CleanNight,
-                                                md_theme_moon_phase
-                                            )
-                                        )
-                                    }
                                 }
                             }
 //                endregion

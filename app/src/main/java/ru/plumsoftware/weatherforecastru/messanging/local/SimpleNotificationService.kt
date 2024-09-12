@@ -39,6 +39,19 @@ class SimpleNotificationService(private val context: Context) {
                             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
                         val activityIntent = Intent(context, MainApplicationActivity::class.java)
 
+
+                        val contentTitle = if (contentText.length != 0) {
+                            "${
+                                contentText.substring(0, 1).uppercase(Locale.getDefault())
+                            }${contentText.substring(1)} ${context.getString(R.string.dot)} ${
+                                context.getString(
+                                    R.string.see_more
+                                )
+                            }"
+                        } else {
+                            ""
+                        }
+
                         val largeIcon = getBitmapFromVectorDrawable(
                             context = context,
                             drawableId = badIconToGoodIcon(weather[0].id!!)
@@ -57,15 +70,7 @@ class SimpleNotificationService(private val context: Context) {
                                 .setContentTitle("${title.toInt()}${context.getString(R.string.degree_sign)}")
                                 .setLargeIcon(largeIcon)
                                 .setStyle(NotificationCompat.BigTextStyle())
-                                .setContentText(
-                                    "${
-                                        contentText.substring(0, 1).uppercase(Locale.getDefault())
-                                    }${contentText.substring(1)} ${context.getString(R.string.dot)} ${
-                                        context.getString(
-                                            R.string.see_more
-                                        )
-                                    }"
-                                )
+                                .setContentText(contentText)
                                 .setContentIntent(pendingActivity)
                                 .build()
 
