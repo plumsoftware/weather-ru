@@ -14,8 +14,8 @@ android {
         applicationId "ru.plumsoftware.weatherforecastru"
         minSdk 22
         targetSdk 34
-        versionCode 17
-        versionName "3.0.3"
+        versionCode 18
+        versionName "3.0.4"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -96,7 +96,7 @@ dependencies {
     androidTestImplementation platform('androidx.compose:compose-bom:2023.03.00')
     androidTestImplementation platform('androidx.compose:compose-bom:2023.03.00')
 
-    def koin_version = "3.4.2"
+    def koin_version = "3.5.6"
     def essenty_version = "1.1.0"
 
     def mvi_kotlin = "mvikotlin"
@@ -113,20 +113,17 @@ dependencies {
 
     def nav_version = "2.7.0"
 
-    def ui_controller = "0.30.1"
+    def ui_controller = "0.36.0"
 
     def material_icons = "1.5.0"
 
     def room_version = "2.6.0"
 
-    def ktor_version = "2.3.3"
+    def ktor_version = "2.3.12"
     def logback_version = "1.2.11"
-    def json_serialization_version = "1.5.1"
+    def json_serialization_version = "1.6.3"
 
-    def ycharts_version = "2.1.0"
-
-    def yandex_ads_version = "7.3.0"
-    def mytarget_version = "5.16.2.0"
+    def yandex_ads_version = "7.4.0"
 
     def glance_version = "1.0.0-rc01"
     def glance_material_version = "1.0.0-rc01"

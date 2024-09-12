@@ -58,11 +58,11 @@ dependencies {
 
     def room_version = "2.6.0"
 
-    def ktor_version = "2.3.3"
+    def ktor_version = "2.3.12"
     def logback_version = "1.2.11"
-    def json_serialization_version = "1.5.1"
+    def json_serialization_version = "1.6.3"
 
-    def gson_version = "2.10.1"
+    def gson_version = "2.10"
 
     implementation 'androidx.core:core-ktx:1.13.1'
     testImplementation 'junit:junit:4.13.2'
