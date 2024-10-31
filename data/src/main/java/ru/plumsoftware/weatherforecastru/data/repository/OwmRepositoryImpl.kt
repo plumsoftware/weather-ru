@@ -1,5 +1,6 @@
 package ru.plumsoftware.weatherforecastru.data.repository
 
+import android.util.Log
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ClientRequestException
@@ -14,6 +15,7 @@ import ru.plumsoftware.weatherforecastru.domain.repository.OwmRepository
 import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
 import java.util.Locale
 
+@Suppress("UNCHECKED_CAST")
 class OwmRepositoryImpl(
     private val client: HttpClient,
     private val sharedPreferencesStorage: SharedPreferencesStorage
@@ -27,7 +29,7 @@ class OwmRepositoryImpl(
             parameter(key = "units", value = sharedPreferencesStorage.get().weatherUnits.unitsValue)
         }
 
-        return try {
+        try {
             val httpError = response.status as E
             val httpResponse = response.body<String>() as D
             val httpResponseTime = response.responseTime as R
@@ -77,42 +79,4 @@ class OwmRepositoryImpl(
             )
         }
     }
-//    override suspend fun getOwm() : OwmResponse {
-//        return try {
-//            val response = client.get {
-//                url(urlString = "https://api.openweathermap.org/data/2.5/weather?q=Omsk&appid=4e228e1be370d9d0d02284441d30cf0b")
-//            }
-//            val httpError = response.status
-//            val httpResponse = response.body<OwmResponse>()
-////            val httpResponse = response as D
-//            return httpResponse
-//        } catch (e: RedirectResponseException) {
-////            3xx
-//            val httpResponse = null
-//            val httpError = e
-//            return OwmResponse(
-//                cod = 300
-//            )
-//        } catch (e: ClientRequestException) {
-////            4xx
-//            val httpResponse = null
-//            val httpError = e
-//            return OwmResponse(
-//                cod = 400
-//            )
-//        } catch (e: ServerResponseException) {
-////            5xx
-//            val httpResponse = null
-//            val httpError = e
-//            return OwmResponse(
-//                cod = 500
-//            )
-//        } catch (e: Exception) {
-//            val httpResponse = null
-//            val httpError = e
-//            return OwmResponse(
-//                cod = -1
-//            )
-//        }
-//    }
 }

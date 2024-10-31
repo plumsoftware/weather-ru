@@ -14,6 +14,7 @@ import ru.plumsoftware.weatherforecastru.domain.repository.WeatherApiRepository
 import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
 import java.util.Locale
 
+@Suppress("UNCHECKED_CAST")
 class WeatherApiRepositoryImpl(
     private val client: HttpClient,
     private val sharedPreferencesStorage: SharedPreferencesStorage
@@ -28,7 +29,7 @@ class WeatherApiRepositoryImpl(
             parameter(key = "lang", value = Locale.getDefault().language)
         }
 
-        return try {
+        try {
             val httpError = response.status as E
             val httpResponse = response.body<String>() as D
             val httpResponseTime = response.responseTime as R

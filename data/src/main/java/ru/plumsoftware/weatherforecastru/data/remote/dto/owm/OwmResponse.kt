@@ -11,7 +11,7 @@ data class OwmResponse(
     @SerializedName("main") var main: MainResponse? = MainResponse(),
     @SerializedName("visibility") var visibility: Int? = 0,
     @SerializedName("wind") var wind: WindResponse? = WindResponse(),
-    @SerializedName("rain") var rain: RainResponse? = RainResponse(),
+//    @SerializedName("rain") var rain: RainResponse? = RainResponse(),
     @SerializedName("clouds") var clouds: CloudsResponse? = CloudsResponse(),
     @SerializedName("dt") var dt: Int? = 0,
     @SerializedName("sys") var sys: SysResponse? = SysResponse(),

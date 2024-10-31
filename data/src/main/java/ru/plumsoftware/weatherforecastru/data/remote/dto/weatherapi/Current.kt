@@ -25,7 +25,7 @@ data class Current (
   @SerializedName("feelslike_f"        ) var feelslikeF       : Double?     = null,
   @SerializedName("vis_km"             ) var visKm            : Double?        = null,
   @SerializedName("vis_miles"          ) var visMiles         : Double?        = null,
-  @SerializedName("uv"                 ) var uv               : Int?        = -1,
+  @SerializedName("uv"                 ) var uv               : Double?        = -1.0,
   @SerializedName("gust_mph"           ) var gustMph          : Double?     = null,
   @SerializedName("gust_kph"           ) var gustKph          : Double?     = null,
   @SerializedName("air_quality"        ) var airQuality       : AirQuality? = AirQuality()

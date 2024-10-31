@@ -8,5 +8,4 @@ import ru.plumsoftware.weatherforecastru.domain.remote.dto.owm.Wind
 data class WindResponse(
     @SerializedName("speed") override var speed: Double? = 0.0,
     @SerializedName("deg") override var deg: Int? = 0,
-    @SerializedName("gust") override var gust: Double? = 0.0
 ) : Wind

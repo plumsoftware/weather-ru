@@ -28,13 +28,14 @@ internal val httpClientModel = module {
                 install(ContentNegotiation) {
                     json(
                         Json {
+                            ignoreUnknownKeys = true
                             prettyPrint = true
                             isLenient = true
                         }
                     )
                 }
                 install(HttpTimeout) {
-                    requestTimeoutMillis = 120000
+                    requestTimeoutMillis = 30000
                 }
             },
             sharedPreferencesStorage = get()
@@ -51,13 +52,14 @@ internal val httpClientModel = module {
                 install(ContentNegotiation) {
                     json(
                         Json {
+                            ignoreUnknownKeys = true
                             prettyPrint = true
                             isLenient = true
                         }
                     )
                 }
                 install(HttpTimeout) {
-                    requestTimeoutMillis = 120000
+                    requestTimeoutMillis = 30000
                 }
             },
             sharedPreferencesStorage = get()

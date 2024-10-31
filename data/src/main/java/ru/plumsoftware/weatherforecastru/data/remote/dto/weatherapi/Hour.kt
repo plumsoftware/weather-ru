@@ -37,6 +37,6 @@ data class Hour (
   @SerializedName("vis_miles"      ) var visMiles     : Double?       = 0.0,
   @SerializedName("gust_mph"       ) var gustMph      : Double?    = 0.0,
   @SerializedName("gust_kph"       ) var gustKph      : Double?    = 0.0,
-  @SerializedName("uv"             ) var uv           : Int?       = 0
+  @SerializedName("uv"             ) var uv           : Double?       = 0.0
 
 )

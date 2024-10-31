@@ -61,7 +61,7 @@ fun WeatherStatus(
             .fillMaxWidth(fraction = 1.0f)
             .wrapContentHeight()
     ) {
-        if (base == "") {
+        if (base.isEmpty()) {
             CircularProgressIndicator()
         }
         if (httpCode in 300..599) {
