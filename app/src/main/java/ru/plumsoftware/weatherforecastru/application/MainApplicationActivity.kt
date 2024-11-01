@@ -124,9 +124,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                 remember { mutableStateOf(value = sharedPreferencesStorage.get().isDarkTheme) }
             navController = rememberNavController()
             val coroutine = rememberCoroutineScope()
-            val OWM_VALUE = remember { mutableStateOf(OwmResponse()) }
             val WEATHER_API_VALUE = remember { mutableStateOf(WeatherApiResponse()) }
-            val owmHttpCode = remember { mutableStateOf(-1) }
             val weatherApiHttpCode = remember { mutableStateOf(-1) }
 //            val httpHolder = remember { mutableStateOf(0) }
             val launcher = rememberLauncherForActivityResult(
@@ -258,11 +256,8 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                             launch = true
                                         )
                                     ) {
-                                        OWM_VALUE.value = second.first
-                                        WEATHER_API_VALUE.value = second.second
-
-                                        owmHttpCode.value = first.first.value
-                                        weatherApiHttpCode.value = first.second.value
+                                        WEATHER_API_VALUE.value = second
+                                        weatherApiHttpCode.value = first.value
                                     }
                                 } else {
                                     navController.navigate(route = Screens.NoConnection)
@@ -340,14 +335,8 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                                                     launch = false
                                                                 )
                                                             ) {
-                                                                OWM_VALUE.value = second.first
-                                                                WEATHER_API_VALUE.value =
-                                                                    second.second
-
-                                                                owmHttpCode.value =
-                                                                    first.first.value
-                                                                weatherApiHttpCode.value =
-                                                                    first.second.value
+                                                                WEATHER_API_VALUE.value = second
+                                                                weatherApiHttpCode.value = first.value
                                                             }
                                                         } else {
                                                             navController.navigate(route = Screens.NoConnection)
@@ -371,12 +360,11 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                 contentViewModel = ContentViewModel(
                                     storeFactory = DefaultStoreFactory(),
                                     sharedPreferencesStorage = sharedPreferencesStorage,
-                                    owmResponse = OWM_VALUE.value,
                                     weatherApiResponse = WEATHER_API_VALUE.value,
                                     adsList = list.value,
                                     isAdsLoading = isAdsLoading.value,
                                     isDark = isSystemInDarkTheme(),
-                                    owmCode = owmHttpCode.value,
+                                    owmCode = weatherApiHttpCode.value,
                                     weatherApiCode = weatherApiHttpCode.value,
                                     output = { output ->
                                         when (output) {
@@ -424,9 +412,8 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                                                 launch = false
                                                             )
                                                         ) {
-                                                            OWM_VALUE.value = second.first
-
-                                                            owmHttpCode.value = first.first.value
+                                                            WEATHER_API_VALUE.value = second
+                                                            weatherApiHttpCode.value = first.value
                                                         }
                                                     } else {navController.navigate(route=Screens.NoConnection)}
                                                 }
@@ -516,9 +503,8 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                                             launch = false
                                                         )
                                                     ) {
-                                                        OWM_VALUE.value = second.first
-
-                                                        owmHttpCode.value = first.first.value
+                                                        WEATHER_API_VALUE.value = second
+                                                        weatherApiHttpCode.value = first.value
                                                     }
                                                 } else {
                                                     navController.navigate(route = Screens.NoConnection)
@@ -567,6 +553,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         Manifest.permission.READ_EXTERNAL_STORAGE
     ) != PackageManager.PERMISSION_GRANTED
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         when (navController.currentDestination!!.route) {
             Screens.Content -> {
@@ -592,7 +579,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
     private suspend fun doHttpResponse(
         httpClientStorage: HttpClientStorage,
         launch: Boolean
-    ): Pair<Pair<HttpStatusCode, HttpStatusCode>, Pair<OwmResponse, WeatherApiResponse>> {
+    ): Pair<HttpStatusCode, WeatherApiResponse> {
 
         val checkInternetConnection =
             checkInternetConnection(context = App.INSTANCE.applicationContext)
@@ -602,27 +589,22 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                 CoroutineScope(Dispatchers.Main).launch {
                     navController.navigate(route = Screens.Content)
                 }
-            var weatherEither: WeatherEither<String, HttpStatusCode, GMTDate> =
-                httpClientStorage.get()
-            val owmResponse = convertStringToJson<OwmResponse>(jsonString = weatherEither.data)
-            val fistCode = weatherEither.httpStatusCode
-
-            weatherEither = httpClientStorage.getWeatherApi()
+            val weatherEither = httpClientStorage.getWeatherApi<String, HttpStatusCode, GMTDate>()
             val weatherApiResponse =
                 convertStringToJson<WeatherApiResponse>(jsonString = weatherEither.data)
             val secondCode = weatherEither.httpStatusCode
 
             return Pair(
-                first = Pair(first = fistCode, second = secondCode),
-                second = Pair(first = owmResponse, second = weatherApiResponse)
+                secondCode,
+                weatherApiResponse
             )
         } else {
             CoroutineScope(Dispatchers.Main).launch {
                 navController.navigate(route = Screens.NoConnection)
             }
             return Pair(
-                first = Pair(first = HttpStatusCode(-1, ""), second = HttpStatusCode(-1, "")),
-                second = Pair(first = OwmResponse(), second = WeatherApiResponse())
+                HttpStatusCode(-1, ""),
+                WeatherApiResponse()
             )
         }
     }

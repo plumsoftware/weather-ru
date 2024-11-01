@@ -39,7 +39,6 @@ interface ContentStore :
         val country: String = "",
         val dropDownState: Boolean = false,
         val checkBoxState: Boolean = true,
-        val owmResponse: OwmResponse = OwmResponse(),
         val weatherUnits: WeatherUnits = WeatherUnits(
             unitsPresentation = "", unitsValue = ""
         ),
