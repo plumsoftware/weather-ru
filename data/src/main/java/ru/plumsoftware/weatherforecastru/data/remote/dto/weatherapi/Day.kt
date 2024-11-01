@@ -24,6 +24,6 @@ data class Day (
   @SerializedName("daily_will_it_snow"   ) var dailyWillItSnow   : Double?       = null,
   @SerializedName("daily_chance_of_snow" ) var dailyChanceOfSnow : Double?       = null,
   @SerializedName("condition"            ) var condition         : Condition? = Condition(),
-  @SerializedName("uv"                   ) var uv                : Int?       = null
+  @SerializedName("uv"                   ) var uv                : Double?       = null
 
 )

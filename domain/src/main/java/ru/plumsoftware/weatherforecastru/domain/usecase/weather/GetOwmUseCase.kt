@@ -5,7 +5,7 @@ import ru.plumsoftware.weatherforecastru.domain.repository.OwmRepository
 
 class GetOwmUseCase (private val owmRepository: OwmRepository) {
     suspend fun <D, E, R> execute () : WeatherEither<D, E, R> {
-        val weatherEither: WeatherEither<D, E, R> = owmRepository.getOwm<D, E, R>()
+        val weatherEither: WeatherEither<D, E, R> = owmRepository.getOwm()
         return weatherEither
     }
 }

@@ -1,11 +1,9 @@
 package ru.plumsoftware.weatherforecastru.di
 
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.android.Android
+import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.plugins.logging.LogLevel
-import io.ktor.client.plugins.logging.Logging
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
@@ -20,7 +18,7 @@ import ru.plumsoftware.weatherforecastru.domain.usecase.weather.GetWeatherApiUse
 internal val httpClientModel = module {
     single<OwmRepository> {
         OwmRepositoryImpl(
-            client = HttpClient(Android) {
+            client = HttpClient(CIO) {
 //                install(Logging) {
 //                    level = LogLevel.ALL
 //                }
@@ -28,13 +26,14 @@ internal val httpClientModel = module {
                 install(ContentNegotiation) {
                     json(
                         Json {
+                            ignoreUnknownKeys = true
                             prettyPrint = true
                             isLenient = true
                         }
                     )
                 }
                 install(HttpTimeout) {
-                    requestTimeoutMillis = 120000
+                    requestTimeoutMillis = 30000
                 }
             },
             sharedPreferencesStorage = get()
@@ -43,7 +42,7 @@ internal val httpClientModel = module {
 
     single<WeatherApiRepository> {
         WeatherApiRepositoryImpl(
-            client = HttpClient(Android) {
+            client = HttpClient(CIO) {
 //                install(Logging) {
 //                    level = LogLevel.ALL
 //                }
@@ -51,13 +50,14 @@ internal val httpClientModel = module {
                 install(ContentNegotiation) {
                     json(
                         Json {
+                            ignoreUnknownKeys = true
                             prettyPrint = true
                             isLenient = true
                         }
                     )
                 }
                 install(HttpTimeout) {
-                    requestTimeoutMillis = 120000
+                    requestTimeoutMillis = 30000
                 }
             },
             sharedPreferencesStorage = get()

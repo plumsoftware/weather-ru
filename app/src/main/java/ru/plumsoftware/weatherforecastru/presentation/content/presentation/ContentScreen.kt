@@ -1,5 +1,3 @@
-//@file:Suppress("CAST_NEVER_SUCCEEDS")
-
 package ru.plumsoftware.weatherforecastru.presentation.content.presentation
 
 import android.annotation.SuppressLint
@@ -20,8 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,7 +29,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.viewinterop.AndroidView
 import com.yandex.mobile.ads.common.AdRequestError
@@ -50,7 +45,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import ru.plumsoftware.uicomponents.PlumsoftwareIconPack
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.Weather
-import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.CleanNight
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Drops
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Hazzy
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Sunny
@@ -71,7 +65,6 @@ import ru.plumsoftware.weatherforecastru.presentation.content.presentation.compo
 import ru.plumsoftware.weatherforecastru.presentation.content.store.ContentStore
 import ru.plumsoftware.weatherforecastru.presentation.content.viewmodel.ContentViewModel
 import ru.plumsoftware.weatherforecastru.presentation.ui.md_theme_humidity_color
-import ru.plumsoftware.weatherforecastru.presentation.ui.md_theme_moon_phase
 import ru.plumsoftware.weatherforecastru.presentation.ui.md_theme_sunny_color
 import ru.plumsoftware.weatherforecastru.presentation.ui.md_theme_visibility_color
 import ru.plumsoftware.weatherforecastru.presentation.ui.md_theme_wind_color
@@ -416,7 +409,7 @@ private fun ContentScreen(
                                         )
                                     ) {
                                         DetailComponent(
-                                            title = calculateUVIndex(state.weatherApiResponse.current!!.uv!!),
+                                            title = calculateUVIndex(state.weatherApiResponse.current!!.uv!!.toInt()),
                                             description = stringResource(id = R.string.uv_index),
                                             pair = Pair(
                                                 PlumsoftwareIconPack.Weather.Sunny,
