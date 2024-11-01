@@ -17,7 +17,6 @@ import ru.plumsoftware.weatherforecastru.presentation.content.store.ContentStore
 class ContentViewModel(
     storeFactory: StoreFactory,
     sharedPreferencesStorage: SharedPreferencesStorage,
-    owmResponse: OwmResponse,
     weatherApiResponse: WeatherApiResponse,
     adsList: MutableList<NativeAd>,
     isAdsLoading: Boolean,
@@ -29,7 +28,6 @@ class ContentViewModel(
     private val contentStore = ContentStoreFactory(
         storeFactory = storeFactory,
         sharedPreferencesStorage = sharedPreferencesStorage,
-        owmResponse = owmResponse,
         weatherApiResponse = weatherApiResponse,
         adsList = adsList,
         isAdsLoading = isAdsLoading,

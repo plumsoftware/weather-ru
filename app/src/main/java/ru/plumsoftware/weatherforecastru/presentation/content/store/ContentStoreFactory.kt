@@ -25,7 +25,6 @@ import java.util.Date
 class ContentStoreFactory(
     private val storeFactory: StoreFactory,
     private val sharedPreferencesStorage: SharedPreferencesStorage,
-    private val owmResponse: OwmResponse,
     private val weatherApiResponse: WeatherApiResponse,
     private val adsList: MutableList<NativeAd>,
     private val isAdsLoading: Boolean,
@@ -89,7 +88,6 @@ class ContentStoreFactory(
         data class IsDark(val value: Boolean) : Msg
 
         //        region::Weather
-        data class OwmResponseMsg(val value: OwmResponse) : Msg
         data class WeatherUnitsMsg(val value: WeatherUnits) : Msg
         data class WeatherApiResponseMsg(val value: WeatherApiResponse) : Msg
         data class WindSpeedMsg(val value: WindSpeed) : Msg
@@ -109,7 +107,6 @@ class ContentStoreFactory(
 
                 is Msg.CheckBoxValue -> copy(checkBoxState = msg.value)
                 is Msg.DropDownMenu -> copy(dropDownState = !msg.value)
-                is Msg.OwmResponseMsg -> copy(owmResponse = msg.value)
                 is Msg.WeatherUnitsMsg -> copy(weatherUnits = msg.value)
                 is Msg.WeatherApiResponseMsg -> copy(weatherApiResponse = msg.value)
                 is Msg.WindSpeedMsg -> copy(windSpeed = msg.value)
@@ -177,7 +174,6 @@ class ContentStoreFactory(
                 is Action.InitTips -> initTips()
                 Action.InitWeather -> initWeather(
                     sharedPreferencesStorage = sharedPreferencesStorage,
-                    owmResponse = owmResponse,
                     weatherApiResponse = weatherApiResponse,
                     owmCode = owmCode,
                     weatherApiCode = weatherApiCode
@@ -221,7 +217,6 @@ class ContentStoreFactory(
 
         private fun initWeather(
             sharedPreferencesStorage: SharedPreferencesStorage,
-            owmResponse: OwmResponse,
             weatherApiResponse: WeatherApiResponse,
             owmCode: Int,
             weatherApiCode: Int
@@ -232,7 +227,6 @@ class ContentStoreFactory(
                     if (owmCode in 300..599) {
                         dispatch(ContentStoreFactory.Msg.OwmCode(value = owmCode))
                     } else {
-                        dispatch(ContentStoreFactory.Msg.OwmResponseMsg(value = owmResponse))
                         dispatch(ContentStoreFactory.Msg.WeatherUnitsMsg(value = weatherUnits))
                         dispatch(ContentStoreFactory.Msg.WindSpeedMsg(value = windSpeed))
                         dispatch(ContentStoreFactory.Msg.ShowTipsMsg(value = showTips))

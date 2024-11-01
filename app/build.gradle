@@ -12,10 +12,10 @@ android {
 
     defaultConfig {
         applicationId "ru.plumsoftware.weatherforecastru"
-        minSdk 22
+        minSdk 26
         targetSdk 34
-        versionCode 21
-        versionName "3.0.5"
+        versionCode 22
+        versionName "3.0.6"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

@@ -177,17 +177,17 @@ private fun ContentScreen(
                 }
 
                 item {
-                    with(state.owmResponse) {
+                    with(state.weatherApiResponse) {
                         WeatherStatus(
-                            description = weather[0].description!!,
-                            temp = main!!.temp!!.toInt().toString(),
-                            tempMax = main!!.tempMax!!.toInt().toString(),
-                            tempMin = main!!.tempMin!!.toInt().toString(),
-                            tempFeelsLike = main!!.feelsLike!!.toInt().toString(),
+                            description = current?.condition?.text ?: "",
+                            temp = (current?.tempC  ?: 1.0).toInt().toString(),
+                            tempMax = forecast?.forecastday?.get(0)?.day?.maxtempC?.toInt().toString(),
+                            tempMin = forecast?.forecastday?.get(0)?.day?.mintempC?.toInt().toString(),
+                            tempFeelsLike = current?.feelslikeC?.toInt().toString(),
                             weatherUnit = "",
-                            iconId = weather[0].id!!,
-                            base = base!!,
-                            httpCode = state.owmCode
+                            iconId = current?.condition?.code!!,
+                            base = current?.condition?.text!!,
+                            httpCode = state.weatherApiCode
                         )
                     }
                 }
@@ -320,7 +320,7 @@ private fun ContentScreen(
                                         modifier = Modifier.fillMaxWidth(),
                                         style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
                                     )
-                                    TipsComponent(base = state.owmResponse.base!!)
+                                    TipsComponent(code = state.weatherApiCode)
                                 }
 //            endregion
 
@@ -384,7 +384,9 @@ private fun ContentScreen(
                                         )
                                     ) {
                                         DetailComponent(
-                                            title = "${state.owmResponse.visibility}м",
+                                            title = "${state.weatherApiResponse.current?.visKm?.times(
+                                                1000
+                                            )}м",
                                             description = stringResource(id = R.string.visibility),
                                             pair = Pair(
                                                 PlumsoftwareIconPack.Weather.Hazzy,
@@ -393,7 +395,7 @@ private fun ContentScreen(
                                         )
 
                                         DetailComponent(
-                                            title = "${state.owmResponse.main!!.humidity}%",
+                                            title = "${state.weatherApiResponse.current?.humidity}%",
                                             description = stringResource(id = R.string.humidity),
                                             pair = Pair(
                                                 PlumsoftwareIconPack.Weather.Drops,
@@ -418,8 +420,8 @@ private fun ContentScreen(
                                         )
 
                                         DetailComponent(
-                                            title = "${state.owmResponse.wind!!.speed!!.toInt()} ${state.windSpeed.windPresentation}",
-                                            description = windDirectionFull(state.owmResponse.wind!!.deg!!),
+                                            title = "${state.weatherApiResponse.current?.windKph?.toInt()} ${state.weatherApiResponse.current?.windDir}",
+                                            description = windDirectionFull(state.weatherApiResponse.current?.windDegree!!),
                                             pair = Pair(
                                                 PlumsoftwareIconPack.Weather.Windy,
                                                 md_theme_wind_color

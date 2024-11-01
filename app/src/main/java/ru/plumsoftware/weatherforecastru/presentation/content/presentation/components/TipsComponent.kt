@@ -21,7 +21,7 @@ import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingVal
 import java.time.LocalDateTime
 
 @Composable
-fun TipsComponent(base: String) {
+fun TipsComponent(code: Int) {
     Card(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 0.dp,
@@ -43,7 +43,7 @@ fun TipsComponent(base: String) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.padding(all = ExtensionPaddingValues._14dp)
         ) {
-            if (base.isEmpty())
+            if (code in 400..404)
                 CircularProgressIndicator()
             else {
                 Text(
