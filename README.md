@@ -7,7 +7,7 @@
 Полный список библиотек:
  - Room
  - FCM
- - Kapt
+ - KSP
  - lint
  - РСЯ SDK
  - Koin
@@ -15,7 +15,7 @@
  - UI controller
  - Glance widget
  - Ycharts
- - Google navigation
+ - Jetpack navigation
  - Ktor
 
 Это мой первый проект на таком стеке.
