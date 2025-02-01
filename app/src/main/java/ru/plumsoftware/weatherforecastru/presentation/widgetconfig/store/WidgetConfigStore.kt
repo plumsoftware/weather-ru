@@ -1,7 +1,7 @@
 package ru.plumsoftware.weatherforecastru.presentation.widgetconfig.store
 
 import com.arkivanov.mvikotlin.core.store.Store
-import ru.plumsoftware.weatherforecastru.domain.models.widget.WidgetConfig
+import ru.plumsoftware.weatherforecastru.data.models.widget.WidgetConfig
 
 interface WidgetConfigStore :
     Store<WidgetConfigStore.Intent, WidgetConfigStore.State, WidgetConfigStore.Label> {

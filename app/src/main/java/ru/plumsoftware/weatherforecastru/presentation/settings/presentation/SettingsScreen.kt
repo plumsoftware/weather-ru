@@ -43,12 +43,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.glance.appwidget.lazy.LazyColumn
 import ru.plumsoftware.uicomponents.PlumsoftwareIconPack
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.Settings
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.settings.Darkmode
+import ru.plumsoftware.weatherforecast.BuildConfig
 import ru.plumsoftware.weatherforecast.R
-import ru.plumsoftware.weatherforecastru.domain.models.settings.NotificationItem
+import ru.plumsoftware.weatherforecastru.data.models.settings.NotificationItem
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecastru.material.components.TopBar
 import ru.plumsoftware.weatherforecastru.presentation.settings.viewmodel.SettingsViewModel
@@ -543,7 +543,7 @@ private fun SettingsScreen(
                                     }
 
 //                            Share application
-                                    if (ru.plumsoftware.data.BuildConfig.platform == "RuStore")
+                                    if (BuildConfig.platform == "RuStore")
                                         Button(
                                             onClick = { event(SettingsStore.Intent.Share) },
                                             contentPadding = PaddingValues(
@@ -588,7 +588,7 @@ private fun SettingsScreen(
                     }
                     item {
 //                        MARK: Feedback
-                        if (ru.plumsoftware.data.BuildConfig.platform == "RuStore")
+                        if (BuildConfig.platform == "RuStore")
                             Column(modifier = Modifier.fillMaxWidth()) {
                                 Text(
                                     text = stringResource(id = R.string.feedback),

@@ -42,7 +42,7 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecastru.application.App
-import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
+import ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecastru.material.components.BackArrowButton
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecastru.presentation.ui.SetupUIController
@@ -58,7 +58,7 @@ import ru.plumsoftware.weatherforecastru.utilites.getWallpaper
 
 class WidgetConfigActivity : ComponentActivity(), KoinComponent {
 
-    private val sharedPreferencesStorage by inject<SharedPreferencesStorage>()
+    private val sharedPreferencesStorage by inject<ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

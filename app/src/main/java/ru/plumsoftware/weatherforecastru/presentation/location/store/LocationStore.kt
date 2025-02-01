@@ -3,7 +3,7 @@ package ru.plumsoftware.weatherforecastru.presentation.location.store
 import androidx.compose.ui.focus.FocusRequester
 import com.arkivanov.mvikotlin.core.store.Store
 import ru.plumsoftware.weatherforecastru.data.models.location.LocationItem
-import ru.plumsoftware.weatherforecastru.domain.models.location.Location
+import ru.plumsoftware.weatherforecastru.data.models.location.Location
 
 interface LocationStore :
     Store<LocationStore.Intent, LocationStore.State, LocationStore.Label> {
@@ -23,9 +23,9 @@ interface LocationStore :
 
         data class ShowDialog(val value: Boolean) : Intent
 
-        data class DeleteLocation(val locationItem: LocationItem) : Intent
+        data class DeleteLocation(val locationItem: _root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem) : Intent
 
-        data class ChangeSelectedLocationItem(val locationItem: LocationItem) : Intent
+        data class ChangeSelectedLocationItem(val locationItem: _root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem) : Intent
     }
 
     data class State(
@@ -34,10 +34,12 @@ interface LocationStore :
         val isSyntaxError: Boolean = false,
         val isVisibleCloseIcon: Boolean = false,
         val focusRequester: FocusRequester = FocusRequester(),
-        val items: List<LocationItem> = emptyList(),
+        val items: List<_root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem> = emptyList(),
         val showDialog: Boolean = false,
         val selectedLocation: Location = Location(city = city, country = country),
-        val selectedLocationItem: LocationItem = LocationItem(city = city)
+        val selectedLocationItem: _root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem = _root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem(
+            city = city
+        )
     )
 
     sealed interface Label {
@@ -45,6 +47,6 @@ interface LocationStore :
 
         data class ConfirmLocation(val location: Location) : Label
 
-        data class DeleteLocation(val locationItem: LocationItem) : Label
+        data class DeleteLocation(val locationItem: _root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem) : Label
     }
 }

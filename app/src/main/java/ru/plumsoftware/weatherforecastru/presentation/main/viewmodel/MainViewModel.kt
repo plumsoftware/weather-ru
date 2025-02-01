@@ -7,7 +7,7 @@ import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import ru.plumsoftware.weatherforecastru.domain.storage.HttpClientStorage
+import ru.plumsoftware.weatherforecastru.data.storage.HttpClientStorage
 import ru.plumsoftware.weatherforecastru.presentation.main.store.MainStore
 import ru.plumsoftware.weatherforecastru.presentation.main.store.MainStoreFactory
 
@@ -15,7 +15,7 @@ class MainViewModel(
     storeFactory: StoreFactory,
     private val output: (MainViewModel.Output) -> Unit,
     city: String,
-    httpClientStorage: HttpClientStorage
+    httpClientStorage: ru.plumsoftware.weatherforecastru.data.storage.HttpClientStorage
 ) : ViewModel() {
     //    region::Variables
     private val mainStore = MainStoreFactory(

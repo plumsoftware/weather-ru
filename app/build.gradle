@@ -4,30 +4,47 @@ plugins {
     id 'com.google.gms.google-services'
     id 'org.jetbrains.kotlin.plugin.compose'
     id 'com.google.devtools.ksp'
+    id("androidx.room")
 }
 
 android {
     namespace 'ru.plumsoftware.weatherforecast'
     compileSdk 34
 
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file("local.properties").newDataInputStream())
+
     defaultConfig {
         applicationId "ru.plumsoftware.weatherforecastru"
         minSdk 22
         targetSdk 34
-        versionCode 21
-        versionName "3.0.5"
+        versionCode 24
+        versionName "3.0.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
         }
 
+        buildConfigField "String", "OWM_API_KEY", "\"${properties.getProperty("OWM_API_KEY")}\""
+        buildConfigField "String", "WEATHER_API", "\"${properties.getProperty("WEATHER_API")}\""
+        buildConfigField "String", "platform", "\"${properties.getProperty("platform")}\""
+        buildConfigField "String", "showNativeAd", "\"${properties.getProperty("showNativeAd")}\""
+
+        buildConfigField "String", "BANNER_ADS_ID", "\"${properties.getProperty("BANNER_ADS_ID")}\""
+        buildConfigField "String", "OPEN_ADS_ID", "\"${properties.getProperty("OPEN_ADS_ID")}\""
+        buildConfigField "String", "NATIVE_ADS_ID", "\"${properties.getProperty("NATIVE_ADS_ID")}\""
+    }
+
+    room {
+        schemaDirectory("$projectDir/schemas")
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
     }
 
@@ -96,7 +113,7 @@ dependencies {
     androidTestImplementation platform('androidx.compose:compose-bom:2023.03.00')
     androidTestImplementation platform('androidx.compose:compose-bom:2023.03.00')
 
-    def koin_version = "3.5.6"
+    def koin_version = "4.0.2"
     def essenty_version = "1.1.0"
 
     def mvi_kotlin = "mvikotlin"
@@ -117,13 +134,13 @@ dependencies {
 
     def material_icons = "1.5.0"
 
-    def room_version = "2.6.0"
+    def room_version = "2.6.1"
 
     def ktor_version = "2.3.12"
     def logback_version = "1.2.11"
     def json_serialization_version = "1.6.3"
 
-    def yandex_ads_version = "7.6.0"
+    def yandex_ads_version = "7.9.0"
 
     def glance_version = "1.0.0-rc01"
     def glance_material_version = "1.0.0-rc01"
@@ -170,7 +187,7 @@ dependencies {
     implementation "androidx.room:room-runtime:$room_version"
     ksp "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
-    annotationProcessor("androidx.room:room-compiler:$room_version")
+//    annotationProcessor("androidx.room:room-compiler:$room_version")
 
 //    Ktor
     implementation("io.ktor:ktor-client-core:$ktor_version")
@@ -200,7 +217,5 @@ dependencies {
 //    implementation "co.yml:ycharts:$ycharts_version"
 
 //    Modules
-    implementation project(path: ":domain")
-    implementation project(path: ":data")
     implementation project(path: ":uicomponents")
 }

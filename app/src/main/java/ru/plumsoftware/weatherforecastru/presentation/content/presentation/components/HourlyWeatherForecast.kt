@@ -24,9 +24,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import ru.plumsoftware.weatherforecast.R
+import ru.plumsoftware.weatherforecastru.data.constants.Constants
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.Hour
-import ru.plumsoftware.weatherforecastru.domain.constants.Constants
-import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
+import ru.plumsoftware.weatherforecastru.data.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionSize
 import ru.plumsoftware.weatherforecastru.presentation.ui.md_theme_text_cover

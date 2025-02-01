@@ -6,19 +6,25 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
-import org.koin.android.ext.android.inject
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
-import org.koin.core.component.KoinComponent
-import org.koin.core.context.startKoin
-import org.koin.core.logger.Level
-import ru.plumsoftware.weatherforecastru.di.databaseModule
-import ru.plumsoftware.weatherforecastru.di.domainModuleDI
-import ru.plumsoftware.weatherforecastru.di.httpClientModel
-import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
+import ru.plumsoftware.weatherforecastru.data.repository.SharedPreferencesRepositoryImpl
+import ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.GetFirstUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.GetNotificationItemUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.GetUserSettingsShowTipsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.GetUserSettingsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveFirstUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveNotificationItemUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsAppThemeUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsLocationUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsShowTipsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsWeatherUnitsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsWindUnitsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.widget.GetWidgetConfigUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.widget.SaveWidgetConfigUseCase
 import ru.plumsoftware.weatherforecastru.messanging.local.SimpleNotificationService
 
-class App : Application(), KoinComponent {
+class App : Application() {
 
     companion object {
         lateinit var INSTANCE: App
@@ -27,14 +33,54 @@ class App : Application(), KoinComponent {
     override fun onCreate() {
         super.onCreate()
         INSTANCE = this
-        startKoin {
-            androidContext(this@App)
-            androidLogger(Level.DEBUG)
-            modules(listOf(domainModuleDI, databaseModule, httpClientModel))
-        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val sharedPreferencesStorage: SharedPreferencesStorage by inject()
+            val sharedPreferencesRepository = SharedPreferencesRepositoryImpl(context = INSTANCE)
+            val sharedPreferencesStorage = SharedPreferencesStorage(
+                getUserSettingsUseCase = ru.plumsoftware.weatherforecastru.data.usecase.settings.GetUserSettingsUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                getUserSettingsShowTipsUseCase = GetUserSettingsShowTipsUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                getFirstUseCase = GetFirstUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveUserSettingsUseCase = SaveUserSettingsUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveUserSettingsAppThemeUseCase = SaveUserSettingsAppThemeUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveUserSettingsShowTipsUseCase = ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsShowTipsUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveUserSettingsWeatherUnitsUseCase = SaveUserSettingsWeatherUnitsUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveUserSettingsWindUnitsUseCase = SaveUserSettingsWindUnitsUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveUserSettingsLocationUseCase = ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsLocationUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveFirstUseCase = SaveFirstUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveWidgetConfigUseCase = SaveWidgetConfigUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                getWidgetConfigUseCase = GetWidgetConfigUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                getNotificationItemUseCase = GetNotificationItemUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveNotificationItemUseCase = SaveNotificationItemUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                )
+            )
+
             createNotificationChannel(sharedPreferencesStorage = sharedPreferencesStorage)
         }
     }

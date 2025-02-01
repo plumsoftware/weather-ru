@@ -17,8 +17,8 @@ import ru.plumsoftware.weatherforecastru.application.App
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
 import ru.plumsoftware.weatherforecastru.data.utilities.showToast
-import ru.plumsoftware.weatherforecastru.domain.remote.dto.either.WeatherEither
-import ru.plumsoftware.weatherforecastru.domain.storage.HttpClientStorage
+import ru.plumsoftware.weatherforecastru.data.remote.either.WeatherEither
+import ru.plumsoftware.weatherforecastru.data.storage.HttpClientStorage
 
 private inline fun <reified T> convertStringToJson(jsonString: String): T =
     Gson().fromJson(jsonString, T::class.java)
@@ -50,7 +50,7 @@ private fun checkInternetConnection(context: Context): Boolean {
 }
 
 suspend fun doHttpResponse(
-    httpClientStorage: HttpClientStorage
+    httpClientStorage: ru.plumsoftware.weatherforecastru.data.storage.HttpClientStorage
 ): Pair<Pair<HttpStatusCode, HttpStatusCode>, Pair<OwmResponse, WeatherApiResponse>> {
 
     val checkInternetConnection =
