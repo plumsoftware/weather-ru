@@ -11,12 +11,12 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
-import ru.plumsoftware.weatherforecastru.domain.models.widget.WidgetConfig
-import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
+import ru.plumsoftware.weatherforecastru.data.models.widget.WidgetConfig
+import ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage
 
 class WidgetConfigStoreFactory(
     private val storeFactory: StoreFactory,
-    private val sharedPreferencesStorage: SharedPreferencesStorage
+    private val sharedPreferencesStorage: ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage
 ) {
 
     @OptIn(ExperimentalMviKotlinApi::class)

@@ -54,7 +54,7 @@ import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Windy
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecastru.application.App
 import ru.plumsoftware.weatherforecastru.data.utilities.logd
-import ru.plumsoftware.weatherforecastru.domain.models.location.Location
+import ru.plumsoftware.weatherforecastru.data.models.location.Location
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecastru.presentation.content.presentation.components.CityComponent
 import ru.plumsoftware.weatherforecastru.presentation.content.presentation.components.DetailComponent
@@ -135,7 +135,8 @@ private fun ContentScreen(
             content = {
 
                 item {
-                    CityComponent(Location(city = state.city, country = state.country),
+                    CityComponent(
+                        Location(city = state.city, country = state.country),
                         dropDownMenuExpanded = state.dropDownState,
                         onCLickMoreVert = {
                             contentViewModel.onEvent(

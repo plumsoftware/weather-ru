@@ -5,8 +5,8 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.yandex.mobile.ads.nativeads.NativeAd
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
-import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
-import ru.plumsoftware.weatherforecastru.domain.models.settings.WindSpeed
+import ru.plumsoftware.weatherforecastru.data.models.settings.WeatherUnits
+import ru.plumsoftware.weatherforecastru.data.models.settings.WindSpeed
 import java.time.LocalDateTime
 import java.util.Calendar
 

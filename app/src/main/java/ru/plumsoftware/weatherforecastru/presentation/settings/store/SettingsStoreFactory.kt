@@ -7,11 +7,11 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
-import ru.plumsoftware.weatherforecastru.domain.constants.Constants
-import ru.plumsoftware.weatherforecastru.domain.models.settings.NotificationItem
-import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
-import ru.plumsoftware.weatherforecastru.domain.models.settings.WindSpeed
-import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
+import ru.plumsoftware.weatherforecastru.data.constants.Constants
+import ru.plumsoftware.weatherforecastru.data.models.settings.NotificationItem
+import ru.plumsoftware.weatherforecastru.data.models.settings.WeatherUnits
+import ru.plumsoftware.weatherforecastru.data.models.settings.WindSpeed
+import ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage
 
 class SettingsStoreFactory(
     private val storeFactory: StoreFactory,
@@ -41,7 +41,7 @@ class SettingsStoreFactory(
         data class CheckBoxValue(val value: Boolean) : Msg
         data class WeatherUnit(val value: WeatherUnits) : Msg
         data class WindUnit(val value: WindSpeed) : Msg
-        data class NotificationItem(val value: ru.plumsoftware.weatherforecastru.domain.models.settings.NotificationItem) :
+        data class NotificationItem(val value: ru.plumsoftware.weatherforecastru.data.models.settings.NotificationItem) :
             Msg
 
         data class ExpandedDropDownMenu(val value: Boolean) : Msg

@@ -29,6 +29,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.room.Room
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
@@ -47,23 +48,55 @@ import com.yandex.mobile.ads.nativeads.NativeAd
 import com.yandex.mobile.ads.nativeads.NativeAdRequestConfiguration
 import com.yandex.mobile.ads.nativeads.NativeBulkAdLoadListener
 import com.yandex.mobile.ads.nativeads.NativeBulkAdLoader
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.date.GMTDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import org.koin.android.ext.koin.androidContext
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import ru.plumsoftware.weatherforecast.BuildConfig
 import ru.plumsoftware.weatherforecast.R
+import ru.plumsoftware.weatherforecastru.data.constants.Constants
+import ru.plumsoftware.weatherforecastru.data.database.LocationItemDatabase
 import ru.plumsoftware.weatherforecastru.data.models.location.LocationItemDao
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
 import ru.plumsoftware.weatherforecastru.data.utilities.logd
-import ru.plumsoftware.weatherforecastru.domain.constants.Constants
-import ru.plumsoftware.weatherforecastru.domain.remote.dto.either.WeatherEither
-import ru.plumsoftware.weatherforecastru.domain.storage.HttpClientStorage
-import ru.plumsoftware.weatherforecastru.domain.storage.LocationStorage
-import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
+import ru.plumsoftware.weatherforecastru.data.remote.either.WeatherEither
+import ru.plumsoftware.weatherforecastru.data.repository.LocationRepository
+import ru.plumsoftware.weatherforecastru.data.repository.LocationRepositoryImpl
+import ru.plumsoftware.weatherforecastru.data.repository.OwmRepositoryImpl
+import ru.plumsoftware.weatherforecastru.data.repository.SharedPreferencesRepository
+import ru.plumsoftware.weatherforecastru.data.repository.SharedPreferencesRepositoryImpl
+import ru.plumsoftware.weatherforecastru.data.repository.WeatherApiRepositoryImpl
+import ru.plumsoftware.weatherforecastru.data.storage.HttpClientStorage
+import ru.plumsoftware.weatherforecastru.data.storage.LocationStorage
+import ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage
+import ru.plumsoftware.weatherforecastru.data.usecase.location.GetLastKnownLocationUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.GetFirstUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.GetNotificationItemUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.GetUserSettingsShowTipsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.GetUserSettingsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveFirstUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveNotificationItemUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsAppThemeUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsLocationUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsShowTipsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsWeatherUnitsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsWindUnitsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetOwmUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetWeatherApiUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.widget.GetWidgetConfigUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.widget.SaveWidgetConfigUseCase
 import ru.plumsoftware.weatherforecastru.presentation.noconnection.presentation.NoConnection
 import ru.plumsoftware.weatherforecastru.presentation.aboutapp.presentation.AboutApp
 import ru.plumsoftware.weatherforecastru.presentation.aboutapp.viewmodel.AboutAppViewModel
@@ -87,13 +120,16 @@ import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.viewmodel.Wid
 import ru.plumsoftware.weatherforecastru.service.JOB_ID
 import ru.plumsoftware.weatherforecastru.service.MyJobService
 
-class MainApplicationActivity : ComponentActivity(), KoinComponent {
+class MainApplicationActivity : ComponentActivity() {
     private var isDarkTheme = mutableStateOf(false)
     private lateinit var navController: NavHostController
     private lateinit var analytics: FirebaseAnalytics
     private val appOpenAdEventListener = AdEventListener()
     private var myAppOpenAd: AppOpenAd? = null
-    private val sharedPreferencesStorage by inject<SharedPreferencesStorage>()
+
+    private lateinit var sharedPreferencesStorage: SharedPreferencesStorage
+
+    private val context = this
 
     //    region:Override
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -110,14 +146,87 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         setContent {
 
 //            region::Variables
-            val locationItemDao by inject<LocationItemDao>()
-            val locationStorage by inject<LocationStorage>()
-            val httpClientStorage by inject<HttpClientStorage>()
+            val room = Room.databaseBuilder(
+                context,
+                LocationItemDatabase::class.java,
+                Constants.Database.DATABASE_NAME
+            ).build()
+            val client = HttpClient(CIO) {
+                install(ContentNegotiation) {
+                    json(
+                        Json {
+                            ignoreUnknownKeys = true
+                            prettyPrint = true
+                            isLenient = true
+                        }
+                    )
+                }
+                install(HttpTimeout) {
+                    requestTimeoutMillis = 30000
+                }
+            }
+
+            val sharedPreferencesRepository = SharedPreferencesRepositoryImpl(context = context)
+
+            val locationItemDao = room.dao
+            val locationStorage = LocationStorage(
+                getLastKnownLocationUseCase = GetLastKnownLocationUseCase(locationRepository = LocationRepositoryImpl(context = context))
+            )
+            sharedPreferencesStorage = SharedPreferencesStorage(
+                getUserSettingsUseCase = ru.plumsoftware.weatherforecastru.data.usecase.settings.GetUserSettingsUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                getUserSettingsShowTipsUseCase = GetUserSettingsShowTipsUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                getFirstUseCase = GetFirstUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveUserSettingsUseCase = SaveUserSettingsUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveUserSettingsAppThemeUseCase = SaveUserSettingsAppThemeUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveUserSettingsShowTipsUseCase = ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsShowTipsUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveUserSettingsWeatherUnitsUseCase = SaveUserSettingsWeatherUnitsUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveUserSettingsWindUnitsUseCase = SaveUserSettingsWindUnitsUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveUserSettingsLocationUseCase = ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsLocationUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveFirstUseCase = SaveFirstUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveWidgetConfigUseCase = SaveWidgetConfigUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                getWidgetConfigUseCase = GetWidgetConfigUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                getNotificationItemUseCase = GetNotificationItemUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                ),
+                saveNotificationItemUseCase = SaveNotificationItemUseCase(
+                    sharedPreferencesRepository = sharedPreferencesRepository
+                )
+            )
+            val owmRepository = OwmRepositoryImpl(client = client, sharedPreferencesStorage = sharedPreferencesStorage)
+            val weatherApiRepository = WeatherApiRepositoryImpl(client = client, sharedPreferencesStorage = sharedPreferencesStorage)
+            val httpClientStorage = HttpClientStorage(
+                getOwmUseCase = GetOwmUseCase(owmRepository = owmRepository),
+                getWeatherApiUseCase = GetWeatherApiUseCase(weatherApiRepository = weatherApiRepository)
+            )
             val context = LocalContext.current
             val sharedDesc = stringResource(id = R.string.share_description)
             val appOpenAdLoader: AppOpenAdLoader = AppOpenAdLoader(application)
             val adRequestConfigurationOpenAds =
-                AdRequestConfiguration.Builder(ru.plumsoftware.data.BuildConfig.OPEN_ADS_ID).build()
+                AdRequestConfiguration.Builder(BuildConfig.OPEN_ADS_ID).build()
 
             analytics = Firebase.analytics
             isDarkTheme =
@@ -209,7 +318,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                         appOpenAdLoader.loadAd(adRequestConfigurationOpenAds)
 //                    endregion
 //                    region::Native ads
-                        if (ru.plumsoftware.data.BuildConfig.showNativeAd.toBoolean()) {
+                        if (BuildConfig.showNativeAd.toBoolean()) {
                             val nativeAdsLoader = NativeBulkAdLoader(context).apply {
                                 setNativeBulkAdLoadListener(object : NativeBulkAdLoadListener {
 //                                    override fun onAdsLoaded(p0: MutableList<NativeAd>) {
@@ -231,7 +340,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
                                 })
                             }
                             val adRequestConfigurationNativeAds =
-                                NativeAdRequestConfiguration.Builder(ru.plumsoftware.data.BuildConfig.NATIVE_ADS_ID)
+                                NativeAdRequestConfiguration.Builder(BuildConfig.NATIVE_ADS_ID)
                                     .build()
                             nativeAdsLoader.loadAds(adRequestConfigurationNativeAds, 1)
                         }
@@ -654,7 +763,7 @@ class MainApplicationActivity : ComponentActivity(), KoinComponent {
         return true
     }
 
-    private fun scheduleBackgroundJob(sharedPreferencesStorage: SharedPreferencesStorage) {
+    private fun scheduleBackgroundJob(sharedPreferencesStorage: ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage) {
         if (sharedPreferencesStorage.getNotificationItem().period > 0) {
             logd(sharedPreferencesStorage.getNotificationItem().period.toString())
             val jobScheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler

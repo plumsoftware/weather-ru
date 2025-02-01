@@ -2,9 +2,9 @@ package ru.plumsoftware.weatherforecastru.presentation.settings.store
 
 import com.arkivanov.mvikotlin.core.store.Store
 import ru.plumsoftware.weatherforecast.R
-import ru.plumsoftware.weatherforecastru.domain.models.settings.NotificationItem
-import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
-import ru.plumsoftware.weatherforecastru.domain.models.settings.WindSpeed
+import ru.plumsoftware.weatherforecastru.data.models.settings.NotificationItem
+import ru.plumsoftware.weatherforecastru.data.models.settings.WeatherUnits
+import ru.plumsoftware.weatherforecastru.data.models.settings.WindSpeed
 
 interface SettingsStore :
     Store<SettingsStore.Intent, SettingsStore.State, SettingsStore.Label> {

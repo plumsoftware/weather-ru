@@ -10,14 +10,13 @@ import kotlinx.coroutines.flow.StateFlow
 import ru.plumsoftware.weatherforecastru.data.models.location.LocationItem
 import ru.plumsoftware.weatherforecastru.data.models.location.LocationItemDao
 import ru.plumsoftware.weatherforecastru.data.utilities.showToast
-import ru.plumsoftware.weatherforecastru.domain.models.location.Location
-import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
+import ru.plumsoftware.weatherforecastru.data.models.location.Location
 import ru.plumsoftware.weatherforecastru.presentation.location.store.LocationStore
 import ru.plumsoftware.weatherforecastru.presentation.location.store.LocationStoreFactory
 
 class LocationViewModel(
     storeFactory: StoreFactory,
-    sharedPreferencesStorage: SharedPreferencesStorage,
+    sharedPreferencesStorage: ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage,
     private val output: (Output) -> Unit,
     private val locationItemDao: LocationItemDao
 ) : ViewModel() {
@@ -44,19 +43,19 @@ class LocationViewModel(
     suspend fun save(location: Location) {
         with(location) {
             locationItemDao.upsert(
-                locationItem = LocationItem(
+                locationItem = _root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem(
                     city = city
                 )
             )
         }
     }
 
-    suspend fun delete(location: LocationItem) {
+    suspend fun delete(location: _root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem) {
         locationItemDao.delete(locationItem = location)
     }
 
     private suspend fun checkLocation(location: Location) {
-        val locationItems: List<LocationItem> = locationItemDao.getAll()
+        val locationItems: List<_root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem> = locationItemDao.getAll()
         with(location) {
             locationItems.forEachIndexed { index, locationItem ->
                 if (locationItem.city == city) {
@@ -67,7 +66,7 @@ class LocationViewModel(
             }
 
             locationItemDao.upsert(
-                locationItem = LocationItem(
+                locationItem = _root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem(
                     city = city
                 )
             )

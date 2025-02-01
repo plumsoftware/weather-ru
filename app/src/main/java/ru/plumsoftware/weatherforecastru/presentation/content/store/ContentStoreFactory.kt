@@ -10,21 +10,21 @@ import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import com.yandex.mobile.ads.nativeads.NativeAd
 import kotlinx.coroutines.launch
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
-import ru.plumsoftware.weatherforecastru.domain.models.settings.UserSettings
-import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
+import ru.plumsoftware.weatherforecastru.data.models.settings.UserSettings
+import ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage
 
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
-import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
-import ru.plumsoftware.weatherforecastru.domain.models.settings.WindSpeed
+import ru.plumsoftware.weatherforecastru.data.models.settings.WeatherUnits
+import ru.plumsoftware.weatherforecastru.data.models.settings.WindSpeed
 import java.time.LocalDateTime
 import java.util.Calendar
 import java.util.Date
 
 class ContentStoreFactory(
     private val storeFactory: StoreFactory,
-    private val sharedPreferencesStorage: SharedPreferencesStorage,
+    private val sharedPreferencesStorage: ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage,
     private val owmResponse: OwmResponse,
     private val weatherApiResponse: WeatherApiResponse,
     private val adsList: MutableList<NativeAd>,
@@ -220,7 +220,7 @@ class ContentStoreFactory(
         }
 
         private fun initWeather(
-            sharedPreferencesStorage: SharedPreferencesStorage,
+            sharedPreferencesStorage: ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage,
             owmResponse: OwmResponse,
             weatherApiResponse: WeatherApiResponse,
             owmCode: Int,

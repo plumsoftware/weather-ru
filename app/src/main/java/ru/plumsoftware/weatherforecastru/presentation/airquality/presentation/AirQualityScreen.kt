@@ -39,7 +39,7 @@ import com.yandex.mobile.ads.common.AdRequest
 import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.common.ImpressionData
 import kotlinx.coroutines.launch
-import ru.plumsoftware.data.BuildConfig
+import ru.plumsoftware.weatherforecast.BuildConfig
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecastru.application.App
 import ru.plumsoftware.weatherforecastru.material.components.TopBar

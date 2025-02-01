@@ -31,9 +31,9 @@ import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Doublecloud
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.RainyDay
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.RainyNight
 import ru.plumsoftware.weatherforecast.R
+import ru.plumsoftware.weatherforecastru.data.constants.Constants
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.Hour
-import ru.plumsoftware.weatherforecastru.domain.constants.Constants
-import ru.plumsoftware.weatherforecastru.domain.models.settings.WeatherUnits
+import ru.plumsoftware.weatherforecastru.data.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionSize
 import java.time.LocalTime

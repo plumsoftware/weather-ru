@@ -10,13 +10,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
-import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
+import ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecastru.presentation.content.store.ContentStore
 import ru.plumsoftware.weatherforecastru.presentation.content.store.ContentStoreFactory
 
 class ContentViewModel(
     storeFactory: StoreFactory,
-    sharedPreferencesStorage: SharedPreferencesStorage,
+    sharedPreferencesStorage: ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage,
     owmResponse: OwmResponse,
     weatherApiResponse: WeatherApiResponse,
     adsList: MutableList<NativeAd>,

@@ -8,12 +8,12 @@ import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
 import ru.plumsoftware.weatherforecastru.application.App
 import ru.plumsoftware.weatherforecastru.data.utilities.showToast
-import ru.plumsoftware.weatherforecastru.domain.storage.HttpClientStorage
+import ru.plumsoftware.weatherforecastru.data.storage.HttpClientStorage
 
 class MainStoreFactory(
     private val storeFactory: StoreFactory,
     private val city: String?,
-    private val httpClientStorage: HttpClientStorage
+    private val httpClientStorage: ru.plumsoftware.weatherforecastru.data.storage.HttpClientStorage
 ) {
     @OptIn(ExperimentalMviKotlinApi::class)
     fun create(): MainStore =

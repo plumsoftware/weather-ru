@@ -10,12 +10,11 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import ru.plumsoftware.weatherforecastru.data.models.location.LocationItem
 import ru.plumsoftware.weatherforecastru.data.models.location.LocationItemDao
-import ru.plumsoftware.weatherforecastru.domain.models.location.Location
-import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
+import ru.plumsoftware.weatherforecastru.data.models.location.Location
 
 internal class LocationStoreFactory(
     private val storeFactory: StoreFactory,
-    private val sharedPreferencesStorage: SharedPreferencesStorage,
+    private val sharedPreferencesStorage: ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage,
     private val locationItemDao: LocationItemDao
 ) : KoinComponent {
 
@@ -56,11 +55,11 @@ internal class LocationStoreFactory(
             val isVisibleCloseIcon: Boolean = false
         ) : Msg
 
-        data class Items(val items: List<LocationItem>) : Msg
+        data class Items(val items: List<_root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem>) : Msg
 
         data class ShowDialogMsg(val value: Boolean) : Msg
 
-        data class SelectedLocationItemMsg(val value: LocationItem) : Msg
+        data class SelectedLocationItemMsg(val value: _root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem) : Msg
     }
 
     private object ReducerImpl : Reducer<LocationStore.State, Msg> {
@@ -161,7 +160,7 @@ internal class LocationStoreFactory(
 
         private fun initLocations() {
             scope.launch {
-                val locationItems: List<LocationItem> = locationItemDao.getAll()
+                val locationItems: List<_root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem> = locationItemDao.getAll()
                 dispatch(LocationStoreFactory.Msg.Items(items = locationItems))
             }
         }

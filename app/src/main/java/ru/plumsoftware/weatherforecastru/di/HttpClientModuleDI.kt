@@ -7,13 +7,13 @@ import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
+import ru.plumsoftware.weatherforecastru.data.repository.OwmRepository
 import ru.plumsoftware.weatherforecastru.data.repository.OwmRepositoryImpl
+import ru.plumsoftware.weatherforecastru.data.repository.WeatherApiRepository
 import ru.plumsoftware.weatherforecastru.data.repository.WeatherApiRepositoryImpl
-import ru.plumsoftware.weatherforecastru.domain.repository.OwmRepository
-import ru.plumsoftware.weatherforecastru.domain.repository.WeatherApiRepository
-import ru.plumsoftware.weatherforecastru.domain.storage.HttpClientStorage
-import ru.plumsoftware.weatherforecastru.domain.usecase.weather.GetOwmUseCase
-import ru.plumsoftware.weatherforecastru.domain.usecase.weather.GetWeatherApiUseCase
+import ru.plumsoftware.weatherforecastru.data.storage.HttpClientStorage
+import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetOwmUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetWeatherApiUseCase
 
 internal val httpClientModel = module {
     single<OwmRepository> {
@@ -66,8 +66,12 @@ internal val httpClientModel = module {
 
     factory<HttpClientStorage> {
         HttpClientStorage(
-            getOwmUseCase = GetOwmUseCase(owmRepository = get()),
-            getWeatherApiUseCase = GetWeatherApiUseCase(weatherApiRepository = get())
+            getOwmUseCase = GetOwmUseCase(
+                owmRepository = get()
+            ),
+            getWeatherApiUseCase = GetWeatherApiUseCase(
+                weatherApiRepository = get()
+            )
         )
     }
 }

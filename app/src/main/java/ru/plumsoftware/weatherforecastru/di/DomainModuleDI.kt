@@ -1,30 +1,34 @@
 package ru.plumsoftware.weatherforecastru.di
 
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
+import ru.plumsoftware.weatherforecastru.data.repository.LocationRepository
 import ru.plumsoftware.weatherforecastru.data.repository.LocationRepositoryImpl
+import ru.plumsoftware.weatherforecastru.data.repository.SharedPreferencesRepository
 import ru.plumsoftware.weatherforecastru.data.repository.SharedPreferencesRepositoryImpl
-import ru.plumsoftware.weatherforecastru.domain.repository.LocationRepository
-import ru.plumsoftware.weatherforecastru.domain.repository.SharedPreferencesRepository
-import ru.plumsoftware.weatherforecastru.domain.storage.LocationStorage
-import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
-import ru.plumsoftware.weatherforecastru.domain.usecase.location.GetLastKnownLocationUseCase
-import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetFirstUseCase
-import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetNotificationItemUseCase
-import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetUserSettingsShowTipsUseCase
-import ru.plumsoftware.weatherforecastru.domain.usecase.settings.GetUserSettingsUseCase
-import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveFirstUseCase
-import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveNotificationItemUseCase
-import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsAppThemeUseCase
-import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsLocationUseCase
-import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsShowTipsUseCase
-import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsUseCase
-import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsWeatherUnitsUseCase
-import ru.plumsoftware.weatherforecastru.domain.usecase.settings.SaveUserSettingsWindUnitsUseCase
-import ru.plumsoftware.weatherforecastru.domain.usecase.widget.GetWidgetConfigUseCase
-import ru.plumsoftware.weatherforecastru.domain.usecase.widget.SaveWidgetConfigUseCase
+import ru.plumsoftware.weatherforecastru.data.storage.LocationStorage
+import ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage
+import ru.plumsoftware.weatherforecastru.data.usecase.location.GetLastKnownLocationUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.GetFirstUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.GetNotificationItemUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.GetUserSettingsShowTipsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.GetUserSettingsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveFirstUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveNotificationItemUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsAppThemeUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsLocationUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsShowTipsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsWeatherUnitsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsWindUnitsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.widget.GetWidgetConfigUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.widget.SaveWidgetConfigUseCase
 
-internal val domainModuleDI = module {
-    single<LocationRepository> { LocationRepositoryImpl(context = get()) }
+val domainModuleDI = module {
+
+    singleOf(::LocationRepositoryImpl).bind<LocationRepository>()
+
     single<LocationStorage> {
         LocationStorage(
             getLastKnownLocationUseCase = GetLastKnownLocationUseCase(
@@ -36,16 +40,22 @@ internal val domainModuleDI = module {
     single<SharedPreferencesRepository> { SharedPreferencesRepositoryImpl(context = get()) }
     single<SharedPreferencesStorage> {
         SharedPreferencesStorage(
-            getUserSettingsUseCase = GetUserSettingsUseCase(sharedPreferencesRepository = get()),
+            getUserSettingsUseCase = ru.plumsoftware.weatherforecastru.data.usecase.settings.GetUserSettingsUseCase(
+                sharedPreferencesRepository = get()
+            ),
             getUserSettingsShowTipsUseCase = GetUserSettingsShowTipsUseCase(
                 sharedPreferencesRepository = get()
             ),
-            getFirstUseCase = GetFirstUseCase(sharedPreferencesRepository = get()),
-            saveUserSettingsUseCase = SaveUserSettingsUseCase(sharedPreferencesRepository = get()),
+            getFirstUseCase = GetFirstUseCase(
+                sharedPreferencesRepository = get()
+            ),
+            saveUserSettingsUseCase = SaveUserSettingsUseCase(
+                sharedPreferencesRepository = get()
+            ),
             saveUserSettingsAppThemeUseCase = SaveUserSettingsAppThemeUseCase(
                 sharedPreferencesRepository = get()
             ),
-            saveUserSettingsShowTipsUseCase = SaveUserSettingsShowTipsUseCase(
+            saveUserSettingsShowTipsUseCase = ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsShowTipsUseCase(
                 sharedPreferencesRepository = get()
             ),
             saveUserSettingsWeatherUnitsUseCase = SaveUserSettingsWeatherUnitsUseCase(
@@ -54,13 +64,21 @@ internal val domainModuleDI = module {
             saveUserSettingsWindUnitsUseCase = SaveUserSettingsWindUnitsUseCase(
                 sharedPreferencesRepository = get()
             ),
-            saveUserSettingsLocationUseCase = SaveUserSettingsLocationUseCase(
+            saveUserSettingsLocationUseCase = ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsLocationUseCase(
                 sharedPreferencesRepository = get()
             ),
-            saveFirstUseCase = SaveFirstUseCase(sharedPreferencesRepository = get()),
-            saveWidgetConfigUseCase = SaveWidgetConfigUseCase(sharedPreferencesRepository = get()),
-            getWidgetConfigUseCase = GetWidgetConfigUseCase(sharedPreferencesRepository = get()),
-            getNotificationItemUseCase = GetNotificationItemUseCase(sharedPreferencesRepository = get()),
+            saveFirstUseCase = SaveFirstUseCase(
+                sharedPreferencesRepository = get()
+            ),
+            saveWidgetConfigUseCase = SaveWidgetConfigUseCase(
+                sharedPreferencesRepository = get()
+            ),
+            getWidgetConfigUseCase = GetWidgetConfigUseCase(
+                sharedPreferencesRepository = get()
+            ),
+            getNotificationItemUseCase = GetNotificationItemUseCase(
+                sharedPreferencesRepository = get()
+            ),
             saveNotificationItemUseCase = SaveNotificationItemUseCase(
                 sharedPreferencesRepository = get()
             )

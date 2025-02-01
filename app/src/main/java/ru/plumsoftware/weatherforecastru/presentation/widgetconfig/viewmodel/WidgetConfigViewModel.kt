@@ -7,13 +7,13 @@ import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import ru.plumsoftware.weatherforecastru.domain.storage.SharedPreferencesStorage
+import ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.store.WidgetConfigStore
 import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.store.WidgetConfigStoreFactory
 
 class WidgetConfigViewModel(
     storeFactory: StoreFactory,
-    sharedPreferencesStorage: SharedPreferencesStorage,
+    sharedPreferencesStorage: ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage,
     private val output: (Output) -> Unit,
 ) : ViewModel() {
 
