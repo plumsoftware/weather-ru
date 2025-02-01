@@ -18,7 +18,7 @@ android {
         applicationId "ru.plumsoftware.weatherforecastru"
         minSdk 22
         targetSdk 34
-        versionCode 23
+        versionCode 24
         versionName "3.0.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
