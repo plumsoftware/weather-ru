@@ -14,8 +14,8 @@ android {
         applicationId "ru.plumsoftware.weatherforecastru"
         minSdk 22
         targetSdk 34
-        versionCode 21
-        versionName "3.0.5"
+        versionCode 23
+        versionName "3.0.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -123,7 +123,7 @@ dependencies {
     def logback_version = "1.2.11"
     def json_serialization_version = "1.6.3"
 
-    def yandex_ads_version = "7.6.0"
+    def yandex_ads_version = "7.9.0"
 
     def glance_version = "1.0.0-rc01"
     def glance_material_version = "1.0.0-rc01"

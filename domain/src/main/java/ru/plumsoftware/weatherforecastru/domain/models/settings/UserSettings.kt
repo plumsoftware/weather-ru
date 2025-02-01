@@ -6,7 +6,7 @@ data class UserSettings(
     val isDarkTheme: Boolean,
     val city: String? = null,
     val country: String? = null,
-    val showTips: Boolean = true,
+    val showTips: Boolean = false,
     val weatherUnits: WeatherUnits = WeatherUnits(
         unitsPresentation = Constants.Settings.METRIC.second,
         unitsValue = Constants.Settings.METRIC.first

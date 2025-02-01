@@ -6,42 +6,35 @@ plugins {
 
 android {
     namespace 'ru.plumsoftware.data'
-    compileSdk 34
-
-    defaultConfig {
-        minSdk 22
-        targetSdk 34
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles "consumer-rules.pro"
-    }
+    compileSdk 35
 
     Properties properties = new Properties()
     properties.load(project.rootProject.file("local.properties").newDataInputStream())
+
+    defaultConfig {
+        minSdk 22
+        targetSdk 35
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+
+        buildConfigField "String", "OWM_API_KEY", "\"${properties.getProperty("OWM_API_KEY")}\""
+        buildConfigField "String", "WEATHER_API", "\"${properties.getProperty("WEATHER_API")}\""
+        buildConfigField "String", "platform", "\"${properties.getProperty("platform")}\""
+        buildConfigField "String", "showNativeAd", "\"${properties.getProperty("showNativeAd")}\""
+
+        buildConfigField "String", "BANNER_ADS_ID", "\"${properties.getProperty("BANNER_ADS_ID")}\""
+        buildConfigField "String", "OPEN_ADS_ID", "\"${properties.getProperty("OPEN_ADS_ID")}\""
+        buildConfigField "String", "NATIVE_ADS_ID", "\"${properties.getProperty("NATIVE_ADS_ID")}\""
+    }
 
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "OWM_API_KEY", "\"${properties.getProperty("OWM_API_KEY")}\""
-            buildConfigField "String", "WEATHER_API", "\"${properties.getProperty("WEATHER_API")}\""
-            buildConfigField "String", "platform", "\"${properties.getProperty("platform")}\""
-            buildConfigField "String", "showNativeAd", "\"${properties.getProperty("showNativeAd")}\""
-
-            buildConfigField "String", "BANNER_ADS_ID", "\"${properties.getProperty("BANNER_ADS_ID")}\""
-            buildConfigField "String", "OPEN_ADS_ID", "\"${properties.getProperty("OPEN_ADS_ID")}\""
-            buildConfigField "String", "NATIVE_ADS_ID", "\"${properties.getProperty("NATIVE_ADS_ID")}\""
         }
         debug {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "OWM_API_KEY", "\"${properties.getProperty("OWM_API_KEY")}\""
-            buildConfigField "String", "WEATHER_API", "\"${properties.getProperty("WEATHER_API")}\""
-            buildConfigField "String", "platform", "\"${properties.getProperty("platform")}\""
-            buildConfigField "String", "showNativeAd", "\"${properties.getProperty("showNativeAd")}\""
-
-            buildConfigField "String", "BANNER_ADS_ID", "\"${properties.getProperty("BANNER_ADS_ID")}\""
-            buildConfigField "String", "OPEN_ADS_ID", "\"${properties.getProperty("OPEN_ADS_ID")}\""
-            buildConfigField "String", "NATIVE_ADS_ID", "\"${properties.getProperty("NATIVE_ADS_ID")}\""
         }
     }
 
