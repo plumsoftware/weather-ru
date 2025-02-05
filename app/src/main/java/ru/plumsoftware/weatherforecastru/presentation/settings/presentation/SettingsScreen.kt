@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Info
@@ -543,7 +541,7 @@ private fun SettingsScreen(
                                     }
 
 //                            Share application
-                                    if (BuildConfig.platform == "RuStore")
+                                    if (BuildConfig.platform == "RuStore") {
                                         Button(
                                             onClick = { event(SettingsStore.Intent.Share) },
                                             contentPadding = PaddingValues(
@@ -582,13 +580,14 @@ private fun SettingsScreen(
                                                 )
                                             }
                                         }
+                                    }
                                 }
                             }
                         }
                     }
                     item {
 //                        MARK: Feedback
-                        if (BuildConfig.platform == "RuStore")
+                        if (BuildConfig.platform == "RuStore") {
                             Column(modifier = Modifier.fillMaxWidth()) {
                                 Text(
                                     text = stringResource(id = R.string.feedback),
@@ -657,6 +656,7 @@ private fun SettingsScreen(
                                     }
                                 }
                             }
+                        }
                     }
                     item {
                         Spacer(modifier = Modifier.height(height = _14dp))

@@ -1,6 +1,5 @@
 package ru.plumsoftware.weatherforecastru.application
 
-import android.Manifest
 import android.app.job.JobInfo
 import android.app.job.JobScheduler
 import android.content.ComponentName
@@ -57,24 +56,20 @@ import io.ktor.serialization.kotlinx.json.json
 import io.ktor.util.date.GMTDate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import org.koin.android.ext.koin.androidContext
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import ru.plumsoftware.weatherforecast.BuildConfig
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecastru.data.constants.Constants
 import ru.plumsoftware.weatherforecastru.data.database.LocationItemDatabase
-import ru.plumsoftware.weatherforecastru.data.models.location.LocationItemDao
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
 import ru.plumsoftware.weatherforecastru.data.utilities.logd
 import ru.plumsoftware.weatherforecastru.data.remote.either.WeatherEither
-import ru.plumsoftware.weatherforecastru.data.repository.LocationRepository
 import ru.plumsoftware.weatherforecastru.data.repository.LocationRepositoryImpl
 import ru.plumsoftware.weatherforecastru.data.repository.OwmRepositoryImpl
-import ru.plumsoftware.weatherforecastru.data.repository.SharedPreferencesRepository
 import ru.plumsoftware.weatherforecastru.data.repository.SharedPreferencesRepositoryImpl
 import ru.plumsoftware.weatherforecastru.data.repository.WeatherApiRepositoryImpl
 import ru.plumsoftware.weatherforecastru.data.storage.HttpClientStorage
@@ -84,12 +79,9 @@ import ru.plumsoftware.weatherforecastru.data.usecase.location.GetLastKnownLocat
 import ru.plumsoftware.weatherforecastru.data.usecase.settings.GetFirstUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.settings.GetNotificationItemUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.settings.GetUserSettingsShowTipsUseCase
-import ru.plumsoftware.weatherforecastru.data.usecase.settings.GetUserSettingsUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveFirstUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveNotificationItemUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsAppThemeUseCase
-import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsLocationUseCase
-import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsShowTipsUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsWeatherUnitsUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsWindUnitsUseCase
@@ -119,6 +111,7 @@ import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.presentation.
 import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.viewmodel.WidgetConfigViewModel
 import ru.plumsoftware.weatherforecastru.service.JOB_ID
 import ru.plumsoftware.weatherforecastru.service.MyJobService
+import kotlin.time.Duration.Companion.seconds
 
 class MainApplicationActivity : ComponentActivity() {
     private var isDarkTheme = mutableStateOf(false)
@@ -170,7 +163,11 @@ class MainApplicationActivity : ComponentActivity() {
 
             val locationItemDao = room.dao
             val locationStorage = LocationStorage(
-                getLastKnownLocationUseCase = GetLastKnownLocationUseCase(locationRepository = LocationRepositoryImpl(context = context))
+                getLastKnownLocationUseCase = GetLastKnownLocationUseCase(
+                    locationRepository = LocationRepositoryImpl(
+                        context = context
+                    )
+                )
             )
             sharedPreferencesStorage = SharedPreferencesStorage(
                 getUserSettingsUseCase = ru.plumsoftware.weatherforecastru.data.usecase.settings.GetUserSettingsUseCase(
@@ -216,8 +213,14 @@ class MainApplicationActivity : ComponentActivity() {
                     sharedPreferencesRepository = sharedPreferencesRepository
                 )
             )
-            val owmRepository = OwmRepositoryImpl(client = client, sharedPreferencesStorage = sharedPreferencesStorage)
-            val weatherApiRepository = WeatherApiRepositoryImpl(client = client, sharedPreferencesStorage = sharedPreferencesStorage)
+            val owmRepository = OwmRepositoryImpl(
+                client = client,
+                sharedPreferencesStorage = sharedPreferencesStorage
+            )
+            val weatherApiRepository = WeatherApiRepositoryImpl(
+                client = client,
+                sharedPreferencesStorage = sharedPreferencesStorage
+            )
             val httpClientStorage = HttpClientStorage(
                 getOwmUseCase = GetOwmUseCase(owmRepository = owmRepository),
                 getWeatherApiUseCase = GetWeatherApiUseCase(weatherApiRepository = weatherApiRepository)
@@ -242,35 +245,16 @@ class MainApplicationActivity : ComponentActivity() {
                 ActivityResultContracts.RequestPermission()
             ) { isGranted: Boolean ->
                 if (isGranted) {
-                    // Permission Accepted: Do something
-                    CoroutineScope(Dispatchers.IO).launch {
-                        val location = locationStorage.get()
-                        sharedPreferencesStorage.saveLocation(location = location)
-                        CoroutineScope(Dispatchers.Main).launch {
-                            navController.navigate(route = Screens.Location)
+                    if (!checkLocationPermission())
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val location = locationStorage.get()
+                            sharedPreferencesStorage.saveLocation(location = location)
+                            withContext(Dispatchers.Main) {
+                                navController.navigate(route = Screens.Location)
+                            }
                         }
-                    }
-                } else {
-                    // Permission Denied: Do something
-                    CoroutineScope(Dispatchers.Main).launch {
-                        navController.navigate(route = Screens.Location)
-                    }
-                }
-            }
-            val launcherReadExtStorage = rememberLauncherForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { isGranted: Boolean ->
-                if (isGranted) {
-                    // Permission Accepted: Do something
-                    CoroutineScope(Dispatchers.IO).launch {
-                        CoroutineScope(Dispatchers.Main).launch {
-                            navController.navigate(route = Screens.WidgetConfig)
-                        }
-                    }
-                } else {
-                    // Permission Denied: Do something
-                    CoroutineScope(Dispatchers.Main).launch {
-
+                    else if (checkReadStoragePermission()) {
+                        navController.navigate(route = Screens.WidgetConfig)
                     }
                 }
             }
@@ -289,63 +273,62 @@ class MainApplicationActivity : ComponentActivity() {
 
 //            region::Coroutines
             LaunchedEffect(Unit) {
-                coroutine.launch {
+                if (checkInternetConnection(context = context)) {
+                    MobileAds.initialize(context) {
+                        logd(message = "RSY initialized!")
+                    }
 
-                    if (checkInternetConnection(context = context)) {
-                        MobileAds.initialize(context) {
-                            logd(message = "RSY initialized!")
-                        }
+                    delay(1.seconds)
 
-                        isAdsLoading.value = true
+                    isAdsLoading.value = true
 //                    region::Open app ads
-                        val appOpenAdLoadListener = object : AppOpenAdLoadListener {
-                            override fun onAdLoaded(appOpenAd: AppOpenAd) {
-                                // The ad was loaded successfully. Now you can show loaded ad.
-                                myAppOpenAd = appOpenAd
-                                myAppOpenAd?.show(this@MainApplicationActivity)
-                                isAdsLoading.value = false
-                            }
-
-                            override fun onAdFailedToLoad(adRequestError: AdRequestError) {
-                                isAdsLoading.value = false
-                                // Ad failed to load with AdRequestError.
-                                // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
-                            }
+                    val appOpenAdLoadListener = object : AppOpenAdLoadListener {
+                        override fun onAdLoaded(appOpenAd: AppOpenAd) {
+                            // The ad was loaded successfully. Now you can show loaded ad.
+                            myAppOpenAd = appOpenAd
+                            myAppOpenAd?.show(this@MainApplicationActivity)
+                            isAdsLoading.value = false
                         }
 
-                        myAppOpenAd?.setAdEventListener(appOpenAdEventListener)
-                        appOpenAdLoader.setAdLoadListener(appOpenAdLoadListener)
-                        appOpenAdLoader.loadAd(adRequestConfigurationOpenAds)
+                        override fun onAdFailedToLoad(adRequestError: AdRequestError) {
+                            isAdsLoading.value = false
+                            // Ad failed to load with AdRequestError.
+                            // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
+                        }
+                    }
+
+                    myAppOpenAd?.setAdEventListener(appOpenAdEventListener)
+                    appOpenAdLoader.setAdLoadListener(appOpenAdLoadListener)
+                    appOpenAdLoader.loadAd(adRequestConfigurationOpenAds)
 //                    endregion
 //                    region::Native ads
-                        if (BuildConfig.showNativeAd.toBoolean()) {
-                            val nativeAdsLoader = NativeBulkAdLoader(context).apply {
-                                setNativeBulkAdLoadListener(object : NativeBulkAdLoadListener {
+                    if (BuildConfig.showNativeAd.toBoolean()) {
+                        val nativeAdsLoader = NativeBulkAdLoader(context).apply {
+                            setNativeBulkAdLoadListener(object : NativeBulkAdLoadListener {
 //                                    override fun onAdsLoaded(p0: MutableList<NativeAd>) {
 //                                        list.value = p0
 //                                        adsError.value = false
 //                                    }
 //                                    TODO(Slava Deych): Remove later
 
-                                    override fun onAdsFailedToLoad(p0: AdRequestError) {
-                                        logd(p0.toString())
-                                        adsError.value = true
-                                        isAdsLoading.value = false
-                                    }
+                                override fun onAdsFailedToLoad(p0: AdRequestError) {
+                                    logd(p0.toString())
+                                    adsError.value = true
+                                    isAdsLoading.value = false
+                                }
 
-                                    override fun onAdsLoaded(nativeAds: List<NativeAd>) {
-                                        list.value = nativeAds.toMutableList()
-                                        adsError.value = false
-                                    }
-                                })
-                            }
-                            val adRequestConfigurationNativeAds =
-                                NativeAdRequestConfiguration.Builder(BuildConfig.NATIVE_ADS_ID)
-                                    .build()
-                            nativeAdsLoader.loadAds(adRequestConfigurationNativeAds, 1)
+                                override fun onAdsLoaded(nativeAds: List<NativeAd>) {
+                                    list.value = nativeAds.toMutableList()
+                                    adsError.value = false
+                                }
+                            })
                         }
-//                    endregion
+                        val adRequestConfigurationNativeAds =
+                            NativeAdRequestConfiguration.Builder(BuildConfig.NATIVE_ADS_ID)
+                                .build()
+                        nativeAdsLoader.loadAds(adRequestConfigurationNativeAds, 1)
                     }
+//                    endregion
                 }
             }
 //            endregion
@@ -417,7 +400,7 @@ class MainApplicationActivity : ComponentActivity() {
 
                                             AuthorizationViewModel.Output.OpenLocationScreen -> {
                                                 if (checkLocationPermission()) {
-                                                    launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                                                    launcher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
                                                 } else {
                                                     navController.navigate(route = Screens.Location)
                                                 }
@@ -491,7 +474,7 @@ class MainApplicationActivity : ComponentActivity() {
                                         when (output) {
                                             is ContentViewModel.Output.OpenLocationScreen -> {
                                                 if (checkLocationPermission()) {
-                                                    launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                                                    launcher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
                                                 } else {
                                                     navController.navigate(route = Screens.Location)
                                                 }
@@ -537,7 +520,9 @@ class MainApplicationActivity : ComponentActivity() {
 
                                                             owmHttpCode.value = first.first.value
                                                         }
-                                                    } else {navController.navigate(route=Screens.NoConnection)}
+                                                    } else {
+                                                        navController.navigate(route = Screens.NoConnection)
+                                                    }
                                                 }
                                             }
 
@@ -573,9 +558,9 @@ class MainApplicationActivity : ComponentActivity() {
 
                                             SettingsViewModel.Output.OpenWidgetConfig -> {
                                                 if (checkReadStoragePermission()) {
-                                                    launcherReadExtStorage.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                                                } else {
                                                     navController.navigate(route = Screens.WidgetConfig)
+                                                } else {
+                                                    launcher.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
                                                 }
                                             }
                                         }
@@ -672,9 +657,9 @@ class MainApplicationActivity : ComponentActivity() {
     }
 
     private fun checkReadStoragePermission(): Boolean = ContextCompat.checkSelfPermission(
-        App.INSTANCE.applicationContext,
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    ) != PackageManager.PERMISSION_GRANTED
+        this@MainApplicationActivity,
+        android.Manifest.permission.READ_EXTERNAL_STORAGE
+    ) == PackageManager.PERMISSION_GRANTED
 
     override fun onBackPressed() {
         when (navController.currentDestination!!.route) {
@@ -691,8 +676,8 @@ class MainApplicationActivity : ComponentActivity() {
 
     //    region::Private function
     private fun checkLocationPermission(): Boolean = ContextCompat.checkSelfPermission(
-        App.INSTANCE.applicationContext,
-        Manifest.permission.ACCESS_FINE_LOCATION
+        this@MainApplicationActivity,
+        android.Manifest.permission.ACCESS_FINE_LOCATION
     ) != PackageManager.PERMISSION_GRANTED
 
     private inline fun <reified T> convertStringToJson(jsonString: String): T =
