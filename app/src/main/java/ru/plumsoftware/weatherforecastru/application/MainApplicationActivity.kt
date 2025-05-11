@@ -67,6 +67,8 @@ import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecastru.data.constants.Constants
 import ru.plumsoftware.weatherforecastru.data.database.LocationItemDatabase
 import ru.plumsoftware.weatherforecastru.data.models.location.LocationItemDao
+import ru.plumsoftware.weatherforecastru.data.remote.dto.air_polutaon.AirQualityResponse
+import ru.plumsoftware.weatherforecastru.data.remote.dto.forecast_owm.MainWeatherResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
 import ru.plumsoftware.weatherforecastru.data.utilities.logd
@@ -93,6 +95,7 @@ import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsS
 import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsWeatherUnitsUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsWindUnitsUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetHourlyUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetOwmUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetWeatherApiUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.widget.GetWidgetConfigUseCase
@@ -220,7 +223,8 @@ class MainApplicationActivity : ComponentActivity() {
             val weatherApiRepository = WeatherApiRepositoryImpl(client = client, sharedPreferencesStorage = sharedPreferencesStorage)
             val httpClientStorage = HttpClientStorage(
                 getOwmUseCase = GetOwmUseCase(owmRepository = owmRepository),
-                getWeatherApiUseCase = GetWeatherApiUseCase(weatherApiRepository = weatherApiRepository)
+                getWeatherApiUseCase = GetWeatherApiUseCase(weatherApiRepository = weatherApiRepository),
+                getHourlyUseCase = GetHourlyUseCase(owmRepository = owmRepository)
             )
             val context = LocalContext.current
             val sharedDesc = stringResource(id = R.string.share_description)
@@ -234,7 +238,8 @@ class MainApplicationActivity : ComponentActivity() {
             navController = rememberNavController()
             val coroutine = rememberCoroutineScope()
             val OWM_VALUE = remember { mutableStateOf(OwmResponse()) }
-            val WEATHER_API_VALUE = remember { mutableStateOf(WeatherApiResponse()) }
+            val WEATHER_API_VALUE = remember { mutableStateOf(MainWeatherResponse()) }
+            val AIR_QUALITY_VALUE = remember { mutableStateOf(AirQualityResponse()) }
             val owmHttpCode = remember { mutableStateOf(-1) }
             val weatherApiHttpCode = remember { mutableStateOf(-1) }
 //            val httpHolder = remember { mutableStateOf(0) }
@@ -583,21 +588,21 @@ class MainApplicationActivity : ComponentActivity() {
                                 )
                             )
                         }
-                        composable(route = Screens.AirQuality) {
-                            AirQualityScreen(
-                                airQualityViewModel = AirQualityViewModel(
-                                    storeFactory = DefaultStoreFactory(),
-                                    airQuality = WEATHER_API_VALUE.value.current!!.airQuality!!,
-                                    output = { output ->
-                                        when (output) {
-                                            AirQualityViewModel.Output.OpenContentScreen -> {
-                                                navController.popBackStack()
-                                            }
-                                        }
-                                    }
-                                )
-                            )
-                        }
+//                        composable(route = Screens.AirQuality) {
+//                            AirQualityScreen(
+//                                airQualityViewModel = AirQualityViewModel(
+//                                    storeFactory = DefaultStoreFactory(),
+//                                    airQuality = WEATHER_API_VALUE.value.current!!.airQuality!!,
+//                                    output = { output ->
+//                                        when (output) {
+//                                            AirQualityViewModel.Output.OpenContentScreen -> {
+//                                                navController.popBackStack()
+//                                            }
+//                                        }
+//                                    }
+//                                )
+//                            )
+//                        }
                         composable(route = Screens.AboutApp) {
                             AboutApp(aboutAppViewModel = AboutAppViewModel(
                                 storeFactory = DefaultStoreFactory(),
@@ -701,7 +706,7 @@ class MainApplicationActivity : ComponentActivity() {
     private suspend fun doHttpResponse(
         httpClientStorage: HttpClientStorage,
         launch: Boolean
-    ): Pair<Pair<HttpStatusCode, HttpStatusCode>, Pair<OwmResponse, WeatherApiResponse>> {
+    ): Pair<Pair<HttpStatusCode, HttpStatusCode>, Pair<OwmResponse, MainWeatherResponse>> {
 
         val checkInternetConnection =
             checkInternetConnection(context = App.INSTANCE.applicationContext)
@@ -713,17 +718,19 @@ class MainApplicationActivity : ComponentActivity() {
                 }
             var weatherEither: WeatherEither<String, HttpStatusCode, GMTDate> =
                 httpClientStorage.get()
+            val hourly: WeatherEither<String, HttpStatusCode, GMTDate> = httpClientStorage.getHourly()
             val owmResponse = convertStringToJson<OwmResponse>(jsonString = weatherEither.data)
+            val hourlyResponse = convertStringToJson<MainWeatherResponse>(jsonString = hourly.data)
             val fistCode = weatherEither.httpStatusCode
 
-            weatherEither = httpClientStorage.getWeatherApi()
-            val weatherApiResponse =
-                convertStringToJson<WeatherApiResponse>(jsonString = weatherEither.data)
-            val secondCode = weatherEither.httpStatusCode
+//            weatherEither = httpClientStorage.getWeatherApi()
+//            val weatherApiResponse =
+//                convertStringToJson<WeatherApiResponse>(jsonString = weatherEither.data)
+            val secondCode = hourly.httpStatusCode
 
             return Pair(
                 first = Pair(first = fistCode, second = secondCode),
-                second = Pair(first = owmResponse, second = weatherApiResponse)
+                second = Pair(first = owmResponse, second = hourlyResponse)
             )
         } else {
             CoroutineScope(Dispatchers.Main).launch {
@@ -731,7 +738,7 @@ class MainApplicationActivity : ComponentActivity() {
             }
             return Pair(
                 first = Pair(first = HttpStatusCode(-1, ""), second = HttpStatusCode(-1, "")),
-                second = Pair(first = OwmResponse(), second = WeatherApiResponse())
+                second = Pair(first = OwmResponse(), second = MainWeatherResponse())
             )
         }
     }

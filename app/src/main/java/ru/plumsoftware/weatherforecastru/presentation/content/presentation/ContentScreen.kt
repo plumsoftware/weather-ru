@@ -68,6 +68,9 @@ import ru.plumsoftware.weatherforecastru.presentation.ui.md_theme_humidity_color
 import ru.plumsoftware.weatherforecastru.presentation.ui.md_theme_sunny_color
 import ru.plumsoftware.weatherforecastru.presentation.ui.md_theme_visibility_color
 import ru.plumsoftware.weatherforecastru.presentation.ui.md_theme_wind_color
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -270,41 +273,41 @@ private fun ContentScreen(
                             HttpErrorComponent(state.weatherApiCode)
                         } else {
 //            region::Alerts
-                            if (state.weatherApiResponse.alerts!!.alert.isNotEmpty()) {
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(
-                                        space = ExtensionPaddingValues._10dp,
-                                        alignment = Alignment.Top
-                                    ), horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
-                                    Text(
-                                        text = stringResource(id = R.string.alerts),
-                                        textAlign = TextAlign.Start,
-                                        modifier = Modifier.fillMaxWidth(),
-                                        style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
-                                    )
-                                    Column(
-                                        verticalArrangement = Arrangement.Center,
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .background(
-                                                color = MaterialTheme.colorScheme.secondaryContainer,
-                                                shape = MaterialTheme.shapes.large
-                                            )
-                                            .padding(all = ExtensionPaddingValues._14dp)
-                                    ) {
-                                        state.weatherApiResponse.alerts!!.alert.forEachIndexed { index, alert ->
-                                            Text(
-                                                text = alert.desc!!,
-                                                style = MaterialTheme.typography.labelLarge.copy(
-                                                    color = MaterialTheme.colorScheme.onSecondaryContainer
-                                                )
-                                            )
-                                        }
-                                    }
-                                }
-                            }
+//                            if (state.weatherApiResponse.alerts!!.alert.isNotEmpty()) {
+//                                Column(
+//                                    verticalArrangement = Arrangement.spacedBy(
+//                                        space = ExtensionPaddingValues._10dp,
+//                                        alignment = Alignment.Top
+//                                    ), horizontalAlignment = Alignment.CenterHorizontally
+//                                ) {
+//                                    Text(
+//                                        text = stringResource(id = R.string.alerts),
+//                                        textAlign = TextAlign.Start,
+//                                        modifier = Modifier.fillMaxWidth(),
+//                                        style = MaterialTheme.typography.labelMedium.copy(color = MaterialTheme.colorScheme.secondary)
+//                                    )
+//                                    Column(
+//                                        verticalArrangement = Arrangement.Center,
+//                                        horizontalAlignment = Alignment.CenterHorizontally,
+//                                        modifier = Modifier
+//                                            .fillMaxSize()
+//                                            .background(
+//                                                color = MaterialTheme.colorScheme.secondaryContainer,
+//                                                shape = MaterialTheme.shapes.large
+//                                            )
+//                                            .padding(all = ExtensionPaddingValues._14dp)
+//                                    ) {
+//                                        state.weatherApiResponse.alerts!!.alert.forEachIndexed { index, alert ->
+//                                            Text(
+//                                                text = alert.desc!!,
+//                                                style = MaterialTheme.typography.labelLarge.copy(
+//                                                    color = MaterialTheme.colorScheme.onSecondaryContainer
+//                                                )
+//                                            )
+//                                        }
+//                                    }
+//                                }
+//                            }
 //            endregion
 
 //            region::Tips
@@ -339,7 +342,7 @@ private fun ContentScreen(
                                 )
 
                                 HourlyWeatherForecast(
-                                    list = state.weatherApiResponse.forecast!!.forecastday[state.hourlyState].hour,
+                                    list = state.weatherApiResponse.weatherList,
                                     weatherUnits = state.weatherUnits,
                                     scrollToItem = state.scrollToItem,
                                     needScroll = state.needScroll,
@@ -409,14 +412,14 @@ private fun ContentScreen(
                                             alignment = Alignment.CenterHorizontally
                                         )
                                     ) {
-                                        DetailComponent(
-                                            title = calculateUVIndex(state.weatherApiResponse.current!!.uv!!.toInt()),
-                                            description = stringResource(id = R.string.uv_index),
-                                            pair = Pair(
-                                                PlumsoftwareIconPack.Weather.Sunny,
-                                                md_theme_sunny_color
-                                            )
-                                        )
+//                                        DetailComponent(
+//                                            title = "-",
+//                                            description = stringResource(id = R.string.uv_index),
+//                                            pair = Pair(
+//                                                PlumsoftwareIconPack.Weather.Sunny,
+//                                                md_theme_sunny_color
+//                                            )
+//                                        )
 
                                         DetailComponent(
                                             title = "${state.owmResponse.wind!!.speed!!.toInt()} ${state.windSpeed.windPresentation}",
@@ -461,7 +464,9 @@ private fun ContentScreen(
                                         )
                                     ) {
                                         DetailComponent(
-                                            title = state.weatherApiResponse.forecast!!.forecastday[0].astro!!.sunrise!!,
+                                            title = SimpleDateFormat("hh:mm", Locale.getDefault()).format(
+                                                Date(state.owmResponse.sys?.sunrise?.times(1000L) ?: 0L)
+                                            ),
                                             description = stringResource(id = R.string.sunrise),
                                             pair = Pair(
                                                 PlumsoftwareIconPack.Weather.Sunrise,
@@ -469,7 +474,9 @@ private fun ContentScreen(
                                             )
                                         )
                                         DetailComponent(
-                                            title = state.weatherApiResponse.forecast!!.forecastday[0].astro!!.sunset!!,
+                                            title = SimpleDateFormat("hh:mm", Locale.getDefault()).format(
+                                                Date(state.owmResponse.sys?.sunset?.times(1000L) ?: 0L)
+                                            ),
                                             description = stringResource(id = R.string.sunset),
                                             pair = Pair(
                                                 PlumsoftwareIconPack.Weather.Sunset,
