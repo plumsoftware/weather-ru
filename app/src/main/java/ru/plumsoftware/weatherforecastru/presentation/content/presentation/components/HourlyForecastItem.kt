@@ -30,22 +30,25 @@ import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.CloudSnowNight
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Doublecloud
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.RainyDay
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.RainyNight
+import ru.plumsoftware.weatherapp.weatherdata.forecast_owm.WeatherItem
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecastru.data.constants.Constants
-import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.Hour
 import ru.plumsoftware.weatherforecastru.data.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionSize
+import java.text.SimpleDateFormat
 import java.time.LocalTime
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun HourlyForecastItem(
-    hour: Hour,
+    item: WeatherItem,
     weatherUnits: WeatherUnits,
     currentColorCover: Color
 ) {
-    with(hour) {
+    with(item) {
 
         val units = Pair(
             weatherUnits.unitsValue,
@@ -72,25 +75,26 @@ fun HourlyForecastItem(
         }
 
         val icon = if (season == Seasons.WINTER) {
-            if (chanceOfSnow!! > 0) {
-                if (time_ == Time.EVENING)
-                    PlumsoftwareIconPack.Weather.CloudSnowNight
-                else
-                    PlumsoftwareIconPack.Weather.CloudSnowDay
-            } else {
-                PlumsoftwareIconPack.Weather.Doublecloud
-            }
+            if (time_ == Time.EVENING)
+                PlumsoftwareIconPack.Weather.CloudSnowNight
+            else
+                PlumsoftwareIconPack.Weather.CloudSnowDay
         } else {
-            if (chanceOfRain!! > 0) {
-                if (time_ == Time.EVENING)
-                    PlumsoftwareIconPack.Weather.RainyNight
-                else
-                    PlumsoftwareIconPack.Weather.RainyDay
+            if (rain != null) {
+                if (rain.h3 > 0.0) {
+                    if (time_ == Time.EVENING)
+                        PlumsoftwareIconPack.Weather.RainyNight
+                    else
+                        PlumsoftwareIconPack.Weather.RainyDay
+                } else {
+                    PlumsoftwareIconPack.Weather.Doublecloud
+                }
             } else {
                 PlumsoftwareIconPack.Weather.Doublecloud
             }
         }
-        val temp = if (units) tempC!!.toInt().toString() else tempF!!.toInt().toString()
+        val temp = if (units) (main.temp.toInt().toString()) else ((main.temp * 9 / 5) + 32).toInt()
+            .toString()
 
         with(currentColorCover) {
             Column(
@@ -116,7 +120,10 @@ fun HourlyForecastItem(
                         .weight(weight = 1.0f)
                 ) {
                     Text(
-                        text = time!!.substringAfter(" "),
+                        text = SimpleDateFormat(
+                            "dd MMMM \n HH:mm",
+                            Locale.getDefault()
+                        ).format(Date(dt * 1000L)),
                         style = MaterialTheme.typography.labelMedium.copy(color = this@with)
                     )
                     Icon(
@@ -130,10 +137,18 @@ fun HourlyForecastItem(
                         contentDescription = stringResource(id = R.string.weather_hour_logo_desc),
                         modifier = Modifier.width(width = ExtensionSize.IconSize._34dp)
                     )
-                    Text(
-                        text = if (season == Seasons.WINTER) "${chanceOfSnow.toString()}%" else "${chanceOfRain}%",
-                        style = MaterialTheme.typography.labelSmall.copy(color = this@with)
-                    )
+                    if (rain != null)
+                        Text(
+                            text = if (season == Seasons.WINTER) "${rain.h3.toInt()}%" else "${
+                                rain.h3.toInt()
+                            }%",
+                            style = MaterialTheme.typography.labelSmall.copy(color = this@with)
+                        )
+                    else
+                        Text(
+                            text = "0%",
+                            style = MaterialTheme.typography.labelSmall.copy(color = this@with)
+                        )
                 }
                 Column(
                     verticalArrangement = Arrangement.spacedBy(
@@ -148,7 +163,7 @@ fun HourlyForecastItem(
                         verticalArrangement = Arrangement.Bottom,
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
-                            .height(height = ((if (units) if (tempC!! > 0) tempC!! else tempC!! * -1 else if (tempF!! > 0) tempF!! else tempF!! * -1)).toInt().dp)
+                            .height(height = ((if (units) if (main.temp > 0) main.temp else main.temp * -1 else if ((main.temp * 9 / 5) + 32 > 0) (main.temp * 9 / 5) + 32 else (main.temp * 9 / 5) + 32 * -1)).toInt().dp)
                             .width(width = ExtensionSize.HourlyForecastItem.divWidth)
                             .clip(shape = MaterialTheme.shapes.extraSmall)
                             .background(

@@ -18,6 +18,7 @@ import io.ktor.serialization.kotlinx.json.*
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
 import ru.plumsoftware.weatherforecastru.data.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.data.models.settings.WindSpeed
+import ru.plumsoftware.weatherforecastru.data.remote.dto.forecast_owm.MainWeatherResponse
 import java.time.LocalDateTime
 import java.util.Calendar
 import java.util.Date
@@ -26,7 +27,7 @@ class ContentStoreFactory(
     private val storeFactory: StoreFactory,
     private val sharedPreferencesStorage: ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage,
     private val owmResponse: OwmResponse,
-    private val weatherApiResponse: WeatherApiResponse,
+    private val weatherApiResponse: MainWeatherResponse,
     private val adsList: MutableList<NativeAd>,
     private val isAdsLoading: Boolean,
     private val isDark: Boolean,
@@ -91,7 +92,7 @@ class ContentStoreFactory(
         //        region::Weather
         data class OwmResponseMsg(val value: OwmResponse) : Msg
         data class WeatherUnitsMsg(val value: WeatherUnits) : Msg
-        data class WeatherApiResponseMsg(val value: WeatherApiResponse) : Msg
+        data class WeatherApiResponseMsg(val value: MainWeatherResponse) : Msg
         data class WindSpeedMsg(val value: WindSpeed) : Msg
         data class OwmCode(val value: Int) : Msg
         data class WeatherApiCode(val value: Int) : Msg
@@ -153,17 +154,18 @@ class ContentStoreFactory(
                 }
 
                 is ContentStore.Intent.ChangeHourly -> {
-                    dispatch(Msg.ChangeHourly(value = intent.value))
+//                    dispatch(Msg.ChangeHourly(value = intent.value))
                     dispatch(
                         Msg.ScrollToItem(
-                            value = if (intent.value == 0) if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                LocalDateTime.now().hour
-                            } else {
-                                Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-                            } else 0
+                            value = when (intent.value) {
+                                0 -> 0
+                                1 -> 4
+                                2 -> 8
+                                else -> 0
+                            }
                         )
                     )
-                    dispatch(Msg.NeedScroll(value = intent.value == 0))
+//                    dispatch(Msg.NeedScroll(value = intent.value == 0))
                 }
 
                 is ContentStore.Intent.OpenAirQuality -> {
@@ -222,7 +224,7 @@ class ContentStoreFactory(
         private fun initWeather(
             sharedPreferencesStorage: ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage,
             owmResponse: OwmResponse,
-            weatherApiResponse: WeatherApiResponse,
+            weatherApiResponse: MainWeatherResponse,
             owmCode: Int,
             weatherApiCode: Int
         ) {

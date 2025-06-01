@@ -12,6 +12,7 @@ import ru.plumsoftware.weatherforecastru.data.repository.OwmRepositoryImpl
 import ru.plumsoftware.weatherforecastru.data.repository.WeatherApiRepository
 import ru.plumsoftware.weatherforecastru.data.repository.WeatherApiRepositoryImpl
 import ru.plumsoftware.weatherforecastru.data.storage.HttpClientStorage
+import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetHourlyUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetOwmUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetWeatherApiUseCase
 
@@ -71,7 +72,8 @@ internal val httpClientModel = module {
             ),
             getWeatherApiUseCase = GetWeatherApiUseCase(
                 weatherApiRepository = get()
-            )
+            ),
+            getHourlyUseCase = GetHourlyUseCase(owmRepository = get())
         )
     }
 }

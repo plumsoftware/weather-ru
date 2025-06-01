@@ -23,9 +23,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import ru.plumsoftware.weatherapp.weatherdata.forecast_owm.WeatherItem
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecastru.data.constants.Constants
-import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.Hour
 import ru.plumsoftware.weatherforecastru.data.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionSize
@@ -33,7 +33,7 @@ import ru.plumsoftware.weatherforecastru.presentation.ui.md_theme_text_cover
 
 @Composable
 fun HourlyWeatherForecast(
-    list: List<Hour>,
+    list: List<WeatherItem>,
     weatherUnits: WeatherUnits,
     scrollToItem: Int,
     needScroll: Boolean,
@@ -48,11 +48,13 @@ fun HourlyWeatherForecast(
 
     val lazyListState = rememberLazyListState()
 
+    val todayScrollIndex = scrollToItem
+
 
     LaunchedEffect(scrollToItem) {
         if (needScroll)
             lazyListState.animateScrollToItem(
-                index = scrollToItem
+                index = todayScrollIndex
             )
         else
             lazyListState.animateScrollToItem(
@@ -130,7 +132,7 @@ fun HourlyWeatherForecast(
                     itemsIndexed(list) { index, item ->
 
                         HourlyForecastItem(
-                            hour = item,
+                            item = item,
                             weatherUnits = weatherUnits,
                             currentColorCover = if (needScroll) {
                                 if (index == scrollToItem) MaterialTheme.colorScheme.onSecondaryContainer else LocalContentColor.current

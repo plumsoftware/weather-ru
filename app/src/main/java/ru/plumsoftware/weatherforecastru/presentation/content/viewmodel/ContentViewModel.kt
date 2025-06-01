@@ -8,6 +8,7 @@ import com.yandex.mobile.ads.nativeads.NativeAd
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import ru.plumsoftware.weatherforecastru.data.remote.dto.forecast_owm.MainWeatherResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
 import ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage
@@ -18,7 +19,7 @@ class ContentViewModel(
     storeFactory: StoreFactory,
     sharedPreferencesStorage: ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage,
     owmResponse: OwmResponse,
-    weatherApiResponse: WeatherApiResponse,
+    weatherApiResponse: MainWeatherResponse,
     adsList: MutableList<NativeAd>,
     isAdsLoading: Boolean,
     isDark: Boolean,

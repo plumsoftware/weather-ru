@@ -76,4 +76,63 @@ class OwmRepositoryImpl(
             )
         }
     }
+
+    override suspend fun <D, E, R> getOwmHourly(): WeatherEither<D, E, R> {
+        val response = client.get {
+            url(urlString = "https://api.openweathermap.org/data/2.5/forecast?q=${sharedPreferencesStorage.get().city}")
+            parameter(key = "appid", value = BuildConfig.OWM_API_KEY)
+            parameter(key = "lang", value = Locale.getDefault().language)
+            parameter(key = "units", value = sharedPreferencesStorage.get().weatherUnits.unitsValue)
+        }
+
+        try {
+            val httpError = response.status as E
+            val httpResponse = response.body<String>() as D
+            val httpResponseTime = response.responseTime as R
+            return WeatherEither(
+                data = httpResponse,
+                httpStatusCode = httpError,
+                responseTime = httpResponseTime
+            )
+        } catch (e: RedirectResponseException) {
+//            3xx
+            val httpResponse = null as D
+            val httpError = e as E
+            val httpResponseTime = response.responseTime as R
+            return WeatherEither(
+                data = httpResponse,
+                httpStatusCode = httpError,
+                responseTime = httpResponseTime
+            )
+        } catch (e: ClientRequestException) {
+//            4xx
+            val httpResponse = null as D
+            val httpError = e as E
+            val httpResponseTime = response.responseTime as R
+            return WeatherEither(
+                data = httpResponse,
+                httpStatusCode = httpError,
+                responseTime = httpResponseTime
+            )
+        } catch (e: ServerResponseException) {
+//            5xx
+            val httpResponse = null as D
+            val httpError = e as E
+            val httpResponseTime = response.responseTime as R
+            return WeatherEither(
+                data = httpResponse,
+                httpStatusCode = httpError,
+                responseTime = httpResponseTime
+            )
+        } catch (e: Exception) {
+            val httpResponse = null as D
+            val httpError = e as E
+            val httpResponseTime = response.responseTime as R
+            return WeatherEither(
+                data = httpResponse,
+                httpStatusCode = httpError,
+                responseTime = httpResponseTime
+            )
+        }
+    }
 }
