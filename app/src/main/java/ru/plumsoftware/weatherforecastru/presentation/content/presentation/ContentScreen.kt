@@ -134,7 +134,8 @@ private fun ContentScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = ExtensionPaddingValues._8dp),
+                .padding(horizontal = ExtensionPaddingValues._8dp)
+                .padding(top = ExtensionPaddingValues._16dp),
             content = {
 
                 item {
