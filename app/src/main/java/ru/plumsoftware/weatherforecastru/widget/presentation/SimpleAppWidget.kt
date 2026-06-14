@@ -7,8 +7,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.doublePreferencesKey
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.glance.ColorFilter
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import android.graphics.Bitmap
 import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
@@ -48,12 +53,14 @@ import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
 import ru.plumsoftware.uicomponents.R as UI
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
-import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionSize
+import ru.plumsoftware.weatherforecastru.presentation.ui.Dimens
 import ru.plumsoftware.weatherforecastru.widget.di.WidgetDI
 import ru.plumsoftware.weatherforecastru.widget.keys.Keys
 import ru.plumsoftware.weatherforecastru.widget.utilites.doHttpResponse
 import ru.plumsoftware.weatherforecastru.widget.material.PlumsoftwareWidgetTheme
-import ru.plumsoftware.weatherforecastru.widget.utilites.badIconToGoodIcon
+import ru.plumsoftware.weatherforecastru.data.weather.OwmIconSize
+import ru.plumsoftware.weatherforecastru.data.weather.WeatherIconCodes
+import ru.plumsoftware.weatherforecastru.data.weather.WeatherIconImageLoader
 import ru.plumsoftware.weatherforecastru.widget.utilites.darkerColor
 import ru.plumsoftware.weatherforecastru.widget.utilites.makeColorDarker
 
@@ -63,7 +70,7 @@ class SimpleAppWidget : GlanceAppWidget(), KoinComponent {
     private val currentDegreeKey = doublePreferencesKey(name = Keys.Simple.CURRENT_DEGREE)
     private val currentMinDegreeKey = doublePreferencesKey(name = Keys.Simple.CURRENT_MIN_DEGREE)
     private val currentMaxDegreeKey = doublePreferencesKey(name = Keys.Simple.CURRENT_MAX_DEGREE)
-    private val currentIconIdKey = intPreferencesKey(name = Keys.Simple.CURRENT_ICON_ID)
+    private val currentIconCodeKey = stringPreferencesKey(name = Keys.Simple.CURRENT_ICON_CODE)
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         // In this method, load data needed to render the AppWidget.
@@ -85,10 +92,19 @@ class SimpleAppWidget : GlanceAppWidget(), KoinComponent {
         val currentDegree = currentState(key = currentDegreeKey) ?: 0.001
         val currentMinDegree = currentState(key = currentMinDegreeKey) ?: 0.001
         val currentMaxDegree = currentState(key = currentMaxDegreeKey) ?: 0.001
-        val currentIconId = currentState(key = currentIconIdKey) ?: UI.drawable.clear_day
+        val currentIconCode = currentState(key = currentIconCodeKey) ?: WeatherIconCodes.FALLBACK
+        val context = LocalContext.current
+        var weatherIconBitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+        LaunchedEffect(currentIconCode) {
+            weatherIconBitmap = WeatherIconImageLoader.loadBitmap(
+                context = context,
+                iconCode = currentIconCode,
+                size = OwmIconSize.Standard,
+            )
+        }
 
         val coroutine = rememberCoroutineScope()
-        val context = LocalContext.current
 
         val manager = GlanceAppWidgetManager(context)
         val widget = SimpleAppWidget()
@@ -128,18 +144,14 @@ class SimpleAppWidget : GlanceAppWidget(), KoinComponent {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
+                        val iconProvider = weatherIconBitmap?.let { bitmap ->
+                            ImageProvider(bitmap)
+                        } ?: ImageProvider(resId = UI.drawable.cloudy_1_day)
                         Image(
-                            provider = ImageProvider(resId = badIconToGoodIcon(icon = currentIconId)),
+                            provider = iconProvider,
                             contentDescription = null,
                             modifier = GlanceModifier
-                                .size(size = ExtensionSize.IconSize._44dp),
-                            colorFilter = ColorFilter.tint(
-                                ColorProvider(
-                                    darkerColor(
-                                        color = Color(red = red, green = green, blue = blue)
-                                    )
-                                )
-                            ),
+                                .size(size = Dimens.widgetWeatherIconSize),
                         )
                         Spacer(modifier = GlanceModifier.width(width = ExtensionPaddingValues._10dp))
                         Column(
@@ -203,9 +215,8 @@ class SimpleAppWidget : GlanceAppWidget(), KoinComponent {
                 val current = prefs[SimpleAppWidget().currentDegreeKey]
                 val min = prefs[SimpleAppWidget().currentMinDegreeKey]
                 val max = prefs[SimpleAppWidget().currentMaxDegreeKey]
-                val iconId = prefs[SimpleAppWidget().currentIconIdKey]
-
-                prefs[SimpleAppWidget().currentDegreeKey] = 0.001
+                prefs[SimpleAppWidget().currentIconCodeKey] =
+                    WeatherIconCodes.fromOwmIcon(owmResponse.weather.firstOrNull()?.icon)
 
                 if (current != null) {
                     prefs[SimpleAppWidget().currentDegreeKey] = owmResponse.main!!.temp!!
@@ -225,12 +236,6 @@ class SimpleAppWidget : GlanceAppWidget(), KoinComponent {
                         owmResponse.main!!.tempMax!!
                 } else {
                     prefs[SimpleAppWidget().currentMaxDegreeKey] = 0.001
-                }
-
-                if (iconId != null) {
-                    prefs[SimpleAppWidget().currentIconIdKey] = owmResponse.weather[0].id!!
-                } else {
-                    prefs[SimpleAppWidget().currentIconIdKey] = UI.drawable.clear_day
                 }
             }
             widget.update(context, glanceId)

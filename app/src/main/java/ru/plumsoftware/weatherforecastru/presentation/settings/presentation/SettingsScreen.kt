@@ -1,4 +1,4 @@
-package ru.plumsoftware.weatherforecastru.presentation.settings.presentation
+﻿package ru.plumsoftware.weatherforecastru.presentation.settings.presentation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,7 +19,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Air
+import androidx.compose.material.icons.outlined.DarkMode
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.Share
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.outlined.Thermostat
+import androidx.compose.material.icons.outlined.Widgets
 import androidx.compose.material.icons.rounded.Build
+import ru.plumsoftware.weatherforecastru.presentation.ui.components.SettingsDivider
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Notifications
@@ -48,16 +59,20 @@ import ru.plumsoftware.uicomponents.plumsoftwareiconpack.Settings
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.settings.Darkmode
 import ru.plumsoftware.weatherforecast.BuildConfig
 import ru.plumsoftware.weatherforecast.R
+import ru.plumsoftware.weatherforecastru.messanging.NotificationPeriods
 import ru.plumsoftware.weatherforecastru.data.models.settings.NotificationItem
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
-import ru.plumsoftware.weatherforecastru.material.components.TopBar
 import ru.plumsoftware.weatherforecastru.presentation.settings.viewmodel.SettingsViewModel
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionSize
 import ru.plumsoftware.weatherforecastru.presentation.settings.store.SettingsStore
+import ru.plumsoftware.weatherforecastru.presentation.settings.store.isMsWindSpeed
 import ru.plumsoftware.weatherforecastru.presentation.ui.md_theme_text_cover
 
 @Composable
-fun SettingsScreen(settingsViewModel: SettingsViewModel) {
+fun SettingsScreen(
+    settingsViewModel: SettingsViewModel,
+    onNotificationIntervalSelect: (Int) -> Unit,
+) {
     val state by settingsViewModel.state.collectAsState()
 
     LaunchedEffect(settingsViewModel) {
@@ -89,6 +104,10 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel) {
                     settingsViewModel.onOutput(SettingsViewModel.Output.OnSettingsChange)
                 }
 
+                SettingsStore.Label.RescheduleNotifications -> {
+                    settingsViewModel.onOutput(SettingsViewModel.Output.RescheduleNotifications)
+                }
+
                 SettingsStore.Label.WidgetConfigureSettings -> {
                     settingsViewModel.onOutput(SettingsViewModel.Output.OpenWidgetConfig)
                 }
@@ -98,12 +117,146 @@ fun SettingsScreen(settingsViewModel: SettingsViewModel) {
 
     SettingsScreen(
         event = settingsViewModel::onEvent,
-        state = state
+        state = state,
+        onNotificationIntervalSelect = onNotificationIntervalSelect,
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun SettingsScreen(
+    event: (SettingsStore.Intent) -> Unit,
+    state: SettingsStore.State,
+    onNotificationIntervalSelect: (Int) -> Unit,
+) {
+    val isCelsius = state.weatherUnit.unitsPresentation.equals("c", ignoreCase = true) ||
+        state.weatherUnit.unitsPresentation.contains("°C", ignoreCase = true)
+    val isMs = isMsWindSpeed(state.windSpeed)
+    val notificationIntervalIndex = NotificationPeriods.indexForPeriod(state.notificationItem.period)
+
+    androidx.compose.material3.Scaffold(
+        topBar = {
+            SettingsTopBar(
+                title = stringResource(R.string.settings),
+                onBack = { event(SettingsStore.Intent.BackButtonClicked) },
+            )
+        },
+        containerColor = MaterialTheme.colorScheme.background,
+        contentWindowInsets = androidx.compose.foundation.layout.WindowInsets(0, 0, 0, 0),
+    ) { padding ->
+        androidx.compose.foundation.lazy.LazyColumn(
+            modifier = Modifier.fillMaxSize().padding(padding),
+            contentPadding = androidx.compose.foundation.layout.PaddingValues(
+                start = ru.plumsoftware.weatherforecastru.presentation.ui.Dimens.screenPaddingH,
+                end = ru.plumsoftware.weatherforecastru.presentation.ui.Dimens.screenPaddingH,
+                top = ru.plumsoftware.weatherforecastru.presentation.ui.Dimens.screenPaddingV,
+                bottom = ru.plumsoftware.weatherforecastru.presentation.ui.Dimens.screenPaddingV,
+            ),
+            verticalArrangement = Arrangement.spacedBy(ru.plumsoftware.weatherforecastru.presentation.ui.Dimens.sectionGap),
+            content = {
+                item {
+                    SettingsSection(title = stringResource(R.string.weather_units)) {
+                        SettingsSegmentRow(
+                            icon = Icons.Outlined.Thermostat,
+                            iconBgColor = MaterialTheme.colorScheme.primaryContainer,
+                            title = stringResource(R.string.weather),
+                            options = listOf("°C", "°F"),
+                            selectedIndex = if (isCelsius) 0 else 1,
+                            onSelect = { index ->
+                                if ((index == 0) != isCelsius) {
+                                    event(SettingsStore.Intent.ChangeWeatherUnits)
+                                }
+                            },
+                        )
+                        SettingsDivider()
+                        SettingsSegmentRow(
+                            icon = Icons.Outlined.Air,
+                            iconBgColor = Color(0xFFFFF3E0),
+                            title = stringResource(R.string.wind_speed),
+                            options = listOf("м/с", "км/ч"),
+                            selectedIndex = if (isMs) 0 else 1,
+                            onSelect = { index ->
+                                if ((index == 0) != isMs) {
+                                    event(SettingsStore.Intent.ChangeWindUnits)
+                                }
+                            },
+                        )
+                    }
+                }
+                item {
+                    SettingsSection(title = stringResource(R.string.application)) {
+                        SettingsSwitchRow(
+                            icon = Icons.Outlined.DarkMode,
+                            iconBgColor = Color(0xFFEEF2FF),
+                            title = stringResource(R.string.theme_desc),
+                            checked = state.checkBoxValue,
+                            onCheckedChange = { event(SettingsStore.Intent.CheckBoxValue(value = it)) },
+                        )
+                        SettingsDivider()
+                        SettingsSegmentRow(
+                            icon = Icons.Outlined.Notifications,
+                            iconBgColor = Color(0xFFFFF3E0),
+                            title = stringResource(R.string.notification_delivery),
+                            options = listOf(
+                                stringResource(R.string.notification_interval_3h),
+                                stringResource(R.string.notification_interval_6h),
+                                stringResource(R.string.notification_interval_12h),
+                            ),
+                            selectedIndex = notificationIntervalIndex,
+                            controlMaxWidth = 156.dp,
+                            onSelect = { index ->
+                                if (index != notificationIntervalIndex) {
+                                    onNotificationIntervalSelect(index)
+                                }
+                            },
+                        )
+                        SettingsDivider()
+                        SettingsArrowRow(
+                            icon = Icons.Outlined.Widgets,
+                            iconBgColor = Color(0xFFE8F5E9),
+                            title = stringResource(R.string.widget_hint),
+                            onClick = { event(SettingsStore.Intent.WidgetConfigureSettings) },
+                        )
+                        SettingsDivider()
+                        SettingsArrowRow(
+                            icon = Icons.Outlined.Info,
+                            iconBgColor = Color(0xFFF3E5F5),
+                            title = stringResource(R.string.about_app),
+                            onClick = { event(SettingsStore.Intent.AboutApp) },
+                        )
+                        if (BuildConfig.platform == "RuStore") {
+                            SettingsDivider()
+                            SettingsArrowRow(
+                                icon = Icons.Outlined.Share,
+                                iconBgColor = Color(0xFFE8F5E9),
+                                title = stringResource(R.string.share_),
+                                onClick = { event(SettingsStore.Intent.Share) },
+                            )
+                        }
+                    }
+                }
+                if (BuildConfig.platform == "RuStore") {
+                    item {
+                        SettingsSection(title = stringResource(R.string.feedback)) {
+                            SettingsArrowRow(
+                                icon = Icons.Outlined.Star,
+                                iconBgColor = Color(0xFFFFF8E1),
+                                title = stringResource(R.string.rustore_review),
+                                onClick = { event(SettingsStore.Intent.LeaveFeedBack) },
+                            )
+                        }
+                    }
+                }
+            },
+        )
+    }
+}
+
+// Legacy settings layout removed during redesign.
+
+@Composable
+@Suppress("unused", "DEPRECATION")
+private fun SettingsScreenLegacyRemoved(
     event: (SettingsStore.Intent) -> Unit,
     state: SettingsStore.State
 ) {
@@ -115,18 +268,6 @@ private fun SettingsScreen(
             .fillMaxHeight()
     ) {
         with(ExtensionPaddingValues) {
-
-//            MARK: Back
-            Box(modifier = Modifier.padding(start = _16dp, end = _16dp, top = _24dp)) {
-                TopBar(
-                    showBack = true,
-                    textResId = R.string.settings,
-                    onBackClick = {
-                        event(SettingsStore.Intent.BackButtonClicked)
-                    })
-            }
-
-//            MARK: Content
 
             androidx.compose.foundation.lazy.LazyColumn(
                 verticalArrangement = Arrangement.spacedBy(
@@ -659,7 +800,7 @@ private fun SettingsScreen(
                             }
                     }
                     item {
-                        Spacer(modifier = Modifier.height(height = _14dp))
+                        ru.plumsoftware.weatherforecastru.presentation.ui.NavigationBarSpacer()
                     }
                 }
             )

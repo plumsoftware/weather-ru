@@ -40,7 +40,7 @@ import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Sunny
 import ru.plumsoftware.uicomponents.plumsoftwareiconpack.weather.Tornado
 import ru.plumsoftware.weatherforecast.R as T
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
-import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionSize
+import ru.plumsoftware.weatherforecastru.presentation.ui.Dimens
 
 @Composable
 fun WeatherStatus(
@@ -81,7 +81,7 @@ fun WeatherStatus(
                         imageVector = first,
                         contentDescription = stringResource(id = T.string.weather_status_logo),
                         tint = second,
-                        modifier = Modifier.size(size = ExtensionSize.IconSize._44dp),
+                        modifier = Modifier.size(size = Dimens.widgetWeatherIconSize),
                     )
                     Spacer(modifier = Modifier.width(width = ExtensionPaddingValues._10dp))
                     Text(

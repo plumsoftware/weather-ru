@@ -1,9 +1,6 @@
 package ru.plumsoftware.weatherforecastru.application
 
 import android.Manifest
-import android.app.job.JobInfo
-import android.app.job.JobScheduler
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,23 +9,35 @@ import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
@@ -41,15 +50,15 @@ import com.yandex.mobile.ads.appopenad.AppOpenAdEventListener
 import com.yandex.mobile.ads.appopenad.AppOpenAdLoadListener
 import com.yandex.mobile.ads.appopenad.AppOpenAdLoader
 import com.yandex.mobile.ads.common.AdError
-import com.yandex.mobile.ads.common.AdRequestConfiguration
+import com.yandex.mobile.ads.common.AdRequest
 import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.common.ImpressionData
-import com.yandex.mobile.ads.common.MobileAds
+import com.yandex.mobile.ads.common.YandexAds
 import com.yandex.mobile.ads.nativeads.NativeAd
-import com.yandex.mobile.ads.nativeads.NativeAdRequestConfiguration
 import com.yandex.mobile.ads.nativeads.NativeBulkAdLoadListener
 import com.yandex.mobile.ads.nativeads.NativeBulkAdLoader
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.android.Android
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -68,10 +77,15 @@ import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecastru.data.constants.Constants
 import ru.plumsoftware.weatherforecastru.data.database.LocationItemDatabase
 import ru.plumsoftware.weatherforecastru.data.models.location.LocationItemDao
-import ru.plumsoftware.weatherforecastru.data.remote.dto.air_polutaon.AirQualityResponse
+import ru.plumsoftware.weatherforecastru.data.models.airquality.AirQualityData
+import ru.plumsoftware.weatherforecastru.data.repository.AirQualityRepositoryImpl
 import ru.plumsoftware.weatherforecastru.data.remote.dto.forecast_owm.MainWeatherResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
+import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.Astro
+import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiAstronomyResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import ru.plumsoftware.weatherforecastru.data.utilities.logd
 import ru.plumsoftware.weatherforecastru.data.remote.either.WeatherEither
 import ru.plumsoftware.weatherforecastru.data.repository.LocationRepository
@@ -79,6 +93,7 @@ import ru.plumsoftware.weatherforecastru.data.repository.LocationRepositoryImpl
 import ru.plumsoftware.weatherforecastru.data.repository.OwmRepositoryImpl
 import ru.plumsoftware.weatherforecastru.data.repository.SharedPreferencesRepository
 import ru.plumsoftware.weatherforecastru.data.repository.SharedPreferencesRepositoryImpl
+import ru.plumsoftware.weatherforecastru.data.map.MapGridWeatherRepository
 import ru.plumsoftware.weatherforecastru.data.repository.WeatherApiRepositoryImpl
 import ru.plumsoftware.weatherforecastru.data.storage.HttpClientStorage
 import ru.plumsoftware.weatherforecastru.data.storage.LocationStorage
@@ -98,7 +113,9 @@ import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsW
 import ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveUserSettingsWindUnitsUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetHourlyUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetOwmUseCase
-import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetWeatherApiUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetWeatherApiAstronomyUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetWeatherApiCurrentUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetWeatherApiForecastUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.widget.GetWidgetConfigUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.widget.SaveWidgetConfigUseCase
 import ru.plumsoftware.weatherforecastru.presentation.noconnection.presentation.NoConnection
@@ -108,7 +125,12 @@ import ru.plumsoftware.weatherforecastru.presentation.airquality.presentation.Ai
 import ru.plumsoftware.weatherforecastru.presentation.airquality.viewmodel.AirQualityViewModel
 import ru.plumsoftware.weatherforecastru.presentation.authorization.viewmodel.AuthorizationViewModel
 import ru.plumsoftware.weatherforecastru.presentation.authorization.presentation.AuthorizationScreen
+import ru.plumsoftware.weatherforecastru.presentation.app.WeatherSession
 import ru.plumsoftware.weatherforecastru.presentation.content.presentation.ContentScreen
+import ru.plumsoftware.weatherforecastru.presentation.content.presentation.components.hasCurrentWeather
+import ru.plumsoftware.weatherforecastru.presentation.content.presentation.components.resolveWeatherApiCurrent
+import ru.plumsoftware.weatherforecastru.presentation.content.presentation.components.weatherApiForecastHasHourlyData
+import ru.plumsoftware.weatherforecastru.presentation.content.presentation.components.weatherApiForecastDayCount
 import ru.plumsoftware.weatherforecastru.presentation.content.viewmodel.ContentViewModel
 import ru.plumsoftware.weatherforecastru.presentation.location.presentation.LocationScreen
 import ru.plumsoftware.weatherforecastru.presentation.location.viewmodel.LocationViewModel
@@ -121,8 +143,12 @@ import ru.plumsoftware.weatherforecastru.presentation.ui.SetupUIController
 import ru.plumsoftware.weatherforecastru.presentation.ui.WeatherAppTheme
 import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.presentation.WidgetConfig
 import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.viewmodel.WidgetConfigViewModel
-import ru.plumsoftware.weatherforecastru.service.JOB_ID
-import ru.plumsoftware.weatherforecastru.service.MyJobService
+import ru.plumsoftware.weatherforecastru.application.permissions.AppPermissionsHelper
+import ru.plumsoftware.weatherforecastru.application.permissions.EntryPermissionsFlow
+import ru.plumsoftware.weatherforecastru.application.permissions.rememberNotificationSetupPermissionHandler
+import ru.plumsoftware.weatherforecastru.messanging.NotificationPeriods
+import ru.plumsoftware.weatherforecastru.messanging.WeatherNotificationScheduler
+import ru.plumsoftware.weatherforecastru.presentation.settings.store.SettingsStore
 
 class MainApplicationActivity : ComponentActivity() {
     private var isDarkTheme = mutableStateOf(false)
@@ -138,11 +164,8 @@ class MainApplicationActivity : ComponentActivity() {
     //    region:Override
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-//        region::Hide status bar
-        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_FULLSCREEN
+        enableEdgeToEdge()
         actionBar?.hide()
-//        endregion
 
 //        region::Add shortcuts
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -160,28 +183,57 @@ class MainApplicationActivity : ComponentActivity() {
                 LocationItemDatabase::class.java,
                 Constants.Database.DATABASE_NAME
             ).build()
-            val client = HttpClient(CIO) {
-                install(ContentNegotiation) {
-                    json(
-                        Json {
-                            ignoreUnknownKeys = true
-                            prettyPrint = true
-                            isLenient = true
-                        }
-                    )
+            val owmClient = remember {
+                HttpClient(CIO) {
+                    install(ContentNegotiation) {
+                        json(
+                            Json {
+                                ignoreUnknownKeys = true
+                                prettyPrint = true
+                                isLenient = true
+                            }
+                        )
+                    }
+                    install(HttpTimeout) {
+                        requestTimeoutMillis = 15000
+                        connectTimeoutMillis = 10000
+                        socketTimeoutMillis = 15000
+                    }
                 }
-                install(HttpTimeout) {
-                    requestTimeoutMillis = 30000
+            }
+            val weatherApiClient = remember {
+                HttpClient(Android) {
+                    engine {
+                        connectTimeout = 0
+                        socketTimeout = 0
+                    }
+                    install(ContentNegotiation) {
+                        json(
+                            Json {
+                                ignoreUnknownKeys = true
+                                isLenient = true
+                            }
+                        )
+                    }
+                }
+            }
+            DisposableEffect(owmClient, weatherApiClient) {
+                onDispose {
+                    owmClient.close()
+                    weatherApiClient.close()
                 }
             }
 
-            val sharedPreferencesRepository = SharedPreferencesRepositoryImpl(context = context)
+            val sharedPreferencesRepository = remember {
+                SharedPreferencesRepositoryImpl(context = context)
+            }
 
             val locationItemDao = room.dao
             val locationStorage = LocationStorage(
                 getLastKnownLocationUseCase = GetLastKnownLocationUseCase(locationRepository = LocationRepositoryImpl(context = context))
             )
-            sharedPreferencesStorage = SharedPreferencesStorage(
+            val prefsStorage = remember(sharedPreferencesRepository) {
+                SharedPreferencesStorage(
                 getUserSettingsUseCase = ru.plumsoftware.weatherforecastru.data.usecase.settings.GetUserSettingsUseCase(
                     sharedPreferencesRepository = sharedPreferencesRepository
                 ),
@@ -224,31 +276,82 @@ class MainApplicationActivity : ComponentActivity() {
                 saveNotificationItemUseCase = SaveNotificationItemUseCase(
                     sharedPreferencesRepository = sharedPreferencesRepository
                 )
-            )
-            val owmRepository = OwmRepositoryImpl(client = client, sharedPreferencesStorage = sharedPreferencesStorage)
-            val weatherApiRepository = WeatherApiRepositoryImpl(client = client, sharedPreferencesStorage = sharedPreferencesStorage)
-            val httpClientStorage = HttpClientStorage(
-                getOwmUseCase = GetOwmUseCase(owmRepository = owmRepository),
-                getWeatherApiUseCase = GetWeatherApiUseCase(weatherApiRepository = weatherApiRepository),
-                getHourlyUseCase = GetHourlyUseCase(owmRepository = owmRepository)
-            )
+                )
+            }
+            sharedPreferencesStorage = prefsStorage
+            val httpClientStorage = remember(owmClient, weatherApiClient, prefsStorage) {
+                val owmRepository = OwmRepositoryImpl(client = owmClient, sharedPreferencesStorage = prefsStorage)
+                val weatherApiRepository = WeatherApiRepositoryImpl(
+                    client = weatherApiClient,
+                    sharedPreferencesStorage = prefsStorage,
+                )
+                HttpClientStorage(
+                    getOwmUseCase = GetOwmUseCase(owmRepository = owmRepository),
+                    getWeatherApiCurrentUseCase = GetWeatherApiCurrentUseCase(
+                        weatherApiRepository = weatherApiRepository,
+                    ),
+                    getWeatherApiForecastUseCase = GetWeatherApiForecastUseCase(
+                        weatherApiRepository = weatherApiRepository,
+                    ),
+                    getWeatherApiAstronomyUseCase = GetWeatherApiAstronomyUseCase(
+                        weatherApiRepository = weatherApiRepository,
+                    ),
+                    getHourlyUseCase = GetHourlyUseCase(owmRepository = owmRepository),
+                )
+            }
+            val airQualityRepository = remember(weatherApiClient) {
+                AirQualityRepositoryImpl(client = weatherApiClient)
+            }
             val context = LocalContext.current
             val sharedDesc = stringResource(id = R.string.share_description)
             val appOpenAdLoader: AppOpenAdLoader = AppOpenAdLoader(application)
-            val adRequestConfigurationOpenAds =
-                AdRequestConfiguration.Builder(BuildConfig.OPEN_ADS_ID).build()
+            val openAdsRequest = AdRequest.Builder(BuildConfig.OPEN_ADS_ID).build()
 
             analytics = Firebase.analytics
             isDarkTheme =
-                remember { mutableStateOf(value = sharedPreferencesStorage.get().isDarkTheme) }
+                remember { mutableStateOf(value = prefsStorage.get().isDarkTheme) }
             navController = rememberNavController()
             val coroutine = rememberCoroutineScope()
-            val OWM_VALUE = remember { mutableStateOf(OwmResponse()) }
-            val WEATHER_API_VALUE = remember { mutableStateOf(MainWeatherResponse()) }
-            val AIR_QUALITY_VALUE = remember { mutableStateOf(AirQualityResponse()) }
-            val owmHttpCode = remember { mutableStateOf(-1) }
-            val weatherApiHttpCode = remember { mutableStateOf(-1) }
-//            val httpHolder = remember { mutableStateOf(0) }
+            val weatherSession = remember { WeatherSession() }
+            var showWeatherErrorDialog by remember { mutableStateOf(false) }
+
+            suspend fun loadWeatherIntoSession(): Boolean {
+                if (!checkInternetConnection(context)) return false
+                weatherSession.setLoading(true)
+                return try {
+                    val result = fetchWeatherData(
+                        httpClientStorage = httpClientStorage,
+                        weatherSession = weatherSession,
+                    )
+                    val hasCurrentWeather = result.useOwmForCurrent && result.owmResponse.hasCurrentWeather() ||
+                        !result.useOwmForCurrent && result.weatherApiResponse.hasCurrentWeather()
+                    if (!hasCurrentWeather) {
+                        showWeatherErrorDialog = true
+                    }
+                    val airQuality = fetchAirQuality(
+                        airQualityRepository = airQualityRepository,
+                        owmResponse = result.owmResponse,
+                        weatherApiResponse = result.weatherApiResponse,
+                    )
+                    weatherSession.applyWeather(
+                        owmResponse = result.owmResponse,
+                        owmHourlyResponse = result.owmHourlyResponse,
+                        weatherApiResponse = result.weatherApiResponse,
+                        astronomyAstro = result.astronomyAstro,
+                        airQualityData = airQuality,
+                        owmCode = result.owmCode.value,
+                        owmHourlyCode = result.owmHourlyCode.value,
+                        weatherApiCode = result.weatherApiCode,
+                        useOwmForCurrent = result.useOwmForCurrent,
+                    )
+                    true
+                } catch (e: Exception) {
+                    logd("Weather load error: ${e.message}")
+                    weatherSession.setLoading(false)
+                    showWeatherErrorDialog = true
+                    true
+                }
+            }
             val launcher = rememberLauncherForActivityResult(
                 ActivityResultContracts.RequestPermission()
             ) { isGranted: Boolean ->
@@ -285,6 +388,33 @@ class MainApplicationActivity : ComponentActivity() {
                     }
                 }
             }
+            var entryPermissionsActive by remember {
+                mutableStateOf(
+                    prefsStorage.get().city!!.isNotEmpty() &&
+                        AppPermissionsHelper.needsEntryPermissions(context),
+                )
+            }
+            var pendingLocationNavigation by remember { mutableStateOf(false) }
+
+            fun navigateToLocationScreen() {
+                if (checkLocationPermission()) {
+                    launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                } else {
+                    navController.navigate(route = Screens.Location)
+                }
+            }
+
+            EntryPermissionsFlow(
+                activity = this@MainApplicationActivity,
+                active = entryPermissionsActive,
+                onFinished = {
+                    entryPermissionsActive = false
+                    if (pendingLocationNavigation) {
+                        pendingLocationNavigation = false
+                        navigateToLocationScreen()
+                    }
+                },
+            )
             val list = remember {
                 mutableStateOf(mutableListOf<NativeAd>())
             }
@@ -301,9 +431,12 @@ class MainApplicationActivity : ComponentActivity() {
 //            region::Coroutines
             LaunchedEffect(Unit) {
                 coroutine.launch {
+                    val launchCount = sharedPreferencesRepository.incrementLaunchCount()
+                    val shouldShowNativeAd =
+                        BuildConfig.showNativeAd.toBoolean() && launchCount >= 3
 
                     if (checkInternetConnection(context = context)) {
-                        MobileAds.initialize(context) {
+                        YandexAds.initialize(context) {
                             logd(message = "RSY initialized!")
                         }
 
@@ -325,19 +458,16 @@ class MainApplicationActivity : ComponentActivity() {
                         }
 
                         myAppOpenAd?.setAdEventListener(appOpenAdEventListener)
-                        appOpenAdLoader.setAdLoadListener(appOpenAdLoadListener)
-                        appOpenAdLoader.loadAd(adRequestConfigurationOpenAds)
+                        appOpenAdLoader.loadAd(openAdsRequest, appOpenAdLoadListener)
 //                    endregion
 //                    region::Native ads
-                        if (BuildConfig.showNativeAd.toBoolean()) {
-                            val nativeAdsLoader = NativeBulkAdLoader(context).apply {
-                                setNativeBulkAdLoadListener(object : NativeBulkAdLoadListener {
-//                                    override fun onAdsLoaded(p0: MutableList<NativeAd>) {
-//                                        list.value = p0
-//                                        adsError.value = false
-//                                    }
-//                                    TODO(Slava Deych): Remove later
-
+                        if (shouldShowNativeAd) {
+                            val nativeAdsLoader = NativeBulkAdLoader(context)
+                            val nativeAdsRequest = AdRequest.Builder(BuildConfig.NATIVE_ADS_ID).build()
+                            nativeAdsLoader.loadAds(
+                                nativeAdsRequest,
+                                1,
+                                object : NativeBulkAdLoadListener {
                                     override fun onAdsFailedToLoad(p0: AdRequestError) {
                                         logd(p0.toString())
                                         adsError.value = true
@@ -347,13 +477,12 @@ class MainApplicationActivity : ComponentActivity() {
                                     override fun onAdsLoaded(nativeAds: List<NativeAd>) {
                                         list.value = nativeAds.toMutableList()
                                         adsError.value = false
+                                        isAdsLoading.value = false
                                     }
-                                })
-                            }
-                            val adRequestConfigurationNativeAds =
-                                NativeAdRequestConfiguration.Builder(BuildConfig.NATIVE_ADS_ID)
-                                    .build()
-                            nativeAdsLoader.loadAds(adRequestConfigurationNativeAds, 1)
+                                }
+                            )
+                        } else {
+                            isAdsLoading.value = false
                         }
 //                    endregion
                     }
@@ -361,33 +490,67 @@ class MainApplicationActivity : ComponentActivity() {
             }
 //            endregion
 
-            WeatherAppTheme(darkTheme = isDarkTheme.value) {
-                SetupUIController()
-                Surface {
-                    NavHost(
-                        navController = navController,
-                        startDestination =
-                        if (sharedPreferencesStorage.get().city!!.isEmpty()) {
-                            Screens.Authorization
-                        } else {
-                            coroutine.launch {
-                                if (checkInternetConnection(context)) {
-                                    with(
-                                        doHttpResponse(
-                                            httpClientStorage = httpClientStorage,
-                                            launch = true
-                                        )
-                                    ) {
-                                        OWM_VALUE.value = second.first
-                                        WEATHER_API_VALUE.value = second.second
-
-                                        owmHttpCode.value = first.first.value
-                                        weatherApiHttpCode.value = first.second.value
-                                    }
+            val contentViewModel = remember {
+                val mapGridHttpClient = HttpClient(CIO) {
+                    install(HttpTimeout) {
+                        requestTimeoutMillis = 5000
+                        connectTimeoutMillis = 5000
+                        socketTimeoutMillis = 5000
+                    }
+                }
+                ContentViewModel(
+                    storeFactory = DefaultStoreFactory(),
+                    sharedPreferencesStorage = sharedPreferencesStorage,
+                    weatherSession = weatherSession,
+                    locationRepository = LocationRepositoryImpl(context = context),
+                    mapGridWeatherRepository = MapGridWeatherRepository(httpClient = mapGridHttpClient),
+                    output = { output ->
+                        when (output) {
+                            is ContentViewModel.Output.OpenLocationScreen -> {
+                                if (checkLocationPermission()) {
+                                    launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                                 } else {
-                                    navController.navigate(route = Screens.NoConnection)
+                                    navController.navigate(route = Screens.Location)
                                 }
                             }
+
+                            is ContentViewModel.Output.OpenSettingsScreen -> {
+                                navController.navigate(route = Screens.Settings)
+                            }
+
+                            is ContentViewModel.Output.OpenAirQualityScreen -> {
+                                navController.navigate(route = Screens.AirQuality)
+                            }
+                        }
+                    },
+                )
+            }
+
+            LaunchedEffect(list.value, isAdsLoading.value) {
+                contentViewModel.updateAds(
+                    adsList = list.value,
+                    isAdsLoading = isAdsLoading.value,
+                )
+            }
+
+            LaunchedEffect(isDarkTheme.value) {
+                contentViewModel.updateTheme(isDarkTheme.value)
+            }
+
+            WeatherAppTheme(darkTheme = isDarkTheme.value) {
+                SetupUIController(darkTheme = isDarkTheme.value)
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background),
+                ) {
+                    NavHost(
+                        modifier = Modifier.fillMaxSize(),
+                        navController = navController,
+                        startDestination =
+                        if (prefsStorage.get().city!!.isEmpty()) {
+                            Screens.Authorization
+                        } else {
                             Screens.Content
                         }
                     ) {
@@ -427,10 +590,11 @@ class MainApplicationActivity : ComponentActivity() {
                                             }
 
                                             AuthorizationViewModel.Output.OpenLocationScreen -> {
-                                                if (checkLocationPermission()) {
-                                                    launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                                                if (AppPermissionsHelper.needsEntryPermissions(context)) {
+                                                    pendingLocationNavigation = true
+                                                    entryPermissionsActive = true
                                                 } else {
-                                                    navController.navigate(route = Screens.Location)
+                                                    navigateToLocationScreen()
                                                 }
                                             }
                                         }
@@ -443,6 +607,7 @@ class MainApplicationActivity : ComponentActivity() {
                             LocationScreen(
                                 locationViewModel = LocationViewModel(
                                     storeFactory = DefaultStoreFactory(),
+                                    locationRepository = LocationRepositoryImpl(context = context),
                                     output = { output ->
                                         when (output) {
                                             LocationViewModel.Output.BackStackClicked -> {
@@ -450,31 +615,9 @@ class MainApplicationActivity : ComponentActivity() {
                                             }
 
                                             is LocationViewModel.Output.OpenContentScreen -> {
-                                                navController.navigate(route = Screens.Content)
-                                                {
-                                                    coroutine.launch {
-                                                        if (checkInternetConnection(context)) {
-                                                            with(
-                                                                doHttpResponse(
-                                                                    httpClientStorage = httpClientStorage,
-                                                                    launch = false
-                                                                )
-                                                            ) {
-                                                                OWM_VALUE.value = second.first
-                                                                WEATHER_API_VALUE.value =
-                                                                    second.second
-
-                                                                owmHttpCode.value =
-                                                                    first.first.value
-                                                                weatherApiHttpCode.value =
-                                                                    first.second.value
-                                                            }
-                                                        } else {
-                                                            navController.navigate(route = Screens.NoConnection)
-                                                        }
-                                                    }
-
-                                                    popUpTo(route = Screens.Content) {
+                                                weatherSession.markCityChanged()
+                                                navController.navigate(route = Screens.Content) {
+                                                    popUpTo(route = Screens.Authorization) {
                                                         inclusive = true
                                                     }
                                                 }
@@ -487,42 +630,26 @@ class MainApplicationActivity : ComponentActivity() {
                             )
                         }
                         composable(route = Screens.Content) {
-                            ContentScreen(
-                                contentViewModel = ContentViewModel(
-                                    storeFactory = DefaultStoreFactory(),
-                                    sharedPreferencesStorage = sharedPreferencesStorage,
-                                    owmResponse = OWM_VALUE.value,
-                                    weatherApiResponse = WEATHER_API_VALUE.value,
-                                    adsList = list.value,
-                                    isAdsLoading = isAdsLoading.value,
-                                    isDark = isSystemInDarkTheme(),
-                                    owmCode = owmHttpCode.value,
-                                    weatherApiCode = weatherApiHttpCode.value,
-                                    output = { output ->
-                                        when (output) {
-                                            is ContentViewModel.Output.OpenLocationScreen -> {
-                                                if (checkLocationPermission()) {
-                                                    launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-                                                } else {
-                                                    navController.navigate(route = Screens.Location)
-                                                }
-                                            }
+                            val contentRefreshToken by weatherSession.contentRefreshToken.collectAsState()
+                            val navBackStackEntry by navController.currentBackStackEntryAsState()
+                            val currentRoute = navBackStackEntry?.destination?.route
 
-                                            is ContentViewModel.Output.OpenSettingsScreen -> {
-                                                navController.navigate(route = Screens.Settings)
-                                            }
-
-                                            is ContentViewModel.Output.OpenAirQualityScreen -> {
-                                                navController.navigate(route = Screens.AirQuality)
-                                            }
-                                        }
+                            LaunchedEffect(currentRoute, contentRefreshToken) {
+                                if (currentRoute == Screens.Content &&
+                                    weatherSession.shouldFetchOnContentEnter()
+                                ) {
+                                    val loaded = loadWeatherIntoSession()
+                                    if (!loaded) {
+                                        navController.navigate(route = Screens.NoConnection)
                                     }
-                                )
-                            )
+                                }
+                            }
+
+                            ContentScreen(contentViewModel = contentViewModel)
                         }
                         composable(route = Screens.Settings) {
-                            SettingsScreen(
-                                settingsViewModel = SettingsViewModel(
+                            val settingsViewModel = remember {
+                                SettingsViewModel(
                                     storeFactory = DefaultStoreFactory(),
                                     sharedPreferencesStorage = sharedPreferencesStorage,
                                     output = { output ->
@@ -536,20 +663,16 @@ class MainApplicationActivity : ComponentActivity() {
                                             }
 
                                             is SettingsViewModel.Output.OnSettingsChange -> {
-                                                CoroutineScope(Dispatchers.IO).launch {
-                                                    if (checkInternetConnection(context)) {
-                                                        with(
-                                                            doHttpResponse(
-                                                                httpClientStorage = httpClientStorage,
-                                                                launch = false
-                                                            )
-                                                        ) {
-                                                            OWM_VALUE.value = second.first
-
-                                                            owmHttpCode.value = first.first.value
-                                                        }
-                                                    } else {navController.navigate(route=Screens.NoConnection)}
+                                                weatherSession.markSettingsChanged()
+                                                coroutine.launch {
+                                                    if (!loadWeatherIntoSession()) {
+                                                        navController.navigate(route = Screens.NoConnection)
+                                                    }
                                                 }
+                                            }
+
+                                            SettingsViewModel.Output.RescheduleNotifications -> {
+                                                WeatherNotificationScheduler.schedule(context = context)
                                             }
 
                                             is SettingsViewModel.Output.OpenSetting -> {
@@ -590,25 +713,47 @@ class MainApplicationActivity : ComponentActivity() {
                                                 }
                                             }
                                         }
+                                    },
+                                )
+                            }
+                            var pendingNotificationIndex by remember { mutableStateOf<Int?>(null) }
+                            val requestNotificationSetupPermissions = rememberNotificationSetupPermissionHandler(
+                                activity = this@MainApplicationActivity,
+                            ) {
+                                pendingNotificationIndex?.let { index ->
+                                    settingsViewModel.onEvent(
+                                        SettingsStore.Intent.ChangeNotificationItem(
+                                            value = NotificationPeriods.itemForIndex(index),
+                                        ),
+                                    )
+                                    pendingNotificationIndex = null
+                                }
+                            }
+
+                            SettingsScreen(
+                                settingsViewModel = settingsViewModel,
+                                onNotificationIntervalSelect = { index ->
+                                    pendingNotificationIndex = index
+                                    requestNotificationSetupPermissions()
+                                },
+                            )
+                        }
+                        composable(route = Screens.AirQuality) {
+                            val weatherState by weatherSession.state.collectAsState()
+                            AirQualityScreen(
+                                airQualityViewModel = AirQualityViewModel(
+                                    storeFactory = DefaultStoreFactory(),
+                                    airQualityData = weatherState.airQualityData,
+                                    output = { output ->
+                                        when (output) {
+                                            AirQualityViewModel.Output.OpenContentScreen -> {
+                                                navController.popBackStack()
+                                            }
+                                        }
                                     }
                                 )
                             )
                         }
-//                        composable(route = Screens.AirQuality) {
-//                            AirQualityScreen(
-//                                airQualityViewModel = AirQualityViewModel(
-//                                    storeFactory = DefaultStoreFactory(),
-//                                    airQuality = WEATHER_API_VALUE.value.current!!.airQuality!!,
-//                                    output = { output ->
-//                                        when (output) {
-//                                            AirQualityViewModel.Output.OpenContentScreen -> {
-//                                                navController.popBackStack()
-//                                            }
-//                                        }
-//                                    }
-//                                )
-//                            )
-//                        }
                         composable(route = Screens.AboutApp) {
                             AboutApp(aboutAppViewModel = AboutAppViewModel(
                                 storeFactory = DefaultStoreFactory(),
@@ -628,22 +773,8 @@ class MainApplicationActivity : ComponentActivity() {
                                 output = { output ->
                                     when (output) {
                                         NoConnectionViewModel.Output.TryInternetConnection -> {
-                                            CoroutineScope(Dispatchers.IO).launch {
-                                                if (checkInternetConnection(context)) {
-                                                    with(
-                                                        doHttpResponse(
-                                                            httpClientStorage = httpClientStorage,
-                                                            launch = false
-                                                        )
-                                                    ) {
-                                                        OWM_VALUE.value = second.first
-
-                                                        owmHttpCode.value = first.first.value
-                                                    }
-                                                } else {
-                                                    navController.navigate(route = Screens.NoConnection)
-                                                }
-                                                CoroutineScope(Dispatchers.Main).launch {
+                                            coroutine.launch {
+                                                if (loadWeatherIntoSession()) {
                                                     navController.popBackStack()
                                                 }
                                             }
@@ -668,6 +799,23 @@ class MainApplicationActivity : ComponentActivity() {
                             )
                         }
                     }
+
+                    if (showWeatherErrorDialog) {
+                        AlertDialog(
+                            onDismissRequest = { showWeatherErrorDialog = false },
+                            title = {
+                                Text(text = stringResource(id = R.string.error_code))
+                            },
+                            text = {
+                                Text(text = stringResource(id = R.string.error_occurred))
+                            },
+                            confirmButton = {
+                                TextButton(onClick = { showWeatherErrorDialog = false }) {
+                                    Text(text = stringResource(id = R.string.error_ok))
+                                }
+                            },
+                        )
+                    }
                 }
             }
         }
@@ -675,11 +823,7 @@ class MainApplicationActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        try {
-            scheduleBackgroundJob(sharedPreferencesStorage = sharedPreferencesStorage)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        WeatherNotificationScheduler.schedule(context = this)
     }
 
     private fun checkReadStoragePermission(): Boolean = ContextCompat.checkSelfPermission(
@@ -706,47 +850,173 @@ class MainApplicationActivity : ComponentActivity() {
         Manifest.permission.ACCESS_FINE_LOCATION
     ) != PackageManager.PERMISSION_GRANTED
 
-    private inline fun <reified T> convertStringToJson(jsonString: String): T =
-        Gson().fromJson(jsonString, T::class.java)
+    private inline fun <reified T> convertStringToJson(jsonString: String?, default: T): T {
+        if (jsonString.isNullOrBlank()) return default
+        return runCatching { Gson().fromJson(jsonString, T::class.java) }
+            .onFailure { logd("JSON parse error: ${it.message}") }
+            .getOrDefault(default)
+    }
 
-    private suspend fun doHttpResponse(
+    private fun HttpStatusCode.isSuccessful(): Boolean = value in 200..299
+
+    private suspend fun fetchAirQuality(
+        airQualityRepository: AirQualityRepositoryImpl,
+        owmResponse: OwmResponse,
+        weatherApiResponse: WeatherApiResponse,
+    ): AirQualityData {
+        val lat = owmResponse.coord?.lat ?: weatherApiResponse.location?.lat ?: return AirQualityData()
+        val lon = owmResponse.coord?.lon ?: weatherApiResponse.location?.lon ?: return AirQualityData()
+        return runCatching { airQualityRepository.getAirQuality(lat, lon) }
+            .getOrDefault(AirQualityData())
+    }
+
+    private fun OwmResponse.hasCurrentWeather(): Boolean =
+        base.orEmpty().isNotEmpty() || main?.temp != null
+
+    private data class WeatherFetchResult(
+        val owmCode: HttpStatusCode,
+        val owmHourlyCode: HttpStatusCode,
+        val weatherApiForecastCode: HttpStatusCode,
+        val weatherApiCode: Int,
+        val owmResponse: OwmResponse,
+        val owmHourlyResponse: MainWeatherResponse,
+        val weatherApiResponse: WeatherApiResponse,
+        val astronomyAstro: Astro?,
+        val useOwmForCurrent: Boolean,
+    )
+
+    private suspend fun fetchWeatherData(
         httpClientStorage: HttpClientStorage,
-        launch: Boolean
-    ): Pair<Pair<HttpStatusCode, HttpStatusCode>, Pair<OwmResponse, MainWeatherResponse>> {
-
-        val checkInternetConnection =
-            checkInternetConnection(context = App.INSTANCE.applicationContext)
-
-        if (checkInternetConnection) {
-            if (launch)
-                CoroutineScope(Dispatchers.Main).launch {
-                    navController.navigate(route = Screens.Content)
-                }
-            var weatherEither: WeatherEither<String, HttpStatusCode, GMTDate> =
-                httpClientStorage.get()
-            val hourly: WeatherEither<String, HttpStatusCode, GMTDate> = httpClientStorage.getHourly()
-            val owmResponse = convertStringToJson<OwmResponse>(jsonString = weatherEither.data)
-            val hourlyResponse = convertStringToJson<MainWeatherResponse>(jsonString = hourly.data)
-            val fistCode = weatherEither.httpStatusCode
-
-//            weatherEither = httpClientStorage.getWeatherApi()
-//            val weatherApiResponse =
-//                convertStringToJson<WeatherApiResponse>(jsonString = weatherEither.data)
-            val secondCode = hourly.httpStatusCode
-
-            return Pair(
-                first = Pair(first = fistCode, second = secondCode),
-                second = Pair(first = owmResponse, second = hourlyResponse)
+        weatherSession: WeatherSession,
+    ): WeatherFetchResult {
+        val forecastEither = httpClientStorage.getWeatherApiForecast<String, HttpStatusCode, GMTDate>()
+        val forecastCode = forecastEither.httpStatusCode
+        val forecastResponse = if (forecastCode.isSuccessful()) {
+            convertStringToJson(
+                jsonString = forecastEither.data,
+                default = WeatherApiResponse(),
             )
         } else {
-            CoroutineScope(Dispatchers.Main).launch {
-                navController.navigate(route = Screens.NoConnection)
-            }
-            return Pair(
-                first = Pair(first = HttpStatusCode(-1, ""), second = HttpStatusCode(-1, "")),
-                second = Pair(first = OwmResponse(), second = MainWeatherResponse())
-            )
+            logd("WeatherAPI forecast request failed: ${forecastCode.value}")
+            WeatherApiResponse()
         }
+
+        var weatherApiCurrentCode = -1
+        var resolvedCurrent = resolveWeatherApiCurrent(forecastResponse)
+        var location = forecastResponse.location
+        val weatherApiHasForecast = forecastResponse.forecast?.forecastday.orEmpty().isNotEmpty()
+        val weatherApiHasHourly = weatherApiForecastHasHourlyData(forecastResponse.forecast)
+        val weatherApiDayCount = weatherApiForecastDayCount(forecastResponse.forecast)
+
+        if (resolvedCurrent == null) {
+            val currentEither = httpClientStorage.getWeatherApiCurrent<String, HttpStatusCode, GMTDate>()
+            weatherApiCurrentCode = currentEither.httpStatusCode.value
+            if (currentEither.httpStatusCode.isSuccessful()) {
+                val weatherApiCurrentResponse = convertStringToJson(
+                    jsonString = currentEither.data,
+                    default = WeatherApiResponse(),
+                )
+                resolvedCurrent = weatherApiCurrentResponse.current?.takeIf {
+                    it.condition?.text.orEmpty().isNotEmpty()
+                }
+                location = weatherApiCurrentResponse.location ?: location
+            } else {
+                logd("WeatherAPI current request failed: $weatherApiCurrentCode")
+            }
+        }
+
+        val weatherApiHasCurrent = resolvedCurrent != null
+        if (weatherApiHasCurrent || weatherApiHasForecast) {
+            weatherSession.setLoading(false)
+        }
+
+        var owmCode = HttpStatusCode(0, "Network error")
+        var owmResponse = OwmResponse()
+        var owmHourlyCode = HttpStatusCode(-1, "Not fetched")
+        var owmHourlyResponse = MainWeatherResponse()
+
+        val needOwmCurrent = !weatherApiHasCurrent
+        val needOwmHourly = !weatherApiHasForecast || !weatherApiHasHourly || weatherApiDayCount < 7
+        if (weatherApiDayCount in 1..6) {
+            logd("WeatherAPI returned $weatherApiDayCount days (requested 7), will supplement from OWM")
+        }
+        if (needOwmCurrent || needOwmHourly) {
+            if (needOwmCurrent) {
+                val weatherEither = httpClientStorage.get<String, HttpStatusCode, GMTDate>()
+                owmCode = weatherEither.httpStatusCode
+                owmResponse = if (owmCode.isSuccessful()) {
+                    convertStringToJson(jsonString = weatherEither.data, default = OwmResponse())
+                } else {
+                    logd("OWM request failed: ${owmCode.value}")
+                    OwmResponse()
+                }
+            }
+
+            if (needOwmHourly) {
+                val hourlyEither = httpClientStorage.getHourly<String, HttpStatusCode, GMTDate>()
+                owmHourlyCode = hourlyEither.httpStatusCode
+                owmHourlyResponse = if (owmHourlyCode.isSuccessful()) {
+                    convertStringToJson(
+                        jsonString = hourlyEither.data,
+                        default = MainWeatherResponse(),
+                    )
+                } else {
+                    logd("OWM hourly request failed: ${owmHourlyCode.value}")
+                    MainWeatherResponse()
+                }
+            }
+        }
+
+        val owmCurrentSuccess = owmCode.isSuccessful() && owmResponse.hasCurrentWeather()
+        val useOwmForCurrent = needOwmCurrent && owmCurrentSuccess
+        if (useOwmForCurrent || (!weatherApiHasCurrent && !weatherApiHasForecast)) {
+            weatherSession.setLoading(false)
+        }
+
+        val astronomyDate = forecastResponse.forecast?.forecastday?.firstOrNull()?.date
+            ?: LocalDate.now().format(DateTimeFormatter.ISO_LOCAL_DATE)
+        val astronomyEither = httpClientStorage.getWeatherApiAstronomy<String, HttpStatusCode, GMTDate>(
+            date = astronomyDate,
+        )
+        val astronomyResponse = if (astronomyEither.httpStatusCode.isSuccessful()) {
+            convertStringToJson(
+                jsonString = astronomyEither.data,
+                default = WeatherApiAstronomyResponse(),
+            )
+        } else {
+            logd("WeatherAPI astronomy request failed: ${astronomyEither.httpStatusCode.value}")
+            WeatherApiAstronomyResponse()
+        }
+        val astronomyAstro = astronomyResponse.astronomy?.astro?.takeIf {
+            it.moonrise.orEmpty().isNotBlank() && it.moonrise != "0"
+        } ?: forecastResponse.forecast?.forecastday?.firstOrNull()?.astro
+
+        val weatherApiResponse = WeatherApiResponse(
+            location = location,
+            current = resolvedCurrent,
+            forecast = forecastResponse.forecast,
+            alerts = forecastResponse.alerts,
+        )
+
+        val weatherApiCode = when {
+            useOwmForCurrent -> -1
+            weatherApiCurrentCode > 0 && resolvedCurrent == null -> weatherApiCurrentCode
+            weatherApiResponse.hasCurrentWeather() -> -1
+            !forecastCode.isSuccessful() -> forecastCode.value
+            else -> -1
+        }
+
+        return WeatherFetchResult(
+            owmCode = owmCode,
+            owmHourlyCode = owmHourlyCode,
+            weatherApiForecastCode = forecastCode,
+            weatherApiCode = weatherApiCode,
+            owmResponse = owmResponse,
+            owmHourlyResponse = owmHourlyResponse,
+            weatherApiResponse = weatherApiResponse,
+            astronomyAstro = astronomyAstro,
+            useOwmForCurrent = useOwmForCurrent,
+        )
     }
 
 
@@ -774,45 +1044,6 @@ class MainApplicationActivity : ComponentActivity() {
             return true
         }
         return true
-    }
-
-    private fun scheduleBackgroundJob(sharedPreferencesStorage: ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage) {
-        if (sharedPreferencesStorage.getNotificationItem().period > 0) {
-            logd(sharedPreferencesStorage.getNotificationItem().period.toString())
-            val jobScheduler = getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-            val pendingJob = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                jobScheduler.getPendingJob(JOB_ID)
-            } else {
-                null
-            }
-
-            val serviceName = ComponentName(this, MyJobService::class.java)
-
-            val updatePeriod: Long = sharedPreferencesStorage.getNotificationItem().period
-
-            val jobInfo =
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    JobInfo.Builder(JOB_ID, serviceName)
-                        .setPersisted(true)
-                        .setExpedited(true)
-                        .setPeriodic(updatePeriod)
-                        .build()
-                } else {
-                    JobInfo.Builder(JOB_ID, serviceName)
-                        .setPersisted(true)
-                        .setPeriodic(updatePeriod)
-                        .build()
-                }
-
-            if (pendingJob != null) {
-                // Сервис уже запущен
-                jobScheduler.cancel(JOB_ID)
-            } else {
-                // Сервис еще не запущен
-            }
-
-            jobScheduler.schedule(jobInfo)
-        }
     }
 
     private fun clearAppOpenAd() {

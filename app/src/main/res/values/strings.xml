@@ -23,8 +23,71 @@
     <string name="weather_status_logo">Иконка статуса погоды</string>
     <string name="degree_sign">°</string>
     <string name="feels_like_temp">ощущается как</string>
+    <string name="weather_hero_details">%1$d° / %2$d° · %3$s %4$d°</string>
+    <string name="weather_wind_detail">Ветер · %1$s</string>
+    <string name="weather_air_detail">Воздух · AQI %1$d</string>
+    <string name="visibility_km">%1$d км</string>
+    <string name="weather_clear">Ясно</string>
+    <string name="weather_partly_cloudy">Переменная облачность</string>
+    <string name="weather_cloudy">Облачно</string>
+    <string name="weather_overcast">Пасмурно</string>
+    <string name="weather_mist">Дымка</string>
+    <string name="weather_fog">Туман</string>
+    <string name="weather_haze">Дымка</string>
+    <string name="weather_drizzle">Морось</string>
+    <string name="weather_rain_light">Небольшой дождь</string>
+    <string name="weather_rain">Дождь</string>
+    <string name="weather_rain_heavy">Сильный дождь</string>
+    <string name="weather_rain_shower">Ливень</string>
+    <string name="weather_freezing_rain">Ледяной дождь</string>
+    <string name="weather_thunderstorm">Гроза</string>
+    <string name="weather_snow">Снег</string>
+    <string name="weather_sleet">Мокрый снег</string>
+    <string name="weather_dust">Пыльная буря</string>
+    <string name="weather_tornado">Смерч</string>
+    <string-array name="wind_directions_full">
+        <item>Север</item>
+        <item>Северо-северо-восток</item>
+        <item>Северо-восток</item>
+        <item>Восток-северо-восток</item>
+        <item>Восток</item>
+        <item>Восток-юго-восток</item>
+        <item>Юго-восток</item>
+        <item>Юго-юго-восток</item>
+        <item>Юг</item>
+        <item>Юго-юго-запад</item>
+        <item>Юго-запад</item>
+        <item>Запад-юго-запад</item>
+        <item>Запад</item>
+        <item>Запад-северо-запад</item>
+        <item>Северо-запад</item>
+        <item>Северо-северо-запад</item>
+    </string-array>
     <string name="weather_hour_logo_desc">Иконка погоды в определённый час</string>
     <string name="hourly_weather_forecast">Почасовой прогноз погоды</string>
+    <string name="daily_forecast_7_days">Прогноз на 7 дней</string>
+    <string name="precipitation_title">Осадки</string>
+    <string name="weather_map_title">Карта погоды</string>
+    <string name="map_layer_temperature">🌡 Температура</string>
+    <string name="map_layer_clouds_wind">☁ Облака + Ветер</string>
+    <string name="map_full_title_temperature">Температура · %1$s</string>
+    <string name="map_full_title_clouds_wind">Облака и ветер · %1$s</string>
+    <string name="map_legend_temp_min">-40°</string>
+    <string name="map_legend_temp_max">+40°</string>
+    <string name="map_legend_cloud_min">☁ 0%</string>
+    <string name="map_legend_cloud_max">100%</string>
+    <string name="map_legend_wind_min">💨 calm</string>
+    <string name="map_legend_wind_max">strong</string>
+    <string name="precipitation_light">Слабые</string>
+    <string name="precipitation_heavy">Сильные</string>
+    <string name="precipitation_now">Сейчас</string>
+    <string name="precipitation_plus_1h">+1 ч</string>
+    <string name="precipitation_plus_3h">+3 ч</string>
+    <string name="precipitation_plus_6h">+6 ч</string>
+    <string name="precipitation_full_title">Осадки · %1$s</string>
+    <string name="precipitation_now_badge">сейчас</string>
+    <string name="loading_map">Загружаем карту</string>
+    <string name="back">Назад</string>
     <string name="alerts">Важно для прочтения</string>
     <string name="tips">Подсказки</string>
     <string name="details">Детали</string>
@@ -36,7 +99,14 @@
     <string name="visibility">Видимость</string>
     <string name="sunrise">Восход</string>
     <string name="sunset">Закат</string>
+    <string name="moon">Луна</string>
+    <string name="moonrise">Восход луны</string>
+    <string name="moonset">Заход луны</string>
     <string name="moon_phase">Фаза луны</string>
+    <string name="moon_illumination">Освещённость</string>
+    <string name="expand_map">Развернуть карту</string>
+    <string name="map_attribution_osm">© OpenStreetMap contributors</string>
+    <string name="map_attribution_owm">© OpenWeatherMap</string>
     <string name="today">Сегодня</string>
     <string name="tomorrow">Завтра</string>
     <string name="day_after_tomorrow">Послезавтра</string>
@@ -56,11 +126,21 @@
     <string name="rustore_logo">Логотип магазина приложений RuStore</string>
     <string name="rustore_review">Отзыв в RuStore</string>
     <string name="notifications">Уведомления</string>
+    <string name="notification_delivery">Отправка уведомлений</string>
+    <string name="notification_interval_3h">3 ч</string>
+    <string name="notification_interval_6h">6 ч</string>
+    <string name="notification_interval_12h">12 ч</string>
+    <string name="notification_alerts_more_one">Ещё 1 предупреждение</string>
+    <string name="notification_alerts_more_few">Ещё %1$d предупреждения</string>
+    <string name="notification_alerts_more">Ещё %1$d предупреждений</string>
+    <string name="notification_channel_name">Погода</string>
+    <string name="notification_channel_description">Текущая погода и предупреждения</string>
 
     <!--    Settings-->
     <string name="settings">Настройки</string>
     <string name="every_six_hours">Каждые 6 часов</string>
     <string name="every_three_hours">Каждые 3 часа</string>
+    <string name="every_twelve_hours">Каждые 12 часов</string>
     <string name="every_hour">Каждый час</string>
     <string name="never_notify">Никогда</string>
 
@@ -70,10 +150,51 @@
     <!--    About application-->
     <string name="about_app">О Приложении</string>
     <string name="version_hint">Версия</string>
+    <string name="about_tagline">Точный прогноз всегда под рукой</string>
+    <string name="about_version_format">Версия %1$s</string>
+    <string name="about_section_data_services">Данные и сервисы</string>
+    <string name="about_openweathermap_title">OpenWeatherMap API</string>
+    <string name="about_openweathermap_subtitle">Источник погодных данных</string>
+    <string name="about_osm_title">OpenStreetMap</string>
+    <string name="about_osm_subtitle">Картографические данные</string>
+    <string name="about_meteocons_title">Meteocons by Bas Milius (MIT)</string>
+    <string name="about_meteocons_subtitle">Иконки погоды</string>
+    <string name="about_section_contacts">Контакты и поддержка</string>
+    <string name="about_contact_developer">Написать разработчику</string>
+    <string name="about_rate_app">Оценить приложение</string>
+    <string name="about_report_bug">Сообщить об ошибке</string>
+    <string name="about_section_legal">Правовая информация</string>
+    <string name="about_privacy_policy">Политика конфиденциальности</string>
+    <string name="about_terms_of_use">Условия использования</string>
+    <string name="about_made_with_love">Сделано с ❤️ в Омске</string>
+    <string name="about_copyright">© %1$d %2$s</string>
+    <string name="developer_name">Plumsoftware</string>
+    <string name="about_bug_report_subject">Баг в приложении \"Погода\"</string>
+    <string name="about_open_email">Написать разработчику по электронной почте</string>
+    <string name="about_open_store">Оценить приложение в магазине</string>
+    <string name="about_open_bug_report">Сообщить об ошибке по электронной почте</string>
+    <string name="about_open_privacy">Открыть политику конфиденциальности</string>
+    <string name="about_open_terms">Открыть условия использования</string>
+    <string name="about_app_icon">Иконка приложения</string>
+
+    <!--    Weather alerts-->
+    <string name="alerts_section_header">ПРЕДУПРЕЖДЕНИЯ</string>
+    <string name="alerts_page_indicator">%1$d / %2$d</string>
+    <string name="alerts_expires_prefix">До:</string>
+    <string name="alerts_expand">Подробнее</string>
+    <string name="alerts_collapse">Скрыть</string>
+    <string name="alerts_severity_critical">Чрезвычайная опасность</string>
+    <string name="alerts_severity_high">Высокая опасность</string>
+    <string name="alerts_severity_medium">Умеренная опасность</string>
+    <string name="alerts_severity_low">Низкая опасность</string>
 
     <!--    Errors-->
+    <string name="loading_weather">Загрузка погоды</string>
+    <string name="loading_weather_message">Пожалуйста, подождите…</string>
     <string name="error_desc">Плохое соединение с интернетом</string>
-    <string name="error_code">Ошибка:</string>
+    <string name="error_code">Ошибка</string>
+    <string name="error_occurred">Произошла ошибка при загрузке данных</string>
+    <string name="error_ok">ОК</string>
 
     <!--    Widgets-->
     <string name="simple_widget_description">Виджет с текущей температурой (минимальной и максимальной). Всё, что необходимо!</string>

@@ -28,9 +28,13 @@ class SharedPreferencesStorage
     private val getNotificationItemUseCase: ru.plumsoftware.weatherforecastru.data.usecase.settings.GetNotificationItemUseCase,
     private val saveNotificationItemUseCase: ru.plumsoftware.weatherforecastru.data.usecase.settings.SaveNotificationItemUseCase,
 ) {
-    fun get(): UserSettings {
-        val execute = getUserSettingsUseCase.execute()
-        return execute
+    private var cachedSettings: UserSettings? = null
+
+    fun get(): UserSettings =
+        cachedSettings ?: getUserSettingsUseCase.execute().also { cachedSettings = it }
+
+    private fun invalidateCache() {
+        cachedSettings = null
     }
 
     fun getShowTips(): Boolean {
@@ -40,6 +44,7 @@ class SharedPreferencesStorage
 
     fun save(userSettings: UserSettings) {
         saveUserSettingsUseCase.execute(userSettings = userSettings)
+        invalidateCache()
     }
 
     fun saveFirst(first: Boolean) {
@@ -48,22 +53,27 @@ class SharedPreferencesStorage
 
     fun saveAppTheme(applicationTheme: Boolean) {
         saveUserSettingsAppThemeUseCase.execute(appTheme = applicationTheme)
+        invalidateCache()
     }
 
     fun saveShowTips(showTips: Boolean) {
         saveUserSettingsShowTipsUseCase.execute(showTips = showTips)
+        invalidateCache()
     }
 
     fun saveWeatherUnits(weatherUnits: WeatherUnits) {
         saveUserSettingsWeatherUnitsUseCase.execute(weatherUnits = weatherUnits)
+        invalidateCache()
     }
 
     fun saveWindUnits(windSpeed: WindSpeed) {
         saveUserSettingsWindUnitsUseCase.execute(value = windSpeed)
+        invalidateCache()
     }
 
     fun saveLocation(location: Location) {
         saveUserSettingsLocationUseCase.execute(value = location)
+        invalidateCache()
     }
 
     fun saveWidget(widgetConfig: WidgetConfig) {

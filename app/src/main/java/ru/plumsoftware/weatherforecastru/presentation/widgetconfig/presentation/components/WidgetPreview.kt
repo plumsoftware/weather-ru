@@ -29,6 +29,7 @@ import ru.plumsoftware.weatherforecastru.application.App
 import ru.plumsoftware.weatherforecastru.data.utilities.showToast
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionSize
+import ru.plumsoftware.weatherforecastru.presentation.ui.Dimens
 import ru.plumsoftware.weatherforecastru.widget.utilites.darkerColor
 import ru.plumsoftware.weatherforecastru.widget.utilites.makeColorDarker
 
@@ -52,7 +53,7 @@ fun BoxScope.WidgetPreview(corners: Int, background: Color) {
                 imageVector = PlumsoftwareIconPack.Weather.Sunny,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(size = ExtensionSize.IconSize._64dp),
+                    .size(size = Dimens.widgetWeatherIconSize),
                 colorFilter = ColorFilter.tint(darkerColor(color = background)),
             )
             Spacer(modifier = Modifier.width(width = ExtensionPaddingValues._10dp))

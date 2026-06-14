@@ -3,18 +3,13 @@ package ru.plumsoftware.weatherforecastru.presentation.content.presentation.comp
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -43,9 +38,6 @@ fun CityComponent(
     onCloseDropDownMenu: () -> Unit,
 //    endregion
     onCLickMoreVert: () -> Unit,
-//    region::Check box
-    checkBoxValue: Boolean,
-    onCheckedChange: (Boolean) -> Unit,
     onClickOpenLocation: () -> Unit,
     onClickOpenSettings: () -> Unit,
     onCLickOpenAirQuality: () -> Unit
@@ -163,32 +155,6 @@ fun CityComponent(
                         onCloseDropDownMenu()
                         onCLickOpenAirQuality()
                     })
-
-                    Divider(modifier = Modifier.height(height = ExtensionSize.Divider.height))
-                    DropdownMenuItem(text = {
-                        Row(
-                            horizontalArrangement = Arrangement.Start,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Checkbox(
-                                checked = checkBoxValue,
-                                onCheckedChange = onCheckedChange
-                            )
-                            Spacer(modifier = Modifier.width(width = ExtensionPaddingValues._10dp))
-                            Text(
-                                text = stringResource(id = R.string.tips),
-                                style = MaterialTheme.typography.labelMedium,
-                                modifier = Modifier
-                                    .padding(end = ExtensionPaddingValues._10dp)
-                                    .fillMaxWidth(),
-                                textAlign = TextAlign.Start
-                            )
-                        }
-                    }, onClick = {
-                        onCheckedChange(!checkBoxValue)
-                        onCloseDropDownMenu()
-                    }
-                    )
                 }
             }
         }

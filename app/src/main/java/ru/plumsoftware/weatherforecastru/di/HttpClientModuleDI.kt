@@ -1,6 +1,7 @@
 package ru.plumsoftware.weatherforecastru.di
 
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.android.Android
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -14,7 +15,9 @@ import ru.plumsoftware.weatherforecastru.data.repository.WeatherApiRepositoryImp
 import ru.plumsoftware.weatherforecastru.data.storage.HttpClientStorage
 import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetHourlyUseCase
 import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetOwmUseCase
-import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetWeatherApiUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetWeatherApiAstronomyUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetWeatherApiCurrentUseCase
+import ru.plumsoftware.weatherforecastru.data.usecase.weather.GetWeatherApiForecastUseCase
 
 internal val httpClientModel = module {
     single<OwmRepository> {
@@ -34,7 +37,9 @@ internal val httpClientModel = module {
                     )
                 }
                 install(HttpTimeout) {
-                    requestTimeoutMillis = 30000
+                    requestTimeoutMillis = 15000
+                    connectTimeoutMillis = 10000
+                    socketTimeoutMillis = 15000
                 }
             },
             sharedPreferencesStorage = get()
@@ -43,11 +48,11 @@ internal val httpClientModel = module {
 
     single<WeatherApiRepository> {
         WeatherApiRepositoryImpl(
-            client = HttpClient(CIO) {
-//                install(Logging) {
-//                    level = LogLevel.ALL
-//                }
-
+            client = HttpClient(Android) {
+                engine {
+                    connectTimeout = 0
+                    socketTimeout = 0
+                }
                 install(ContentNegotiation) {
                     json(
                         Json {
@@ -56,9 +61,6 @@ internal val httpClientModel = module {
                             isLenient = true
                         }
                     )
-                }
-                install(HttpTimeout) {
-                    requestTimeoutMillis = 30000
                 }
             },
             sharedPreferencesStorage = get()
@@ -70,8 +72,14 @@ internal val httpClientModel = module {
             getOwmUseCase = GetOwmUseCase(
                 owmRepository = get()
             ),
-            getWeatherApiUseCase = GetWeatherApiUseCase(
-                weatherApiRepository = get()
+            getWeatherApiCurrentUseCase = GetWeatherApiCurrentUseCase(
+                weatherApiRepository = get(),
+            ),
+            getWeatherApiForecastUseCase = GetWeatherApiForecastUseCase(
+                weatherApiRepository = get(),
+            ),
+            getWeatherApiAstronomyUseCase = GetWeatherApiAstronomyUseCase(
+                weatherApiRepository = get(),
             ),
             getHourlyUseCase = GetHourlyUseCase(owmRepository = get())
         )

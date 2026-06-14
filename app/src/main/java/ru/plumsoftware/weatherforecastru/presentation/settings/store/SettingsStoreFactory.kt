@@ -101,19 +101,18 @@ class SettingsStoreFactory(
                 }
 
                 SettingsStore.Intent.ChangeWindUnits -> {
-
-                    val windPresentation =
-                        if (getState().windSpeed.windPresentation == Constants.Settings.M_S.first)
-                            Constants.Settings.MI_H.first else Constants.Settings.M_S.first
-
-                    val windValue =
-                        if (getState().windSpeed.windValue == Constants.Settings.M_S.second)
-                            Constants.Settings.MI_H.second else Constants.Settings.M_S.second
-
-                    val windSpeed = WindSpeed(
-                        windPresentation = windPresentation,
-                        windValue = windValue
-                    )
+                    val current = getState().windSpeed
+                    val windSpeed = if (isMsWindSpeed(current)) {
+                        WindSpeed(
+                            windPresentation = Constants.Settings.KM_H.first,
+                            windValue = Constants.Settings.KM_H.second,
+                        )
+                    } else {
+                        WindSpeed(
+                            windPresentation = Constants.Settings.M_S.first,
+                            windValue = Constants.Settings.M_S.second,
+                        )
+                    }
 
                     dispatch(Msg.WindUnit(value = windSpeed))
                     saveWindUnits(
@@ -148,7 +147,7 @@ class SettingsStoreFactory(
                     saveNotificationItem(
                         notificationItem = notificationItem
                     )
-                    publish(SettingsStore.Label.SettingsChange)
+                    publish(SettingsStore.Label.RescheduleNotifications)
                 }
             }
 
@@ -220,4 +219,18 @@ class SettingsStoreFactory(
             sharedPreferencesStorage.saveNotificationItem(notificationItem = notificationItem)
         }
     }
+}
+
+internal fun isMsWindSpeed(windSpeed: WindSpeed): Boolean {
+    if (windSpeed.windPresentation == Constants.Settings.M_S.first ||
+        windSpeed.windPresentation == "м/c"
+    ) {
+        return true
+    }
+    if (windSpeed.windPresentation == Constants.Settings.KM_H.first ||
+        windSpeed.windPresentation == "миль/час"
+    ) {
+        return false
+    }
+    return windSpeed.windValue <= Constants.Settings.M_S.second
 }

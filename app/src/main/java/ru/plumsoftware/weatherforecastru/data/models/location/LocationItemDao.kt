@@ -16,4 +16,7 @@ interface LocationItemDao {
 
     @Query("SELECT * FROM LocationItem ORDER BY id ASC")
     suspend fun getAll(): List<LocationItem>
+
+    @Query("SELECT * FROM LocationItem WHERE city = :city LIMIT 1")
+    suspend fun findByCity(city: String): LocationItem?
 }

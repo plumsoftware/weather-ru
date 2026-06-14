@@ -3,29 +3,41 @@ package ru.plumsoftware.weatherforecastru.messanging.firebase
 import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import ru.plumsoftware.weatherforecastru.messanging.WeatherNotificationHelper
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
-    private val TAG = "FirebaseMessagingService"
-
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        // ...
-
-        // TODO(developer): Handle FCM messages here.
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: ${remoteMessage.from}")
 
-        // Check if message contains a data payload.
         if (remoteMessage.data.isNotEmpty()) {
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
-
-            if (/* Check if data needs to be processed by long running job */ true) {
-                // For long-running tasks (10 seconds or more) use WorkManager.
-//                scheduleJob()
-            } else {
-                // Handle message within 10 seconds
-//                handleNow()
-            }
         }
+
+        val title = remoteMessage.notification?.title
+            ?: remoteMessage.data["title"]
+            ?: applicationContext.getString(
+                ru.plumsoftware.weatherforecast.R.string.app_name,
+            )
+        val body = remoteMessage.notification?.body
+            ?: remoteMessage.data["body"]
+            ?: remoteMessage.data["message"]
+            ?: return
+
+        WeatherNotificationHelper.show(
+            context = applicationContext,
+            title = title,
+            body = body,
+            notificationId = remoteMessage.messageId?.hashCode() ?: DEFAULT_NOTIFICATION_ID,
+        )
+    }
+
+    override fun onNewToken(token: String) {
+        Log.d(TAG, "Refreshed token: $token")
+    }
+
+    private companion object {
+        const val TAG = "FirebaseMessagingService"
+        const val DEFAULT_NOTIFICATION_ID = 1002
     }
 }

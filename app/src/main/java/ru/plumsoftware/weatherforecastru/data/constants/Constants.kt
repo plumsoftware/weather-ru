@@ -24,6 +24,8 @@ sealed class Constants {
             "ru.plumsoftware.widget.sharedpref.color.blue"
         const val SHARED_PREF_FIRST =
             "ru.plumsoftware.widget.sharedpref.first"
+        const val SHARED_PREF_LAUNCH_COUNT =
+            "ru.plumsoftware.main.sharedpref.launch_count"
         const val SHARED_PREF_NOTIFICATION_PERIOD =
             "ru.plumsoftware.widget.sharedpref.notif_period"
         const val SHARED_PREF_NOTIFICATION_NAMING =
@@ -34,8 +36,10 @@ sealed class Constants {
         val METRIC = Pair<String, String>("metric", "c")
         val IMPERIAL = Pair<String, String>("imperial", "f")
         val DEFAULT = Pair<String, String>("", "k")
-        val M_S = Pair<String, Float>("м/c", 0.45f)
-        val MI_H = Pair<String, Float>("миль/час", 2.23f)
+        val M_S = Pair<String, Float>("м/с", 1.0f)
+        val KM_H = Pair<String, Float>("км/ч", 3.6f)
+        /** @deprecated Legacy label kept for preference migration only. */
+        val MI_H = KM_H
     }
 
     object Database {
@@ -45,6 +49,13 @@ sealed class Constants {
     object Links {
         const val share_link = "https://apps.rustore.ru/app/ru.plumsoftware.weatherforecastru"
         const val leaveFeedback =
-            "https://apps.rustore.ru/app/ru.plumsoftware.brawlstarsclicker/reviews"
+            "https://apps.rustore.ru/app/ru.plumsoftware.weatherforecastru/reviews"
+        const val developerEmail = "plumsoftware@yandex.ru"
+
+        fun playStoreMarketUri(applicationId: String): String =
+            "market://details?id=$applicationId"
+
+        fun playStoreWebUri(applicationId: String): String =
+            "https://play.google.com/store/apps/details?id=$applicationId"
     }
 }

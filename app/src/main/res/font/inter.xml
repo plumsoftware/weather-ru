@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<font-family xmlns:android="http://schemas.android.com/apk/res/android">
+    <font
+        android:font="@font/inter_18pt_thin"
+        android:fontStyle="normal"
+        android:fontWeight="100" />
+    <font
+        android:font="@font/inter_18pt_thinitalic"
+        android:fontStyle="italic"
+        android:fontWeight="100" />
+    <font
+        android:font="@font/inter_18pt_extralight"
+        android:fontStyle="normal"
+        android:fontWeight="200" />
+    <font
+        android:font="@font/inter_18pt_extralightitalic"
+        android:fontStyle="italic"
+        android:fontWeight="200" />
+    <font
+        android:font="@font/inter_18pt_light"
+        android:fontStyle="normal"
+        android:fontWeight="300" />
+    <font
+        android:font="@font/inter_18pt_lightitalic"
+        android:fontStyle="italic"
+        android:fontWeight="300" />
+    <font
+        android:font="@font/inter_18pt_regular"
+        android:fontStyle="normal"
+        android:fontWeight="400" />
+    <font
+        android:font="@font/inter_18pt_italic"
+        android:fontStyle="italic"
+        android:fontWeight="400" />
+    <font
+        android:font="@font/inter_18pt_medium"
+        android:fontStyle="normal"
+        android:fontWeight="500" />
+    <font
+        android:font="@font/inter_18pt_mediumitalic"
+        android:fontStyle="italic"
+        android:fontWeight="500" />
+    <font
+        android:font="@font/inter_18pt_semibold"
+        android:fontStyle="normal"
+        android:fontWeight="600" />
+    <font
+        android:font="@font/inter_18pt_semibolditalic"
+        android:fontStyle="italic"
+        android:fontWeight="600" />
+    <font
+        android:font="@font/inter_18pt_bold"
+        android:fontStyle="normal"
+        android:fontWeight="700" />
+    <font
+        android:font="@font/inter_18pt_bolditalic"
+        android:fontStyle="italic"
+        android:fontWeight="700" />
+    <font
+        android:font="@font/inter_18pt_extrabold"
+        android:fontStyle="normal"
+        android:fontWeight="800" />
+    <font
+        android:font="@font/inter_18pt_extrabolditalic"
+        android:fontStyle="italic"
+        android:fontWeight="800" />
+    <font
+        android:font="@font/inter_18pt_black"
+        android:fontStyle="normal"
+        android:fontWeight="900" />
+    <font
+        android:font="@font/inter_18pt_blackitalic"
+        android:fontStyle="italic"
+        android:fontWeight="900" />
+</font-family>

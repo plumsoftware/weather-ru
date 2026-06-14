@@ -9,16 +9,19 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import com.yandex.mobile.ads.nativeads.NativeAd
 import kotlinx.coroutines.launch
+import ru.plumsoftware.weatherforecastru.data.map.WeatherMapLayer
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecastru.data.models.settings.UserSettings
 import ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage
 
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
+import ru.plumsoftware.weatherforecastru.data.remote.dto.forecast_owm.MainWeatherResponse
+import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.Astro
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
+import ru.plumsoftware.weatherforecastru.presentation.content.presentation.components.hasCurrentWeather
 import ru.plumsoftware.weatherforecastru.data.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.data.models.settings.WindSpeed
-import ru.plumsoftware.weatherforecastru.data.remote.dto.forecast_owm.MainWeatherResponse
 import java.time.LocalDateTime
 import java.util.Calendar
 import java.util.Date
@@ -26,13 +29,6 @@ import java.util.Date
 class ContentStoreFactory(
     private val storeFactory: StoreFactory,
     private val sharedPreferencesStorage: ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage,
-    private val owmResponse: OwmResponse,
-    private val weatherApiResponse: MainWeatherResponse,
-    private val adsList: MutableList<NativeAd>,
-    private val isAdsLoading: Boolean,
-    private val isDark: Boolean,
-    private val owmCode: Int,
-    private val weatherApiCode: Int,
 ) {
 
     @OptIn(ExperimentalMviKotlinApi::class)
@@ -43,12 +39,7 @@ class ContentStoreFactory(
                 initialState = ContentStore.State(),
                 bootstrapper = coroutineBootstrapper {
                     launch {
-                        dispatch(ContentStoreFactory.Action.InitLocation)
-                        dispatch(ContentStoreFactory.Action.InitTips)
-                        dispatch(ContentStoreFactory.Action.InitWeather)
-                        dispatch(ContentStoreFactory.Action.InitAds)
-                        dispatch(ContentStoreFactory.Action.InitIsAdsLoading)
-                        dispatch(ContentStoreFactory.Action.InitTheme)
+                        dispatch(ContentStoreFactory.Action.InitFromStorage)
                     }
                 },
                 reducer = ContentStoreFactory.ReducerImpl,
@@ -57,12 +48,7 @@ class ContentStoreFactory(
         }
 
     sealed interface Action {
-        object InitLocation : Action
-        object InitTips : Action
-        object InitWeather : Action
-        object InitAds : Action
-        object InitIsAdsLoading : Action
-        object InitTheme : Action
+        object InitFromStorage : Action
     }
 
     sealed interface Msg {
@@ -91,11 +77,18 @@ class ContentStoreFactory(
 
         //        region::Weather
         data class OwmResponseMsg(val value: OwmResponse) : Msg
+        data class OwmHourlyResponseMsg(val value: MainWeatherResponse) : Msg
         data class WeatherUnitsMsg(val value: WeatherUnits) : Msg
-        data class WeatherApiResponseMsg(val value: MainWeatherResponse) : Msg
+        data class WeatherApiResponseMsg(val value: WeatherApiResponse) : Msg
         data class WindSpeedMsg(val value: WindSpeed) : Msg
         data class OwmCode(val value: Int) : Msg
+        data class OwmHourlyCode(val value: Int) : Msg
         data class WeatherApiCode(val value: Int) : Msg
+        data class AirQualityDataMsg(val value: ru.plumsoftware.weatherforecastru.data.models.airquality.AirQualityData) : Msg
+        data class IsWeatherLoading(val value: Boolean) : Msg
+        data class UseOwmForCurrent(val value: Boolean) : Msg
+        data class AstronomyAstroMsg(val value: Astro?) : Msg
+        data class WeatherMapLayerMsg(val value: WeatherMapLayer) : Msg
 //        endregion
     }
 
@@ -111,6 +104,7 @@ class ContentStoreFactory(
                 is Msg.CheckBoxValue -> copy(checkBoxState = msg.value)
                 is Msg.DropDownMenu -> copy(dropDownState = !msg.value)
                 is Msg.OwmResponseMsg -> copy(owmResponse = msg.value)
+                is Msg.OwmHourlyResponseMsg -> copy(owmHourlyResponse = msg.value)
                 is Msg.WeatherUnitsMsg -> copy(weatherUnits = msg.value)
                 is Msg.WeatherApiResponseMsg -> copy(weatherApiResponse = msg.value)
                 is Msg.WindSpeedMsg -> copy(windSpeed = msg.value)
@@ -122,7 +116,13 @@ class ContentStoreFactory(
                 is Msg.ScrollToItem -> copy(scrollToItem = msg.value)
                 is Msg.IsDark -> copy(isDark = msg.value)
                 is Msg.OwmCode -> copy(owmCode = msg.value)
+                is Msg.OwmHourlyCode -> copy(owmHourlyCode = msg.value)
                 is Msg.WeatherApiCode -> copy(weatherApiCode = msg.value)
+                is Msg.AirQualityDataMsg -> copy(airQualityData = msg.value)
+                is Msg.IsWeatherLoading -> copy(isWeatherLoading = msg.value)
+                is Msg.UseOwmForCurrent -> copy(useOwmForCurrent = msg.value)
+                is Msg.AstronomyAstroMsg -> copy(astronomyAstro = msg.value)
+                is Msg.WeatherMapLayerMsg -> copy(weatherMapLayer = msg.value)
             }
     }
 
@@ -171,94 +171,82 @@ class ContentStoreFactory(
                 is ContentStore.Intent.OpenAirQuality -> {
                     publish(ContentStore.Label.OpenAirQuality)
                 }
+
+                is ContentStore.Intent.ApplyWeather -> applyWeather(intent)
+
+                is ContentStore.Intent.ApplyWeatherLoading -> {
+                    dispatch(Msg.IsWeatherLoading(value = intent.isLoading))
+                }
+
+                is ContentStore.Intent.ApplyAds -> {
+                    dispatch(Msg.AdsList(value = intent.adsList))
+                    dispatch(Msg.IsAdsLoading(value = intent.isAdsLoading))
+                }
+
+                is ContentStore.Intent.ApplyTheme -> {
+                    dispatch(Msg.IsDark(value = intent.isDark))
+                }
+
+                is ContentStore.Intent.ChangeWeatherMapLayer -> {
+                    dispatch(Msg.WeatherMapLayerMsg(value = intent.layer))
+                }
             }
 
         override fun executeAction(action: Action, getState: () -> ContentStore.State) =
             when (action) {
-                is Action.InitLocation -> initLocation()
-                is Action.InitTips -> initTips()
-                Action.InitWeather -> initWeather(
-                    sharedPreferencesStorage = sharedPreferencesStorage,
-                    owmResponse = owmResponse,
-                    weatherApiResponse = weatherApiResponse,
-                    owmCode = owmCode,
-                    weatherApiCode = weatherApiCode
-                )
-
-                Action.InitAds -> initAds(list = adsList)
-                Action.InitIsAdsLoading -> initIsAdsLoading(isLoading = isAdsLoading)
-                Action.InitTheme -> initTheme(isDark = isDark)
+                Action.InitFromStorage -> initFromStorage()
             }
 
-        private fun initTheme(isDark: Boolean) {
-            scope.launch {
-                dispatch(Msg.IsDark(value = isDark))
-            }
-        }
-
-        private fun initTips() {
-            scope.launch {
-                val showTips: Boolean = sharedPreferencesStorage.getShowTips()
-                dispatch(
-                    ContentStoreFactory.Msg.CheckBoxValue(
-                        value = showTips
-                    )
-                )
-            }
-        }
-
-        private fun initLocation() {
-            scope.launch {
-                val userSettings: UserSettings = sharedPreferencesStorage.get()
-                with(userSettings) {
-                    dispatch(
-                        ContentStoreFactory.Msg.LocationData(
-                            city = city!!,
-                            country = country!!
-                        )
-                    )
-                }
-            }
-        }
-
-        private fun initWeather(
-            sharedPreferencesStorage: ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage,
-            owmResponse: OwmResponse,
-            weatherApiResponse: MainWeatherResponse,
-            owmCode: Int,
-            weatherApiCode: Int
-        ) {
-//            region::Init weather
+        private fun applyWeather(intent: ContentStore.Intent.ApplyWeather) {
             scope.launch {
                 with(sharedPreferencesStorage.get()) {
-                    if (owmCode in 300..599) {
-                        dispatch(ContentStoreFactory.Msg.OwmCode(value = owmCode))
-                    } else {
-                        dispatch(ContentStoreFactory.Msg.OwmResponseMsg(value = owmResponse))
-                        dispatch(ContentStoreFactory.Msg.WeatherUnitsMsg(value = weatherUnits))
-                        dispatch(ContentStoreFactory.Msg.WindSpeedMsg(value = windSpeed))
-                        dispatch(ContentStoreFactory.Msg.ShowTipsMsg(value = showTips))
+                    dispatch(
+                        Msg.LocationData(
+                            city = city.orEmpty(),
+                            country = country.orEmpty(),
+                        )
+                    )
+                    dispatch(Msg.WeatherUnitsMsg(value = weatherUnits))
+                    dispatch(Msg.WindSpeedMsg(value = windSpeed))
+                    dispatch(Msg.OwmCode(value = intent.owmCode))
+                    if (intent.owmCode !in 300..599) {
+                        dispatch(Msg.OwmResponseMsg(value = intent.owmResponse))
                     }
-
-                    if (weatherApiCode in 300..599) {
-                        dispatch(ContentStoreFactory.Msg.WeatherApiCode(value = weatherApiCode))
-                    } else {
-                        dispatch(ContentStoreFactory.Msg.WeatherApiResponseMsg(value = weatherApiResponse))
+                    dispatch(Msg.OwmHourlyCode(value = intent.owmHourlyCode))
+                    if (intent.owmHourlyCode !in 300..599 ||
+                        intent.owmHourlyResponse.weatherList.isNotEmpty()
+                    ) {
+                        dispatch(Msg.OwmHourlyResponseMsg(value = intent.owmHourlyResponse))
                     }
+                    dispatch(Msg.WeatherApiCode(value = intent.weatherApiCode))
+                    if (intent.weatherApiCode !in 300..599 ||
+                        intent.weatherApiResponse.forecast?.forecastday.orEmpty().isNotEmpty() ||
+                        intent.weatherApiResponse.hasCurrentWeather()
+                    ) {
+                        dispatch(Msg.WeatherApiResponseMsg(value = intent.weatherApiResponse))
+                    }
+                    dispatch(Msg.UseOwmForCurrent(value = intent.useOwmForCurrent))
+                    dispatch(Msg.AstronomyAstroMsg(value = intent.astronomyAstro))
+                    dispatch(Msg.AirQualityDataMsg(value = intent.airQualityData))
+                    dispatch(Msg.IsWeatherLoading(value = false))
                 }
             }
-//            endregion
         }
 
-        private fun initAds(list: MutableList<NativeAd>) {
+        private fun initFromStorage() {
             scope.launch {
-                dispatch(ContentStoreFactory.Msg.AdsList(value = list))
-            }
-        }
-
-        private fun initIsAdsLoading(isLoading: Boolean) {
-            scope.launch {
-                dispatch(ContentStoreFactory.Msg.IsAdsLoading(value = isLoading))
+                with(sharedPreferencesStorage.get()) {
+                    dispatch(
+                        Msg.LocationData(
+                            city = city.orEmpty(),
+                            country = country.orEmpty(),
+                        )
+                    )
+                    dispatch(Msg.CheckBoxValue(value = showTips))
+                    dispatch(Msg.ShowTipsMsg(value = showTips))
+                    dispatch(Msg.WeatherUnitsMsg(value = weatherUnits))
+                    dispatch(Msg.WindSpeedMsg(value = windSpeed))
+                }
             }
         }
     }
