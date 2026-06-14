@@ -3,247 +3,204 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <com.yandex.mobile.ads.nativeads.NativeAdView
         android:id="@+id/nativeAdView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginVertical="0dp"
-        android:layout_weight="0"
-        android:padding="0dp"
-        android:visibility="visible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/adView">
+        android:layout_height="wrap_content"
+        android:padding="0dp">
 
-        <LinearLayout
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            app:cardBackgroundColor="?attr/colorSurface"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:cardUseCompatPadding="false">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardView2"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardBackgroundColor="?attr/colorSurfaceVariant"
-                app:cardCornerRadius="24dp"
-                app:cardElevation="0dp"
-                app:cardUseCompatPadding="false">
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:orientation="vertical"
+                android:padding="8dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="0dp"
-                    android:paddingTop="8dp">
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:id="@+id/adsPromo"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="@null" />
+
+                    <TextView
+                        android:id="@+id/age"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="0dp"
-                        android:layout_marginEnd="0dp"
-                        android:orientation="horizontal">
+                        android:layout_marginStart="4dp"
+                        android:enabled="false"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="10sp"
+                        tools:text="16+" />
 
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="16dp"
-                            android:layout_weight="0"
-                            android:gravity="center"
-                            android:orientation="vertical">
+                    <TextView
+                        android:id="@+id/storeView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:ellipsize="end"
+                        android:enabled="true"
+                        android:fontFamily="@font/inter_regular"
+                        android:gravity="end|center_vertical"
+                        android:maxLines="1"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:textSize="11sp"
+                        tools:text="Реклама" />
 
-                            <ImageView
-                                android:id="@+id/adsPromo"
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:layout_gravity="center"
-                                android:layout_marginEnd="8dp"
-                                android:layout_weight="0"
-                                android:padding="0dp" />
+                    <ImageView
+                        android:id="@+id/imageViewFeedback"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_marginStart="4dp"
+                        android:contentDescription="@null" />
+                </LinearLayout>
 
-                            <TextView
-                                android:id="@+id/age"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_gravity="bottom"
-                                android:layout_weight="0"
-                                android:enabled="false"
-                                android:gravity="bottom"
-                                android:text="0+"
-                                android:textSize="10sp" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginHorizontal="0dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:paddingVertical="0dp">
-
-                                <TextView
-                                    android:id="@+id/storeView"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_gravity="center"
-                                    android:layout_marginHorizontal="0dp"
-                                    android:layout_marginVertical="0dp"
-                                    android:layout_weight="0"
-                                    android:enabled="true"
-                                    android:fontFamily="@font/roboto_regular"
-                                    android:gravity="center|end"
-                                    android:text=""
-                                    android:textSize="14sp" />
-
-                            </LinearLayout>
-
-                        </LinearLayout>
-
-                        <ImageView
-                            android:id="@+id/imageViewFeedback"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_marginVertical="0dp"
-                            android:layout_marginStart="0dp"
-                            android:layout_marginEnd="24dp"
-                            android:layout_weight="0" />
-
-                    </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <androidx.cardview.widget.CardView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginTop="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:layout_marginBottom="16dp"
-                        app:cardCornerRadius="12dp"
+                        android:layout_width="84dp"
+                        android:layout_height="84dp"
+                        app:cardBackgroundColor="?attr/colorSurfaceVariant"
+                        app:cardCornerRadius="8dp"
                         app:cardElevation="0dp">
 
-                        <com.yandex.mobile.ads.nativeads.MediaView
-                            android:id="@+id/media"
+                        <ImageView
+                            android:id="@+id/adsIcon"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
-
-                        </com.yandex.mobile.ads.nativeads.MediaView>
+                            android:layout_height="match_parent"
+                            android:contentDescription="@null"
+                            android:scaleType="centerCrop" />
                     </androidx.cardview.widget.CardView>
 
-                    <TextView
-                        android:id="@+id/tvHeadline"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="0dp"
-                        android:layout_marginVertical="4dp"
-                        android:enabled="false"
-                        android:fontFamily="@font/roboto_bold"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/tvAdvertiser"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginHorizontal="0dp"
-                        android:layout_marginVertical="0dp"
-                        android:enabled="true"
-                        android:fontFamily="@font/roboto_medium"
-                        android:paddingStart="16dp"
-                        android:paddingEnd="16dp"
-                        android:textSize="14sp" />
-
-                    <RatingBar
-                        android:id="@+id/rating"
-                        style="?android:attr/ratingBarStyleSmall"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center|left"
-                        android:layout_marginVertical="4dp"
-                        android:layout_marginStart="16dp"
-                        android:layout_marginEnd="16dp"
-                        android:isIndicator="true"
-                        android:numStars="5"
-                        android:stepSize="0.5" />
-
                     <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_marginStart="0dp"
-                        android:layout_marginEnd="0dp"
-                        android:layout_marginBottom="8dp"
-                        android:orientation="horizontal">
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
+                        android:orientation="vertical">
 
                         <TextView
-                            android:id="@+id/textViewDomain"
+                            android:id="@+id/tvAdvertiser"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginHorizontal="0dp"
-                            android:layout_marginVertical="0dp"
-                            android:layout_marginStart="18dp"
-                            android:layout_weight="1"
-                            android:enabled="false"
-                            android:fontFamily="@font/roboto_light"
-                            android:text=""
-                            android:textColor="?attr/colorOutline"
-                            android:textSize="12sp" />
+                            android:enabled="true"
+                            android:fontFamily="@font/inter_medium"
+                            android:maxLines="3"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            android:textSize="11sp"
+                            tools:text="App name" />
 
                         <TextView
-                            android:id="@+id/priceView"
-                            android:layout_width="wrap_content"
+                            android:id="@+id/tvHeadline"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginHorizontal="18dp"
-                            android:layout_marginVertical="0dp"
-                            android:layout_weight="0"
+                            android:layout_marginTop="2dp"
                             android:enabled="false"
-                            android:fontFamily="@font/roboto_light"
-                            android:text=""
-                            android:textColor="?attr/colorOutline"
-                            android:textSize="12sp" />
+                            android:fontFamily="@font/inter_bold"
+                            android:maxLines="3"
+                            android:textColor="?attr/colorOnSurface"
+                            android:textSize="13sp"
+                            tools:text="Ad headline text" />
 
-                        <TextView
-                            android:id="@+id/btnVisitSite"
+                        <ru.plumsoftware.weatherforecastru.presentation.content.presentation.components.AdRatingView
+                            android:id="@+id/rating"
+                            style="?android:attr/ratingBarStyleSmall"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="0"
-                            android:background="#00FFFFFF"
-                            android:fontFamily="@font/roboto_light"
-                            android:gravity="center"
-                            android:paddingHorizontal="18dp"
-                            android:paddingTop="8dp"
-                            android:paddingBottom="8dp"
-                            android:text="Подробнее"
-                            android:textColor="?attr/colorOutline"
-                            android:textSize="12sp" />
+                            android:layout_marginTop="4dp"
+                            android:isIndicator="true"
+                            android:numStars="5"
+                            android:paddingTop="2dp"
+                            android:paddingBottom="2dp"
+                            android:stepSize="0.5" />
 
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/textViewDomain"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:ellipsize="end"
+                                android:enabled="false"
+                                android:fontFamily="@font/inter_light"
+                                android:maxLines="1"
+                                android:textColor="?attr/colorOutline"
+                                android:textSize="11sp"
+                                tools:text="Google Play" />
+
+                            <TextView
+                                android:id="@+id/priceView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:enabled="false"
+                                android:fontFamily="@font/inter_light"
+                                android:maxLines="1"
+                                android:textColor="?attr/colorOutline"
+                                android:textSize="11sp"
+                                tools:text="Бесплатно" />
+
+                            <TextView
+                                android:id="@+id/btnVisitSite"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/native_ad_cta_background"
+                                android:fontFamily="@font/inter_medium"
+                                android:gravity="center"
+                                android:minHeight="0dp"
+                                android:paddingHorizontal="12dp"
+                                android:paddingVertical="6dp"
+                                android:text="@string/see_more"
+                                android:textAllCaps="false"
+                                android:textColor="?attr/colorOnPrimary"
+                                android:textSize="11sp" />
+                        </LinearLayout>
                     </LinearLayout>
-
-                    <TextView
-                        android:id="@+id/textViewWarning"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="0"
-                        android:enabled="false"
-                        android:fontFamily="@font/roboto_light"
-                        android:paddingStart="16dp"
-                        android:paddingTop="4dp"
-                        android:paddingEnd="16dp"
-                        android:paddingBottom="4dp"
-                        android:textSize="12sp" />
-
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
-        </LinearLayout>
-    </com.yandex.mobile.ads.nativeads.NativeAdView>
 
+                <com.yandex.mobile.ads.nativeads.MediaView
+                    android:id="@+id/media"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/textViewWarning"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:visibility="gone" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </com.yandex.mobile.ads.nativeads.NativeAdView>
 </LinearLayout>

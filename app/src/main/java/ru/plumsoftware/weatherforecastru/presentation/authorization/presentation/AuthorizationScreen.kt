@@ -4,7 +4,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
+import ru.plumsoftware.weatherforecastru.presentation.ui.NavigationBarSpacer
+import ru.plumsoftware.weatherforecastru.presentation.ui.statusBarTopPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -69,12 +72,18 @@ private fun AuthorizationScreen(
 ) {
     with(ExtensionPaddingValues) {
         Column(
-            verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .statusBarTopPadding()
                 .padding(PaddingValues(horizontal = _16dp, vertical = _24dp))
         ) {
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
             Column(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -124,6 +133,8 @@ private fun AuthorizationScreen(
                     )
                 }
             }
+            }
+            NavigationBarSpacer()
         }
     }
 }

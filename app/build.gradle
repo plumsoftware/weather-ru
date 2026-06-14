@@ -18,8 +18,8 @@ android {
         applicationId "ru.plumsoftware.weatherforecastru"
         minSdk 26
         targetSdk 36
-        versionCode 29
-        versionName "3.1.2"
+        versionCode 30
+        versionName "3.1.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -79,7 +79,7 @@ android {
         checkGeneratedSources true
         checkReleaseBuilds false
         checkTestSources true
-        disable 'TypographyFractions', 'TypographyQuotes', 'MobileAdsSdkOutdatedVersion'
+        disable 'TypographyFractions', 'TypographyQuotes', 'YandexAdsSdkOutdatedVersion'
         enable 'RtlHardcoded', 'RtlCompat', 'RtlEnabled'
         error 'Wakelock', 'TextViewEdits'
         explainIssues false
@@ -140,12 +140,13 @@ dependencies {
     def logback_version = "1.2.11"
     def json_serialization_version = "1.6.3"
 
-    def yandex_ads_version = "7.18.2"
+    def yandex_ads_version = "8.1.0"
 
     def glance_version = "1.0.0-rc01"
     def glance_material_version = "1.0.0-rc01"
 
     implementation 'androidx.core:core-ktx:1.10.1'
+    implementation 'androidx.work:work-runtime-ktx:2.9.0'
     implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.0')
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
     implementation 'androidx.activity:activity-compose:1.7.2'
@@ -182,6 +183,7 @@ dependencies {
 
 //    Material icons
     implementation "androidx.compose.material:material:$material_icons"
+    implementation "androidx.compose.material:material-icons-extended:$material_icons"
 
 //    Room database
     implementation "androidx.room:room-runtime:$room_version"
@@ -215,6 +217,10 @@ dependencies {
 
 //    Charts
 //    implementation "co.yml:ycharts:$ycharts_version"
+
+//    Maps
+    implementation 'org.osmdroid:osmdroid-android:6.1.18'
+
 
 //    Modules
     implementation project(path: ":uicomponents")

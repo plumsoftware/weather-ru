@@ -23,6 +23,46 @@
     <string name="weather_status_logo">Weather status icon</string>
     <string name="degree_sign">°</string>
     <string name="feels_like_temp">feels like</string>
+    <string name="weather_hero_details">%1$d° / %2$d° · %3$s %4$d°</string>
+    <string name="weather_wind_detail">Wind · %1$s</string>
+    <string name="weather_air_detail">Air · AQI %1$d</string>
+    <string name="visibility_km">%1$d km</string>
+    <string name="weather_clear">Clear</string>
+    <string name="weather_partly_cloudy">Partly cloudy</string>
+    <string name="weather_cloudy">Cloudy</string>
+    <string name="weather_overcast">Overcast</string>
+    <string name="weather_mist">Mist</string>
+    <string name="weather_fog">Fog</string>
+    <string name="weather_haze">Haze</string>
+    <string name="weather_drizzle">Drizzle</string>
+    <string name="weather_rain_light">Light rain</string>
+    <string name="weather_rain">Rain</string>
+    <string name="weather_rain_heavy">Heavy rain</string>
+    <string name="weather_rain_shower">Rain shower</string>
+    <string name="weather_freezing_rain">Freezing rain</string>
+    <string name="weather_thunderstorm">Thunderstorm</string>
+    <string name="weather_snow">Snow</string>
+    <string name="weather_sleet">Sleet</string>
+    <string name="weather_dust">Dust storm</string>
+    <string name="weather_tornado">Tornado</string>
+    <string-array name="wind_directions_full">
+        <item>North</item>
+        <item>North-northeast</item>
+        <item>Northeast</item>
+        <item>East-northeast</item>
+        <item>East</item>
+        <item>East-southeast</item>
+        <item>Southeast</item>
+        <item>South-southeast</item>
+        <item>South</item>
+        <item>South-southwest</item>
+        <item>Southwest</item>
+        <item>West-southwest</item>
+        <item>West</item>
+        <item>West-northwest</item>
+        <item>Northwest</item>
+        <item>North-northwest</item>
+    </string-array>
     <string name="weather_hour_logo_desc">Weather icon at a certain hour</string>
     <string name="hourly_weather_forecast">Hourly weather forecast</string>
     <string name="alerts">Important to read</string>
@@ -31,7 +71,25 @@
     <string name="astronomy">Astronomy</string>
     <string name="sunrise">Sunrise</string>
     <string name="sunset">Sunset</string>
+    <string name="moon">Moon</string>
+    <string name="moonrise">Moonrise</string>
+    <string name="moonset">Moonset</string>
     <string name="moon_phase">Moon phase</string>
+    <string name="moon_illumination">Illumination</string>
+    <string name="expand_map">Expand map</string>
+    <string name="weather_map_title">Weather map</string>
+    <string name="map_layer_temperature">🌡 Temperature</string>
+    <string name="map_layer_clouds_wind">☁ Clouds + Wind</string>
+    <string name="map_full_title_temperature">Temperature · %1$s</string>
+    <string name="map_full_title_clouds_wind">Clouds and wind · %1$s</string>
+    <string name="map_legend_temp_min">-40°</string>
+    <string name="map_legend_temp_max">+40°</string>
+    <string name="map_legend_cloud_min">☁ 0%</string>
+    <string name="map_legend_cloud_max">100%</string>
+    <string name="map_legend_wind_min">💨 calm</string>
+    <string name="map_legend_wind_max">strong</string>
+    <string name="map_attribution_osm">© OpenStreetMap contributors</string>
+    <string name="map_attribution_owm">© OpenWeatherMap</string>
     <string name="tips_star">✨</string>
     <string name="tips_rocket">🚀</string>
     <string name="humidity">Humidity</string>
@@ -56,11 +114,21 @@
     <string name="rustore_logo">RuStore app store logo</string>
     <string name="rustore_review">Review on RuStore</string>
     <string name="notifications">Notifications</string>
+    <string name="notification_delivery">Weather notifications</string>
+    <string name="notification_interval_3h">3 h</string>
+    <string name="notification_interval_6h">6 h</string>
+    <string name="notification_interval_12h">12 h</string>
+    <string name="notification_alerts_more_one">1 more alert</string>
+    <string name="notification_alerts_more_few">%1$d more alerts</string>
+    <string name="notification_alerts_more">%1$d more alerts</string>
+    <string name="notification_channel_name">Weather</string>
+    <string name="notification_channel_description">Current weather and alerts</string>
 
     <!--    Settings-->
     <string name="settings">Settings</string>
     <string name="every_six_hours">Every 6 hours</string>
     <string name="every_three_hours">Every 3 hours</string>
+    <string name="every_twelve_hours">Every 12 hours</string>
     <string name="every_hour">Every hour</string>
     <string name="never_notify">Never</string>
 
@@ -70,10 +138,51 @@
     <!--    About application-->
     <string name="about_app">About application</string>
     <string name="version_hint">Version</string>
+    <string name="about_tagline">Accurate forecast always at hand</string>
+    <string name="about_version_format">Version %1$s</string>
+    <string name="about_section_data_services">Data and services</string>
+    <string name="about_openweathermap_title">OpenWeatherMap API</string>
+    <string name="about_openweathermap_subtitle">Weather data source</string>
+    <string name="about_osm_title">OpenStreetMap</string>
+    <string name="about_osm_subtitle">Map data</string>
+    <string name="about_meteocons_title">Meteocons by Bas Milius (MIT)</string>
+    <string name="about_meteocons_subtitle">Weather icons</string>
+    <string name="about_section_contacts">Contact and support</string>
+    <string name="about_contact_developer">Contact developer</string>
+    <string name="about_rate_app">Rate the app</string>
+    <string name="about_report_bug">Report a bug</string>
+    <string name="about_section_legal">Legal information</string>
+    <string name="about_privacy_policy">Privacy policy</string>
+    <string name="about_terms_of_use">Terms of use</string>
+    <string name="about_made_with_love">Made with ❤️ in Omsk</string>
+    <string name="about_copyright">© %1$d %2$s</string>
+    <string name="developer_name">Plumsoftware</string>
+    <string name="about_bug_report_subject">Bug in \"Погода\" app</string>
+    <string name="about_open_email">Email the developer</string>
+    <string name="about_open_store">Rate the app in the store</string>
+    <string name="about_open_bug_report">Report a bug by email</string>
+    <string name="about_open_privacy">Open privacy policy</string>
+    <string name="about_open_terms">Open terms of use</string>
+    <string name="about_app_icon">App icon</string>
+
+    <!--    Weather alerts-->
+    <string name="alerts_section_header">ALERTS</string>
+    <string name="alerts_page_indicator">%1$d / %2$d</string>
+    <string name="alerts_expires_prefix">Until:</string>
+    <string name="alerts_expand">More</string>
+    <string name="alerts_collapse">Hide</string>
+    <string name="alerts_severity_critical">Extreme danger</string>
+    <string name="alerts_severity_high">High danger</string>
+    <string name="alerts_severity_medium">Moderate danger</string>
+    <string name="alerts_severity_low">Low danger</string>
 
     <!--    Errors-->
+    <string name="loading_weather">Loading weather</string>
+    <string name="loading_weather_message">Please wait…</string>
     <string name="error_desc">Bad connection with internet</string>
-    <string name="error_code">Error:</string>
+    <string name="error_code">Error</string>
+    <string name="error_occurred">An error occurred while loading data</string>
+    <string name="error_ok">OK</string>
 
     <!--    Widgets-->
     <string name="simple_widget_description">Widget with current temperature (minimum and maximum). Everything you need</string>

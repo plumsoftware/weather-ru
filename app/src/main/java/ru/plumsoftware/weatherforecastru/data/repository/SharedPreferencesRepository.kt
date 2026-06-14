@@ -23,4 +23,6 @@ interface SharedPreferencesRepository {
     fun saveWidgetConfig(widgetConfig: WidgetConfig)
     fun saveFist(first: Boolean)
     fun saveNotificationPeriod(notificationItem: NotificationItem)
+    fun getLaunchCount(): Int
+    fun incrementLaunchCount(): Int
 }

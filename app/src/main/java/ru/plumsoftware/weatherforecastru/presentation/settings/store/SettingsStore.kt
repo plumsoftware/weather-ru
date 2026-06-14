@@ -50,5 +50,6 @@ interface SettingsStore :
         object Share : Label
         object LeaveFeedBack : Label
         object WidgetConfigureSettings : Label
+        object RescheduleNotifications : Label
     }
 }

@@ -4,6 +4,10 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
+import ru.plumsoftware.weatherforecastru.presentation.ui.NavigationBarSpacer
+import ru.plumsoftware.weatherforecastru.presentation.ui.statusBarTopPadding
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -62,6 +66,7 @@ class WidgetConfigActivity : ComponentActivity(), KoinComponent {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContent {
             val widgetConfigViewModel: WidgetConfigViewModel = WidgetConfigViewModel(
                 storeFactory = DefaultStoreFactory(),
@@ -78,14 +83,18 @@ class WidgetConfigActivity : ComponentActivity(), KoinComponent {
 
 
             WeatherAppTheme {
-                SetupUIController()
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                SetupUIController(darkTheme = isSystemInDarkTheme())
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background),
                 ) {
                     WidgetConfig(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .statusBarTopPadding(),
                         event = widgetConfigViewModel::onEvent,
-                        state = state
+                        state = state,
                     )
                 }
             }
@@ -94,8 +103,9 @@ class WidgetConfigActivity : ComponentActivity(), KoinComponent {
 
     @Composable
     private fun WidgetConfig(
+        modifier: Modifier = Modifier,
         event: (WidgetConfigStore.Intent) -> Unit,
-        state: WidgetConfigStore.State
+        state: WidgetConfigStore.State,
     ) {
 
         val context = LocalContext.current
@@ -108,10 +118,10 @@ class WidgetConfigActivity : ComponentActivity(), KoinComponent {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
-            modifier = Modifier
+            modifier = modifier
                 .padding(all = ExtensionPaddingValues._24dp)
                 .fillMaxWidth()
-                .fillMaxHeight()
+                .fillMaxHeight(),
         ) {
             with(ExtensionPaddingValues) {
 //            Back
@@ -253,6 +263,7 @@ class WidgetConfigActivity : ComponentActivity(), KoinComponent {
                                         }
                                     )
                                 }
+                                NavigationBarSpacer()
                             }
                         }
                     }

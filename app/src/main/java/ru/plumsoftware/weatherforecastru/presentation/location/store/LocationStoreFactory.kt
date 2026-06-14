@@ -27,7 +27,6 @@ internal class LocationStoreFactory(
                 bootstrapper = coroutineBootstrapper {
                     launch {
                         dispatch(LocationStoreFactory.Action.InitLocations)
-                        dispatch(LocationStoreFactory.Action.InitLocation)
                     }
                 },
                 reducer = ReducerImpl,
@@ -37,7 +36,6 @@ internal class LocationStoreFactory(
 
     sealed interface Action {
         object InitLocations : Action
-        object InitLocation : Action
     }
 
     sealed interface Msg {
@@ -153,31 +151,14 @@ internal class LocationStoreFactory(
 
         override fun executeAction(action: Action, getState: () -> LocationStore.State) =
             when (action) {
-                Action.InitLocation -> initLocation()
-
                 Action.InitLocations -> initLocations()
             }
 
         private fun initLocations() {
             scope.launch {
-                val locationItems: List<_root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem> = locationItemDao.getAll()
+                val locationItems = locationItemDao.getAll()
+                    .distinctBy { it.city }
                 dispatch(LocationStoreFactory.Msg.Items(items = locationItems))
-            }
-        }
-
-        private fun initLocation() {
-            scope.launch {
-                with(sharedPreferencesStorage.get()) {
-                    with(
-                        Location(
-                            city = city!!,
-                            country = country!!
-                        )
-                    ) {
-                        dispatch(LocationStoreFactory.Msg.Data(city = city))
-                        dispatch(LocationStoreFactory.Msg.Country(country = country))
-                    }
-                }
             }
         }
     }

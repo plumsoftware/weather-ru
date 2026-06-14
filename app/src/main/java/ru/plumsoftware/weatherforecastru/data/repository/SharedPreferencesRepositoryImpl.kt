@@ -71,21 +71,19 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
                 )!!
             )
 
+            val rawWindPresentation = getString(
+                Constants.SharedPreferences.SHARED_PREF_WIND_SPEED_PRESENTATION,
+                Constants.Settings.M_S.first
+            )!!
+            val normalizedPresentation = normalizeWindPresentation(rawWindPresentation)
             val windSpeed: WindSpeed = WindSpeed(
-                windPresentation = getString(
-                    Constants.SharedPreferences.SHARED_PREF_WIND_SPEED_PRESENTATION,
-                    Constants.Settings.M_S.first
-                )!!,
-                windValue = getFloat(
-                    Constants.SharedPreferences.SHARED_PREF_WIND_SPEED_VALUE,
+                windPresentation = normalizedPresentation,
+                windValue = if (normalizedPresentation == Constants.Settings.KM_H.first) {
+                    Constants.Settings.KM_H.second
+                } else {
                     Constants.Settings.M_S.second
-                )
+                },
             )
-
-            logd("application theme: " + if (theme) "DARK" else "LIGHT")
-            logd("base city: $city")
-            logd("base country: $country")
-            logd("show tips: $showTips")
 
             return UserSettings(
                 isDarkTheme = theme,
@@ -223,6 +221,17 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
             .apply()
     }
 
+    override fun getLaunchCount(): Int =
+        sharedPreferences.getInt(Constants.SharedPreferences.SHARED_PREF_LAUNCH_COUNT, 0)
+
+    override fun incrementLaunchCount(): Int {
+        val count = getLaunchCount() + 1
+        sharedPreferences.edit()
+            .putInt(Constants.SharedPreferences.SHARED_PREF_LAUNCH_COUNT, count)
+            .apply()
+        return count
+    }
+
     override fun saveNotificationPeriod(notificationItem: NotificationItem) {
         sharedPreferences
             .edit()
@@ -236,4 +245,10 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
             )
             .apply()
     }
+}
+
+private fun normalizeWindPresentation(raw: String): String = when (raw) {
+    "м/c", Constants.Settings.M_S.first -> Constants.Settings.M_S.first
+    "миль/час", Constants.Settings.KM_H.first -> Constants.Settings.KM_H.first
+    else -> raw
 }

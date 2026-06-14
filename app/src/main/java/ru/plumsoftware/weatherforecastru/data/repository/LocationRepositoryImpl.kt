@@ -1,35 +1,42 @@
 package ru.plumsoftware.weatherforecastru.data.repository
 
 import android.content.Context
+import android.location.Geocoder
 import ru.plumsoftware.weatherforecastru.data.location.LocationHelper
-import ru.plumsoftware.weatherforecastru.data.utilities.showToast
 import ru.plumsoftware.weatherforecastru.data.models.location.Location
 import ru.plumsoftware.weatherforecastru.data.models.location.LocationCoords
+import java.util.Locale
 
 class LocationRepositoryImpl(private val context: Context) : LocationRepository {
 
     override suspend fun getCurrentLocation(): Location {
-        val locationHelper: LocationHelper = LocationHelper(context = context)
-        var location: Location = Location(
-            city = "",
-            country = "",
-            coords = LocationCoords(latitude = 1.0, longitude = 1.0)
-        )
-        if (locationHelper.isLocationEnabled()) {
-            locationHelper.getCurrentLocation { latitude, longitude, city, country ->
-                location = Location(
-                    city = city!!,
-                    country = country!!,
-                    coords = LocationCoords(latitude = latitude, longitude = longitude)
-                )
-            }
-            return location
-        } else {
-            showToast(
-                context,
-                "Определение местоположения не доступно на вашем устройстве"
-            )
-            return location
+        val locationHelper = LocationHelper(context = context)
+        if (!locationHelper.isLocationPermissionGranted() || !locationHelper.isLocationEnabled()) {
+            return emptyLocation()
         }
+
+        val deviceLocation = locationHelper.awaitCurrentLocation() ?: return emptyLocation()
+
+        val city = runCatching {
+            Geocoder(context, Locale.getDefault())
+                .getFromLocation(deviceLocation.latitude, deviceLocation.longitude, 1)
+                ?.firstOrNull()
+                ?.locality
+        }.getOrNull().orEmpty()
+
+        return Location(
+            city = city,
+            country = "",
+            coords = LocationCoords(
+                latitude = deviceLocation.latitude,
+                longitude = deviceLocation.longitude,
+            ),
+        )
     }
+
+    private fun emptyLocation(): Location = Location(
+        city = "",
+        country = "",
+        coords = LocationCoords(latitude = 0.0, longitude = 0.0),
+    )
 }

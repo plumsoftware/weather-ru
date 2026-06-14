@@ -7,19 +7,19 @@ import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.AirQuality
+import ru.plumsoftware.weatherforecastru.data.models.airquality.AirQualityData
 import ru.plumsoftware.weatherforecastru.presentation.airquality.store.AirQualityStore
 import ru.plumsoftware.weatherforecastru.presentation.airquality.store.AirQualityStoreFactory
 
-class AirQualityViewModel (
+class AirQualityViewModel(
     storeFactory: StoreFactory,
     private val output: (AirQualityViewModel.Output) -> Unit,
-    airQuality: AirQuality
+    airQualityData: AirQualityData,
 ) : ViewModel() {
 
     private val airQualityStore = AirQualityStoreFactory(
         storeFactory = storeFactory,
-        airQuality = airQuality
+        airQualityData = airQualityData,
     ).create()
 
     @OptIn(ExperimentalCoroutinesApi::class)

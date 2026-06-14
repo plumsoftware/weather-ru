@@ -43,7 +43,7 @@ class AboutAppStoreFactory(
 
         override fun AboutAppStore.State.reduce(msg: Msg): AboutAppStore.State =
             when (msg) {
-                is Msg.AboutMsg -> copy(version = version, appName = appName)
+                is Msg.AboutMsg -> copy(version = msg.version, appName = msg.appName)
             }
     }
 
@@ -70,7 +70,7 @@ class AboutAppStoreFactory(
 
         private fun initAppInfo(appName: String) {
             scope.launch {
-                dispatch(Msg.AboutMsg(version= BuildConfig.VERSION_NAME, appName = "Погода в вашем городе"))
+                dispatch(Msg.AboutMsg(version = BuildConfig.VERSION_NAME, appName = appName))
             }
         }
     }

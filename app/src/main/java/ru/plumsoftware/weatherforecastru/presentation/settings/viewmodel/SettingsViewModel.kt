@@ -39,6 +39,7 @@ class SettingsViewModel(
         object BackStackClicked : Output()
         data class ChangedTheme(val value: Boolean) : Output()
         object OnSettingsChange : Output()
+        object RescheduleNotifications : Output()
         object OpenSetting : Output()
         object LeaveFeedBack : Output()
         object Share : Output()

@@ -4,66 +4,73 @@ import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionTypography
 
+private val MaterialDefaults = Typography()
+private val inter = InterFontFamily
+
+private fun TextStyle.inter(): TextStyle = copy(fontFamily = inter)
 
 internal val Typography = Typography(
+    displayLarge = MaterialDefaults.displayLarge.inter(),
+    displayMedium = MaterialDefaults.displayMedium.inter(),
+    displaySmall = MaterialDefaults.displaySmall.inter(),
+    headlineLarge = TextStyle(
+        fontFamily = inter,
+        fontWeight = ExtensionTypography.TypographyWeight.bold,
+        fontSize = ExtensionTypography.TypographySize._20sp,
+        lineHeight = ExtensionTypography.LineHeight.lineHeight,
+        letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing,
+    ),
+    headlineMedium = MaterialDefaults.headlineMedium.inter(),
+    headlineSmall = MaterialDefaults.headlineSmall.inter(),
     titleLarge = TextStyle(
-        fontFamily = getSemiBoldFont(),
+        fontFamily = inter,
         fontWeight = ExtensionTypography.TypographyWeight.bold,
         fontSize = ExtensionTypography.TypographySize._24sp,
         lineHeight = ExtensionTypography.LineHeight.lineHeight,
-        letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing
+        letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing,
     ),
     titleMedium = TextStyle(
-        fontFamily = getSemiBoldFont(),
+        fontFamily = inter,
         fontWeight = ExtensionTypography.TypographyWeight.semi_bold,
         fontSize = ExtensionTypography.TypographySize._16sp,
         lineHeight = ExtensionTypography.LineHeight.lineHeight,
-        letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing
+        letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing,
     ),
     titleSmall = TextStyle(
-        fontFamily = getMediumFont(),
+        fontFamily = inter,
         fontWeight = ExtensionTypography.TypographyWeight.medium,
         fontSize = ExtensionTypography.TypographySize._20sp,
         lineHeight = ExtensionTypography.LineHeight.lineHeight,
-        letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing
+        letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing,
     ),
-
-    headlineLarge = TextStyle(
-        fontFamily = getBoldFont(),
-        fontWeight = ExtensionTypography.TypographyWeight.bold,
-        fontSize = ExtensionTypography.TypographySize._20sp,
+    bodyLarge = MaterialDefaults.bodyLarge.inter(),
+    bodyMedium = TextStyle(
+        fontFamily = inter,
+        fontWeight = ExtensionTypography.TypographyWeight.regular,
+        fontSize = ExtensionTypography.TypographySize._14sp,
         lineHeight = ExtensionTypography.LineHeight.lineHeight,
-        letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing
+        letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing,
     ),
-
+    bodySmall = MaterialDefaults.bodySmall.inter(),
     labelLarge = TextStyle(
-        fontFamily = getBoldFont(),
+        fontFamily = inter,
         fontWeight = ExtensionTypography.TypographyWeight.regular,
         fontSize = ExtensionTypography.TypographySize._16sp,
         lineHeight = ExtensionTypography.LineHeight.lineHeight,
-        letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing
+        letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing,
     ),
-
     labelMedium = TextStyle(
-        fontFamily = getRegularFont(),
+        fontFamily = inter,
         fontWeight = ExtensionTypography.TypographyWeight.regular,
         fontSize = ExtensionTypography.TypographySize._16sp,
         lineHeight = ExtensionTypography.LineHeight.lineHeight,
-        letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing
+        letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing,
     ),
     labelSmall = TextStyle(
-        fontFamily = getLightFont(),
+        fontFamily = inter,
         fontWeight = ExtensionTypography.TypographyWeight.light,
         fontSize = ExtensionTypography.TypographySize._12sp,
         lineHeight = ExtensionTypography.LineHeight.lineHeight,
         letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing,
     ),
-
-    bodyMedium = TextStyle(
-        fontFamily = getRegularFont(),
-        fontWeight = ExtensionTypography.TypographyWeight.regular,
-        fontSize = ExtensionTypography.TypographySize._14sp,
-        lineHeight = ExtensionTypography.LineHeight.lineHeight,
-        letterSpacing = ExtensionTypography.LetterSpacing.letterSpacing,
-    )
 )

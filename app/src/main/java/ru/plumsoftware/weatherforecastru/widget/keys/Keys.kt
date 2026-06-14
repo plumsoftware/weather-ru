@@ -6,6 +6,7 @@ object Keys {
         const val CURRENT_MIN_DEGREE = "CURRENT_MIN_DEGREE"
         const val CURRENT_MAX_DEGREE = "CURRENT_MAX_DEGREE"
         const val CURRENT_ICON_ID = "CURRENT_ICON_ID"
+        const val CURRENT_ICON_CODE = "CURRENT_ICON_CODE"
     }
 
     object Parameters {

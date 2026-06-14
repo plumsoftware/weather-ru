@@ -4,11 +4,14 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.arkivanov.mvikotlin.core.store.Store
 import com.yandex.mobile.ads.nativeads.NativeAd
+import ru.plumsoftware.weatherforecastru.data.map.WeatherMapLayer
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
-import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
+import ru.plumsoftware.weatherforecastru.data.models.airquality.AirQualityData
 import ru.plumsoftware.weatherforecastru.data.models.settings.WeatherUnits
 import ru.plumsoftware.weatherforecastru.data.models.settings.WindSpeed
 import ru.plumsoftware.weatherforecastru.data.remote.dto.forecast_owm.MainWeatherResponse
+import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.Astro
+import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -37,6 +40,29 @@ interface ContentStore :
         //        region::Hourly
         data class ChangeHourly(val value: Int) : Intent
 //        endregion
+
+        data class ApplyWeather(
+            val owmResponse: OwmResponse,
+            val owmHourlyResponse: MainWeatherResponse,
+            val weatherApiResponse: WeatherApiResponse,
+            val astronomyAstro: Astro?,
+            val airQualityData: AirQualityData,
+            val owmCode: Int,
+            val owmHourlyCode: Int,
+            val weatherApiCode: Int,
+            val useOwmForCurrent: Boolean,
+        ) : Intent
+
+        data class ApplyWeatherLoading(val isLoading: Boolean) : Intent
+
+        data class ApplyAds(
+            val adsList: MutableList<NativeAd>,
+            val isAdsLoading: Boolean,
+        ) : Intent
+
+        data class ApplyTheme(val isDark: Boolean) : Intent
+
+        data class ChangeWeatherMapLayer(val layer: WeatherMapLayer) : Intent
     }
 
     data class State(
@@ -45,10 +71,11 @@ interface ContentStore :
         val dropDownState: Boolean = false,
         val checkBoxState: Boolean = true,
         val owmResponse: OwmResponse = OwmResponse(),
+        val owmHourlyResponse: MainWeatherResponse = MainWeatherResponse(),
         val weatherUnits: WeatherUnits = WeatherUnits(
             unitsPresentation = "", unitsValue = ""
         ),
-        val weatherApiResponse: MainWeatherResponse = MainWeatherResponse(),
+        val weatherApiResponse: WeatherApiResponse = WeatherApiResponse(),
         val windSpeed: WindSpeed = WindSpeed(
             windValue = 0.0f,
             windPresentation = ""
@@ -61,7 +88,13 @@ interface ContentStore :
         val needScroll: Boolean = true,
         val isDark: Boolean = false,
         val owmCode: Int = -1,
-        val weatherApiCode: Int = -1
+        val owmHourlyCode: Int = -1,
+        val weatherApiCode: Int = -1,
+        val airQualityData: AirQualityData = AirQualityData(),
+        val astronomyAstro: Astro? = null,
+        val isWeatherLoading: Boolean = false,
+        val useOwmForCurrent: Boolean = false,
+        val weatherMapLayer: WeatherMapLayer = WeatherMapLayer.Temperature,
     )
 
     sealed interface Label {

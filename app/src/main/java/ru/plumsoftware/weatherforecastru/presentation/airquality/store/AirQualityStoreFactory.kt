@@ -7,69 +7,59 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
-import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.AirQuality
+import ru.plumsoftware.weatherforecastru.data.models.airquality.AirQualityData
 
 class AirQualityStoreFactory(
     private val storeFactory: StoreFactory,
-    private val airQuality: AirQuality
+    private val airQualityData: AirQualityData,
 ) {
 
     @OptIn(ExperimentalMviKotlinApi::class)
     fun create(): AirQualityStore =
         object : AirQualityStore,
             Store<AirQualityStore.Intent, AirQualityStore.State, AirQualityStore.Label> by storeFactory.create(
-                name = "Authorization",
+                name = "AirQuality",
                 initialState = AirQualityStore.State(),
                 bootstrapper = coroutineBootstrapper {
-                    launch { dispatch(AirQualityStoreFactory.Action.AirQualityAction(value = airQuality)) }
+                    launch {
+                        dispatch(
+                            AirQualityStoreFactory.Action.AirQualityAction(value = airQualityData)
+                        )
+                    }
                 },
                 reducer = AirQualityStoreFactory.ReducerImpl,
-                executorFactory = ::ExecutorImpl
-            ) {
-        }
+                executorFactory = ::ExecutorImpl,
+            ) {}
 
     sealed interface Action {
-        data class AirQualityAction(val value: AirQuality) : Action
+        data class AirQualityAction(val value: AirQualityData) : Action
     }
 
     sealed interface Msg {
-        data class AirQualityMsg(
-            val value: AirQuality
-        ) : Msg
+        data class AirQualityMsg(val value: AirQualityData) : Msg
     }
 
-    private object ReducerImpl : Reducer<AirQualityStore.State, AirQualityStoreFactory.Msg> {
-
-        override fun AirQualityStore.State.reduce(msg: AirQualityStoreFactory.Msg): AirQualityStore.State =
-            when (msg) {
-                is Msg.AirQualityMsg -> copy(airQuality = msg.value)
-            }
+    private object ReducerImpl : Reducer<AirQualityStore.State, Msg> {
+        override fun AirQualityStore.State.reduce(msg: Msg): AirQualityStore.State = when (msg) {
+            is Msg.AirQualityMsg -> copy(isLoading = false, airQualityData = msg.value)
+        }
     }
 
     private inner class ExecutorImpl :
-        CoroutineExecutor<AirQualityStore.Intent, AirQualityStoreFactory.Action, AirQualityStore.State, AirQualityStoreFactory.Msg, AirQualityStore.Label>() {
+        CoroutineExecutor<AirQualityStore.Intent, Action, AirQualityStore.State, Msg, AirQualityStore.Label>() {
 
-        override fun executeIntent(
-            intent: AirQualityStore.Intent,
-            getState: () -> AirQualityStore.State
-        ) =
+        override fun executeIntent(intent: AirQualityStore.Intent, getState: () -> AirQualityStore.State) =
             when (intent) {
-                AirQualityStore.Intent.BackButtonClicked -> {
-                    publish(AirQualityStore.Label.BackButtonClicked)
-                }
+                AirQualityStore.Intent.BackButtonClicked -> publish(AirQualityStore.Label.BackButtonClicked)
             }
 
-        override fun executeAction(
-            action: AirQualityStoreFactory.Action,
-            getState: () -> AirQualityStore.State
-        ) =
-            when (action) {
-                is Action.AirQualityAction -> initAirQuality(value = airQuality)
-            }
+        override fun executeAction(action: Action, getState: () -> AirQualityStore.State) = when (action) {
+            is Action.AirQualityAction -> initAirQuality(value = action.value)
+        }
 
-        private fun initAirQuality(value: AirQuality) {
+        private fun initAirQuality(value: AirQualityData) {
             scope.launch {
-                dispatch(AirQualityStoreFactory.Msg.AirQualityMsg(value = value))
+                dispatch(Msg.AirQualityMsg(value = value))
             }
         }
     }
