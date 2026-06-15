@@ -6,6 +6,10 @@
     <string name="weather_logo_description">Иконка приложения</string>
     <string name="get_started">Начать</string>
     <string name="dark_theme">Тёмная тема</string>
+    <string name="welcome_subtitle">Точный прогноз,\nкрасивый интерфейс</string>
+    <string name="welcome_feature_precipitation">Осадки</string>
+    <string name="welcome_feature_wind">Ветер</string>
+    <string name="welcome_feature_temperature">Температура</string>
 
     <!--    Location-->
     <string name="location">Местоположение</string>

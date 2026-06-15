@@ -432,34 +432,42 @@ class MainApplicationActivity : ComponentActivity() {
             LaunchedEffect(Unit) {
                 coroutine.launch {
                     val launchCount = sharedPreferencesRepository.incrementLaunchCount()
-                    val shouldShowNativeAd =
-                        BuildConfig.showNativeAd.toBoolean() && launchCount >= 3
+                    val shouldShowEntryAds = launchCount >= 3
+                    val shouldShowNativeAd = BuildConfig.showNativeAd.toBoolean()
 
                     if (checkInternetConnection(context = context)) {
                         YandexAds.initialize(context) {
                             logd(message = "RSY initialized!")
                         }
 
-                        isAdsLoading.value = true
-//                    region::Open app ads
-                        val appOpenAdLoadListener = object : AppOpenAdLoadListener {
-                            override fun onAdLoaded(appOpenAd: AppOpenAd) {
-                                // The ad was loaded successfully. Now you can show loaded ad.
-                                myAppOpenAd = appOpenAd
-                                myAppOpenAd?.show(this@MainApplicationActivity)
-                                isAdsLoading.value = false
-                            }
-
-                            override fun onAdFailedToLoad(adRequestError: AdRequestError) {
-                                isAdsLoading.value = false
-                                // Ad failed to load with AdRequestError.
-                                // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
-                            }
+                        if (shouldShowEntryAds || shouldShowNativeAd) {
+                            isAdsLoading.value = true
+                        } else {
+                            isAdsLoading.value = false
                         }
 
-                        myAppOpenAd?.setAdEventListener(appOpenAdEventListener)
-                        appOpenAdLoader.loadAd(openAdsRequest, appOpenAdLoadListener)
+                        if (shouldShowEntryAds) {
+//                    region::Open app ads
+                            val appOpenAdLoadListener = object : AppOpenAdLoadListener {
+                                override fun onAdLoaded(appOpenAd: AppOpenAd) {
+                                    // The ad was loaded successfully. Now you can show loaded ad.
+                                    myAppOpenAd = appOpenAd
+                                    myAppOpenAd?.show(this@MainApplicationActivity)
+                                    isAdsLoading.value = false
+                                }
+
+                                override fun onAdFailedToLoad(adRequestError: AdRequestError) {
+                                    isAdsLoading.value = false
+                                    // Ad failed to load with AdRequestError.
+                                    // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
+                                }
+                            }
+
+                            myAppOpenAd?.setAdEventListener(appOpenAdEventListener)
+                            appOpenAdLoader.loadAd(openAdsRequest, appOpenAdLoadListener)
 //                    endregion
+                        }
+
 //                    region::Native ads
                         if (shouldShowNativeAd) {
                             val nativeAdsLoader = NativeBulkAdLoader(context)
@@ -481,8 +489,6 @@ class MainApplicationActivity : ComponentActivity() {
                                     }
                                 }
                             )
-                        } else {
-                            isAdsLoading.value = false
                         }
 //                    endregion
                     }
@@ -502,7 +508,6 @@ class MainApplicationActivity : ComponentActivity() {
                     storeFactory = DefaultStoreFactory(),
                     sharedPreferencesStorage = sharedPreferencesStorage,
                     weatherSession = weatherSession,
-                    locationRepository = LocationRepositoryImpl(context = context),
                     mapGridWeatherRepository = MapGridWeatherRepository(httpClient = mapGridHttpClient),
                     output = { output ->
                         when (output) {
@@ -580,15 +585,6 @@ class MainApplicationActivity : ComponentActivity() {
                                     storeFactory = DefaultStoreFactory(),
                                     output = { output ->
                                         when (output) {
-                                            is AuthorizationViewModel.Output.ChangeTheme -> {
-                                                with(output) {
-                                                    isDarkTheme.value = value
-                                                    sharedPreferencesStorage.saveAppTheme(
-                                                        applicationTheme = isDarkTheme.value
-                                                    )
-                                                }
-                                            }
-
                                             AuthorizationViewModel.Output.OpenLocationScreen -> {
                                                 if (AppPermissionsHelper.needsEntryPermissions(context)) {
                                                     pendingLocationNavigation = true
@@ -598,8 +594,7 @@ class MainApplicationActivity : ComponentActivity() {
                                                 }
                                             }
                                         }
-                                    },
-                                    theme = isDarkTheme.value
+                                    }
                                 )
                             )
                         }

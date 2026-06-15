@@ -13,7 +13,6 @@ import kotlinx.coroutines.launch
 import ru.plumsoftware.weatherforecastru.data.map.MapGridWeatherRepository
 import ru.plumsoftware.weatherforecastru.data.map.WeatherGridLabel
 import ru.plumsoftware.weatherforecastru.data.map.WeatherMapLayer
-import ru.plumsoftware.weatherforecastru.data.repository.LocationRepository
 import ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage
 import ru.plumsoftware.weatherforecastru.presentation.app.WeatherSession
 import ru.plumsoftware.weatherforecastru.presentation.content.store.ContentStore
@@ -23,7 +22,6 @@ class ContentViewModel(
     storeFactory: StoreFactory,
     sharedPreferencesStorage: SharedPreferencesStorage,
     private val weatherSession: WeatherSession,
-    private val locationRepository: LocationRepository,
     private val mapGridWeatherRepository: MapGridWeatherRepository,
     private val output: (Output) -> Unit,
 ) : ViewModel() {
@@ -70,19 +68,6 @@ class ContentViewModel(
 
     fun onEvent(event: ContentStore.Intent) {
         contentStore.accept(event)
-    }
-
-    suspend fun resolveDeviceMapCoordinates(
-        fallbackLatitude: Double,
-        fallbackLongitude: Double,
-    ): Pair<Double, Double> {
-        val deviceLocation = locationRepository.getCurrentLocation()
-        val latitude = deviceLocation.coords?.latitude ?: 0.0
-        val longitude = deviceLocation.coords?.longitude ?: 0.0
-        if (latitude != 0.0 || longitude != 0.0) {
-            return latitude to longitude
-        }
-        return fallbackLatitude to fallbackLongitude
     }
 
     suspend fun loadMapGridLabels(

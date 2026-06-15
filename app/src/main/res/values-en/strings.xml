@@ -6,6 +6,10 @@
     <string name="weather_logo_description">Application logo icon</string>
     <string name="get_started">Get Started</string>
     <string name="dark_theme">Dark Theme</string>
+    <string name="welcome_subtitle">Accurate forecast,\nbeautiful interface</string>
+    <string name="welcome_feature_precipitation">Precipitation</string>
+    <string name="welcome_feature_wind">Wind</string>
+    <string name="welcome_feature_temperature">Temperature</string>
 
     <!--    Location-->
     <string name="location">Location</string>
