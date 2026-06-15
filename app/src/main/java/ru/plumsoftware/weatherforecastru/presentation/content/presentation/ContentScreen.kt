@@ -149,13 +149,9 @@ private fun ContentScreen(
     var mapLatitude by remember { mutableStateOf(fallbackLatitude) }
     var mapLongitude by remember { mutableStateOf(fallbackLongitude) }
 
-    LaunchedEffect(fallbackLatitude, fallbackLongitude, isPrecipitationMapExpanded) {
-        val (latitude, longitude) = contentViewModel.resolveDeviceMapCoordinates(
-            fallbackLatitude = fallbackLatitude,
-            fallbackLongitude = fallbackLongitude,
-        )
-        mapLatitude = latitude
-        mapLongitude = longitude
+    LaunchedEffect(state.city, fallbackLatitude, fallbackLongitude) {
+        mapLatitude = fallbackLatitude
+        mapLongitude = fallbackLongitude
     }
 
     LaunchedEffect(

@@ -211,15 +211,14 @@ fun PrecipitationOsmdroidMap(
         }
         layerFade.animateTo(0f, tween(LAYER_CROSSFADE_HALF_MS))
         mapView.post {
+            centerMap(mapView, forceZoom = true)
             applyOwmOverlays(mapView, overlaySpecs)
         }
         layerFade.animateTo(1f, tween(LAYER_CROSSFADE_HALF_MS))
     }
 
     LaunchedEffect(latitude, longitude) {
-        if (!interactive) {
-            mapView.post { centerMap(mapView, forceZoom = true) }
-        }
+        mapView.post { centerMap(mapView, forceZoom = true) }
     }
 
     AndroidView(

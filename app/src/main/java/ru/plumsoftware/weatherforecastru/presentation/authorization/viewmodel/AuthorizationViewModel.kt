@@ -12,13 +12,11 @@ import ru.plumsoftware.weatherforecastru.presentation.authorization.store.Author
 
 class AuthorizationViewModel(
     storeFactory: StoreFactory,
-    private val output: (Output) -> Unit,
-    theme: Boolean
+    private val output: (Output) -> Unit
 ) : ViewModel() {
 
     private val authorizationStore = AuthorizationStoreFactory(
-        storeFactory = storeFactory,
-        isDarkTheme = theme
+        storeFactory = storeFactory
     ).create()
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -36,8 +34,5 @@ class AuthorizationViewModel(
 
     sealed class Output {
         object OpenLocationScreen : Output()
-
-        data class ChangeTheme(val value: Boolean) : Output()
     }
-
 }

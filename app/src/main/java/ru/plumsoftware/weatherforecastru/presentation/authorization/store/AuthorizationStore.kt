@@ -7,18 +7,11 @@ interface AuthorizationStore :
 
     sealed interface Intent {
         object ContinueButtonClicked : Intent
-
-        data class CheckBoxChanged(val value: Boolean) : Intent
     }
 
-    data class State(
-        val checkBoxValue: Boolean = false
-    )
+    data class State(val unit: Unit = Unit)
 
     sealed interface Label {
         object AuthorizationSuccess : Label
-
-        data class ThemeChanged(val value: Boolean) : Label
-
     }
 }
