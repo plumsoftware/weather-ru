@@ -21,6 +21,16 @@
     <string name="delete_location">Удалить</string>
     <string name="cancel_delete_location">Отмена</string>
     <string name="delete_location_hint">Удалить местоположение</string>
+    <string name="detect_my_location">Определить моё местоположение</string>
+    <string name="location_detection_vpn_message">Для определения местоположения отключите VPN и попробуйте снова.</string>
+    <string name="location_detection_success_message">Ваше местоположение определено: %1$s</string>
+    <string name="location_detection_success_hint">Если город определён неверно, введите адрес вручную.</string>
+    <string name="location_detection_permission_denied">Нет доступа к геолокации. Разрешите доступ в настройках или введите город вручную.</string>
+    <string name="location_detection_disabled">Геолокация отключена на устройстве. Включите её в настройках или введите город вручную.</string>
+    <string name="location_detection_unavailable">Не удалось определить местоположение. Проверьте подключение к интернету и попробуйте снова или введите город вручную.</string>
+    <string name="location_enter_manually">Ввести вручную</string>
+    <string name="location_use_detected">Использовать</string>
+    <string name="ok">ОК</string>
 
     <!--    Content-->
     <string name="more_icon_dewscription">Кнопка с выподающим меню</string>
@@ -208,6 +218,17 @@
     <string name="color">Цвет</string>
     <string name="wallpaper_image_hint">Картинка обои на телефоне</string>
     <string name="radius_settings">Настройка радиуса закругления виджета доступна для версии ОС Android 12 и больше</string>
+    <string name="widget_preview_label">ПРЕДПРОСМОТР</string>
+    <string name="widget_corner_radius">Скругление углов</string>
+    <string name="widget_background_color">Цвет фона</string>
+    <string name="widget_opacity">Прозрачность</string>
+    <string name="widget_current_color">Текущий цвет</string>
+    <string name="widget_preset_white">Белый</string>
+    <string name="widget_preset_dark">Тёмный</string>
+    <string name="widget_preset_indigo">Индиго</string>
+    <string name="widget_preset_custom">Свой</string>
+    <string name="widget_radius_value">%1$ddp</string>
+    <string name="widget_opacity_value">%1$d%%</string>
 
     <!--    No connection-->
     <string name="refresh_icon_hint">Кнопка обновления экрана</string>

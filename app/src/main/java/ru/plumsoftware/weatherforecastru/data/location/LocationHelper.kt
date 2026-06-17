@@ -57,7 +57,7 @@ class LocationHelper(private val context: Context) {
     }
 
     @SuppressLint("MissingPermission")
-    suspend fun awaitCurrentLocation(timeoutMs: Long = 10_000L): Location? {
+    suspend fun awaitCurrentLocation(timeoutMs: Long = 15_000L): Location? {
         if (!isLocationPermissionGranted() || !isLocationEnabled()) return null
 
         return suspendCancellableCoroutine { continuation ->

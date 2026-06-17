@@ -44,9 +44,21 @@ object AppPermissionsHelper {
     }
 
     fun needsStoragePermissions(context: Context): Boolean =
-        storagePermissionsToRequest().any { permission ->
+        wallpaperPermissionsToRequest().any { permission ->
             !isPermissionGranted(context, permission)
         }
+
+    fun wallpaperPermissionsToRequest(): List<String> = when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+            listOf(Manifest.permission.READ_MEDIA_IMAGES)
+        }
+
+        else -> {
+            listOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+    }
+
+    fun needsWallpaperPermission(context: Context): Boolean = needsStoragePermissions(context)
 
     fun needsEntryPermissions(context: Context): Boolean =
         needsNotificationPermission(context) ||

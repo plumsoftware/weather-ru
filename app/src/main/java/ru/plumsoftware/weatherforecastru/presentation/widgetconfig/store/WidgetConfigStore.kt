@@ -13,8 +13,8 @@ interface WidgetConfigStore :
         data class RedChanged(val value: Int) : Intent
         data class GreenChanged(val value: Int) : Intent
         data class BlueChanged(val value: Int) : Intent
-
-        object Save : Intent
+        data class OpacityChanged(val value: Float) : Intent
+        data class ColorPresetSelected(val red: Int, val green: Int, val blue: Int) : Intent
     }
 
     data class State(
@@ -22,7 +22,8 @@ interface WidgetConfigStore :
         val radius: Int = widgetConfig.radius,
         val red: Int = widgetConfig.red,
         val green: Int = widgetConfig.green,
-        val blue: Int = widgetConfig.blue
+        val blue: Int = widgetConfig.blue,
+        val opacity: Float = widgetConfig.opacity,
     )
 
     sealed interface Label {

@@ -1,35 +1,52 @@
 package ru.plumsoftware.weatherforecastru.data.repository
 
 import android.content.Context
-import android.location.Geocoder
+import ru.plumsoftware.weatherforecastru.data.location.LocationGeocoder
 import ru.plumsoftware.weatherforecastru.data.location.LocationHelper
+import ru.plumsoftware.weatherforecastru.data.location.VpnDetector
 import ru.plumsoftware.weatherforecastru.data.models.location.Location
 import ru.plumsoftware.weatherforecastru.data.models.location.LocationCoords
-import java.util.Locale
+import ru.plumsoftware.weatherforecastru.data.models.location.LocationDetectionResult
 
 class LocationRepositoryImpl(private val context: Context) : LocationRepository {
 
-    override suspend fun getCurrentLocation(): Location {
-        val locationHelper = LocationHelper(context = context)
-        if (!locationHelper.isLocationPermissionGranted() || !locationHelper.isLocationEnabled()) {
-            return emptyLocation()
+    override suspend fun getCurrentLocation(): Location =
+        when (val result = detectLocation()) {
+            is LocationDetectionResult.Success -> result.location
+            else -> emptyLocation()
         }
 
-        val deviceLocation = locationHelper.awaitCurrentLocation() ?: return emptyLocation()
+    override suspend fun detectLocation(): LocationDetectionResult {
+        if (VpnDetector.isVpnActive(context)) {
+            return LocationDetectionResult.VpnActive
+        }
 
-        val city = runCatching {
-            Geocoder(context, Locale.getDefault())
-                .getFromLocation(deviceLocation.latitude, deviceLocation.longitude, 1)
-                ?.firstOrNull()
-                ?.locality
-        }.getOrNull().orEmpty()
+        val locationHelper = LocationHelper(context = context)
+        if (!locationHelper.isLocationPermissionGranted()) {
+            return LocationDetectionResult.PermissionDenied
+        }
+        if (!locationHelper.isLocationEnabled()) {
+            return LocationDetectionResult.LocationDisabled
+        }
 
-        return Location(
-            city = city,
-            country = "",
-            coords = LocationCoords(
-                latitude = deviceLocation.latitude,
-                longitude = deviceLocation.longitude,
+        val deviceLocation = locationHelper.awaitCurrentLocation() ?: return LocationDetectionResult.LocationUnavailable
+
+        val city = LocationGeocoder(context).resolveCity(
+            latitude = deviceLocation.latitude,
+            longitude = deviceLocation.longitude,
+        )
+        if (city.isBlank()) {
+            return LocationDetectionResult.LocationUnavailable
+        }
+
+        return LocationDetectionResult.Success(
+            location = Location(
+                city = city,
+                country = "",
+                coords = LocationCoords(
+                    latitude = deviceLocation.latitude,
+                    longitude = deviceLocation.longitude,
+                ),
             ),
         )
     }
