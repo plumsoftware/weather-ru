@@ -1,17 +1,17 @@
 package ru.plumsoftware.weatherforecastru.presentation.location.presentation
 
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -24,7 +24,9 @@ import androidx.compose.material.icons.outlined.MyLocation
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,25 +43,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ru.plumsoftware.weatherforecast.R
 import ru.plumsoftware.weatherforecastru.application.App
+import ru.plumsoftware.weatherforecastru.data.location.LocationHelper
 import ru.plumsoftware.weatherforecastru.data.utilities.showToast
 import ru.plumsoftware.weatherforecastru.material.extensions.ExtensionPaddingValues
 import ru.plumsoftware.weatherforecastru.presentation.location.presentation.components.CityRow
 import ru.plumsoftware.weatherforecastru.presentation.location.presentation.components.HistoryCityRow
-import ru.plumsoftware.weatherforecastru.presentation.ui.Dimens
-import ru.plumsoftware.weatherforecastru.presentation.ui.medium
-import ru.plumsoftware.weatherforecastru.presentation.ui.regular
-import ru.plumsoftware.weatherforecastru.presentation.ui.NavigationBarSpacer
-import ru.plumsoftware.weatherforecastru.presentation.ui.statusBarTopPadding
 import ru.plumsoftware.weatherforecastru.presentation.location.store.LocationStore
 import ru.plumsoftware.weatherforecastru.presentation.location.viewmodel.LocationViewModel
+import ru.plumsoftware.weatherforecastru.presentation.ui.Dimens
+import ru.plumsoftware.weatherforecastru.presentation.ui.NavigationBarSpacer
+import ru.plumsoftware.weatherforecastru.presentation.ui.medium
 import ru.plumsoftware.weatherforecastru.presentation.ui.md_theme_icon_tint
+import ru.plumsoftware.weatherforecastru.presentation.ui.regular
+import ru.plumsoftware.weatherforecastru.presentation.ui.statusBarTopPadding
 
 @Composable
 fun LocationScreen(locationViewModel: LocationViewModel) {
@@ -75,8 +81,8 @@ fun LocationScreen(locationViewModel: LocationViewModel) {
                     }
                     locationViewModel.onOutput(
                         LocationViewModel.Output.OpenContentScreen(
-                            location = label.location
-                        )
+                            location = label.location,
+                        ),
                     )
                 }
 
@@ -86,7 +92,9 @@ fun LocationScreen(locationViewModel: LocationViewModel) {
 
                 is LocationStore.Label.DeleteLocation -> {
                     showToast(App.INSTANCE.applicationContext, label.locationItem.toString())
-                    locationViewModel.delete(location = label.locationItem)
+                    coroutine.launch {
+                        locationViewModel.delete(location = label.locationItem)
+                    }
                 }
             }
         }
@@ -94,7 +102,7 @@ fun LocationScreen(locationViewModel: LocationViewModel) {
     LocationScreen(
         event = locationViewModel::onEvent,
         state = state,
-        locationViewModel = locationViewModel,
+        onDetectLocation = { locationViewModel.detectCurrentLocation() },
         coroutine = coroutine,
     )
 }
@@ -104,48 +112,100 @@ fun LocationScreen(locationViewModel: LocationViewModel) {
 private fun LocationScreen(
     event: (LocationStore.Intent) -> Unit,
     state: LocationStore.State,
-    locationViewModel: LocationViewModel,
+    onDetectLocation: suspend () -> Unit,
     coroutine: kotlinx.coroutines.CoroutineScope,
 ) {
-    if (state.showDialog)
+    val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions(),
+    ) { permissions ->
+        val granted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+            permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        if (granted) {
+            coroutine.launch { onDetectLocation() }
+        } else {
+            event(
+                LocationStore.Intent.ShowLocationDetectionDialog(
+                    dialog = LocationStore.LocationDetectionDialog.Failed(
+                        messageResId = R.string.location_detection_permission_denied,
+                    ),
+                ),
+            )
+        }
+    }
+
+    fun startLocationDetection() {
+        val locationHelper = LocationHelper(context)
+        if (!locationHelper.isLocationPermissionGranted()) {
+            permissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                ),
+            )
+        } else {
+            coroutine.launch { onDetectLocation() }
+        }
+    }
+
+    LaunchedEffect(state.requestAddressFieldFocus) {
+        if (state.requestAddressFieldFocus) {
+            delay(100)
+            state.focusRequester.requestFocus()
+            keyboardController?.show()
+            event(LocationStore.Intent.RequestAddressFieldFocus(value = false))
+        }
+    }
+
+    state.locationDetectionDialog?.let { dialog ->
+        LocationDetectionDialog(
+            dialog = dialog,
+            onDismiss = { event(LocationStore.Intent.DismissLocationDetectionDialog) },
+            onConfirmDetected = { event(LocationStore.Intent.ConfirmDetectedLocation) },
+            onEnterManually = { event(LocationStore.Intent.EnterLocationManually) },
+        )
+    }
+
+    if (state.showDialog) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .background(color = md_theme_icon_tint)
-                .fillMaxSize()
+                .fillMaxSize(),
         ) {
             Card(shape = MaterialTheme.shapes.large, modifier = Modifier.wrapContentSize()) {
-
                 Column(
                     verticalArrangement = Arrangement.spacedBy(
                         space = ExtensionPaddingValues._14dp,
-                        alignment = Alignment.Bottom
+                        alignment = Alignment.Bottom,
                     ),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .wrapContentSize()
                         .padding(
                             horizontal = ExtensionPaddingValues._16dp,
-                            vertical = ExtensionPaddingValues._10dp
-                        )
+                            vertical = ExtensionPaddingValues._10dp,
+                        ),
                 ) {
                     Text(
                         text = "${stringResource(id = R.string.delete_location_hint)} ${state.selectedLocationItem.city}",
                         style = MaterialTheme.typography.bodyMedium.regular(),
-                        overflow = TextOverflow.Ellipsis
+                        overflow = TextOverflow.Ellipsis,
                     )
                     Column(
                         verticalArrangement = Arrangement.spacedBy(
                             space = ExtensionPaddingValues._4dp,
-                            alignment = Alignment.Bottom
-                        )
+                            alignment = Alignment.Bottom,
+                        ),
                     ) {
                         TextButton(onClick = {
                             event(LocationStore.Intent.ShowDialog(value = false))
                         }) {
                             Text(
                                 text = stringResource(id = R.string.cancel_delete_location),
-                                style = MaterialTheme.typography.bodyMedium.regular()
+                                style = MaterialTheme.typography.bodyMedium.regular(),
                             )
                         }
 
@@ -153,20 +213,21 @@ private fun LocationScreen(
                             event(LocationStore.Intent.ShowDialog(value = false))
                             event(
                                 LocationStore.Intent.DeleteLocation(
-                                    locationItem = state.selectedLocationItem
-                                )
+                                    locationItem = state.selectedLocationItem,
+                                ),
                             )
                         }) {
                             Text(
                                 text = stringResource(id = R.string.delete_location),
-                                style = MaterialTheme.typography.bodyMedium.regular().copy(color = MaterialTheme.colorScheme.error)
+                                style = MaterialTheme.typography.bodyMedium.regular()
+                                    .copy(color = MaterialTheme.colorScheme.error),
                             )
                         }
                     }
                 }
             }
         }
-    else
+    } else {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -258,21 +319,32 @@ private fun LocationScreen(
                             .padding(vertical = 4.dp),
                         shape = RoundedCornerShape(12.dp),
                         color = MaterialTheme.colorScheme.primaryContainer,
-                        onClick = { coroutine.launch { locationViewModel.detectCurrentLocation() } },
+                        onClick = {
+                            if (!state.isDetectingLocation) {
+                                startLocationDetection()
+                            }
+                        },
                     ) {
                         Row(
                             modifier = Modifier.padding(12.dp),
                             horizontalArrangement = Arrangement.spacedBy(10.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ) {
-                            Icon(
-                                Icons.Outlined.MyLocation,
-                                null,
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.height(18.dp),
-                            )
+                            if (state.isDetectingLocation) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.height(18.dp),
+                                    strokeWidth = 2.dp,
+                                )
+                            } else {
+                                Icon(
+                                    Icons.Outlined.MyLocation,
+                                    null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.height(18.dp),
+                                )
+                            }
                             Text(
-                                "Определить моё местоположение",
+                                text = stringResource(R.string.detect_my_location),
                                 style = MaterialTheme.typography.bodyMedium.regular(),
                                 color = MaterialTheme.colorScheme.primary,
                             )
@@ -309,4 +381,79 @@ private fun LocationScreen(
                 item { NavigationBarSpacer() }
             }
         }
+    }
+}
+
+@Composable
+private fun LocationDetectionDialog(
+    dialog: LocationStore.LocationDetectionDialog,
+    onDismiss: () -> Unit,
+    onConfirmDetected: () -> Unit,
+    onEnterManually: () -> Unit,
+) {
+    when (dialog) {
+        LocationStore.LocationDetectionDialog.VpnBlocked -> {
+            AlertDialog(
+                onDismissRequest = onDismiss,
+                text = {
+                    Text(text = stringResource(R.string.location_detection_vpn_message))
+                },
+                confirmButton = {
+                    TextButton(onClick = onDismiss) {
+                        Text(stringResource(R.string.ok))
+                    }
+                },
+            )
+        }
+
+        is LocationStore.LocationDetectionDialog.Success -> {
+            AlertDialog(
+                onDismissRequest = onDismiss,
+                text = {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = stringResource(
+                                R.string.location_detection_success_message,
+                                dialog.city,
+                            ),
+                        )
+                        Text(
+                            text = stringResource(R.string.location_detection_success_hint),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = onConfirmDetected) {
+                        Text(stringResource(R.string.location_use_detected))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = onEnterManually) {
+                        Text(stringResource(R.string.location_enter_manually))
+                    }
+                },
+            )
+        }
+
+        is LocationStore.LocationDetectionDialog.Failed -> {
+            AlertDialog(
+                onDismissRequest = onDismiss,
+                text = {
+                    Text(text = stringResource(dialog.messageResId))
+                },
+                confirmButton = {
+                    TextButton(onClick = onEnterManually) {
+                        Text(stringResource(R.string.location_enter_manually))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = onDismiss) {
+                        Text(stringResource(R.string.ok))
+                    }
+                },
+            )
+        }
+    }
 }

@@ -48,7 +48,6 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
 import ru.plumsoftware.weatherforecastru.data.remote.dto.owm.OwmResponse
 import ru.plumsoftware.weatherforecastru.data.remote.dto.weatherapi.WeatherApiResponse
 import ru.plumsoftware.uicomponents.R as UI
@@ -65,7 +64,7 @@ import ru.plumsoftware.weatherforecastru.widget.utilites.darkerColor
 import ru.plumsoftware.weatherforecastru.widget.utilites.makeColorDarker
 
 
-class SimpleAppWidget : GlanceAppWidget(), KoinComponent {
+class SimpleAppWidget : GlanceAppWidget() {
 
     private val currentDegreeKey = doublePreferencesKey(name = Keys.Simple.CURRENT_DEGREE)
     private val currentMinDegreeKey = doublePreferencesKey(name = Keys.Simple.CURRENT_MIN_DEGREE)
@@ -112,24 +111,24 @@ class SimpleAppWidget : GlanceAppWidget(), KoinComponent {
 
         coroutine.launch {
             val httpResponse: Pair<Pair<HttpStatusCode, HttpStatusCode>, Pair<OwmResponse, WeatherApiResponse>> =
-                doHttpResponse(WidgetDI.httpClientStorage)
+                doHttpResponse(WidgetDI.httpClientStorage(context))
             val owmResponse: OwmResponse = httpResponse.second.first
 
             update(manager = manager, widget = widget, context = context, owmResponse = owmResponse)
         }
 
-        with(WidgetDI.sharedPreferencesStorage.getWidget()) {
+        with(WidgetDI.sharedPreferencesStorage(context).getWidget()) {
+            val backgroundColor = Color(
+                red = red,
+                green = green,
+                blue = blue,
+                alpha = (opacity * 255).toInt().coerceIn(0, 255),
+            )
             Box(
                 modifier = GlanceModifier
                     .fillMaxSize()
                     .background(
-                        colorProvider = ColorProvider(
-                            Color(
-                                red = red,
-                                green = green,
-                                blue = blue
-                            )
-                        )
+                        colorProvider = ColorProvider(backgroundColor)
                     )
                     .cornerRadius(radius = radius.dp)
                     .clickable(onClick = actionRunCallback<RefreshAction>())
@@ -252,7 +251,7 @@ class SimpleAppWidget : GlanceAppWidget(), KoinComponent {
             val widget = SimpleAppWidget()
 
             val httpResponse: Pair<Pair<HttpStatusCode, HttpStatusCode>, Pair<OwmResponse, WeatherApiResponse>> =
-                doHttpResponse(WidgetDI.httpClientStorage)
+                doHttpResponse(WidgetDI.httpClientStorage(context))
             val owmResponse: OwmResponse = httpResponse.second.first
 
             CoroutineScope(Dispatchers.Main).launch {

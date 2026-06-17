@@ -26,6 +26,26 @@ interface LocationStore :
         data class DeleteLocation(val locationItem: _root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem) : Intent
 
         data class ChangeSelectedLocationItem(val locationItem: _root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem) : Intent
+
+        data object DismissLocationDetectionDialog : Intent
+
+        data object ConfirmDetectedLocation : Intent
+
+        data object EnterLocationManually : Intent
+
+        data class SetDetectingLocation(val value: Boolean) : Intent
+
+        data class ShowLocationDetectionDialog(val dialog: LocationDetectionDialog) : Intent
+
+        data class RequestAddressFieldFocus(val value: Boolean) : Intent
+    }
+
+    sealed interface LocationDetectionDialog {
+        data object VpnBlocked : LocationDetectionDialog
+
+        data class Success(val city: String) : LocationDetectionDialog
+
+        data class Failed(val messageResId: Int) : LocationDetectionDialog
     }
 
     data class State(
@@ -39,7 +59,10 @@ interface LocationStore :
         val selectedLocation: Location = Location(city = city, country = country),
         val selectedLocationItem: _root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem = _root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem(
             city = city
-        )
+        ),
+        val locationDetectionDialog: LocationDetectionDialog? = null,
+        val isDetectingLocation: Boolean = false,
+        val requestAddressFieldFocus: Boolean = false,
     )
 
     sealed interface Label {

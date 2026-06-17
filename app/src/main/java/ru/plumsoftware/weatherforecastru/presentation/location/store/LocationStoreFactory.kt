@@ -7,7 +7,6 @@ import com.arkivanov.mvikotlin.core.utils.ExperimentalMviKotlinApi
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
 import ru.plumsoftware.weatherforecastru.data.models.location.LocationItem
 import ru.plumsoftware.weatherforecastru.data.models.location.LocationItemDao
 import ru.plumsoftware.weatherforecastru.data.models.location.Location
@@ -16,7 +15,7 @@ internal class LocationStoreFactory(
     private val storeFactory: StoreFactory,
     private val sharedPreferencesStorage: ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage,
     private val locationItemDao: LocationItemDao
-) : KoinComponent {
+) {
 
     @OptIn(ExperimentalMviKotlinApi::class)
     fun create(): LocationStore =
@@ -58,6 +57,12 @@ internal class LocationStoreFactory(
         data class ShowDialogMsg(val value: Boolean) : Msg
 
         data class SelectedLocationItemMsg(val value: _root_ide_package_.ru.plumsoftware.weatherforecastru.data.models.location.LocationItem) : Msg
+
+        data class LocationDetectionDialogMsg(val value: LocationStore.LocationDetectionDialog?) : Msg
+
+        data class DetectingLocationMsg(val value: Boolean) : Msg
+
+        data class RequestAddressFieldFocusMsg(val value: Boolean) : Msg
     }
 
     private object ReducerImpl : Reducer<LocationStore.State, Msg> {
@@ -87,6 +92,12 @@ internal class LocationStoreFactory(
                 is Msg.ShowDialogMsg -> copy(showDialog = msg.value)
 
                 is Msg.SelectedLocationItemMsg -> copy(selectedLocationItem = msg.value)
+
+                is Msg.LocationDetectionDialogMsg -> copy(locationDetectionDialog = msg.value)
+
+                is Msg.DetectingLocationMsg -> copy(isDetectingLocation = msg.value)
+
+                is Msg.RequestAddressFieldFocusMsg -> copy(requestAddressFieldFocus = msg.value)
             }
     }
 
@@ -146,6 +157,46 @@ internal class LocationStoreFactory(
 
                 is LocationStore.Intent.ChangeSelectedLocationItem -> {
                     dispatch(Msg.SelectedLocationItemMsg(value = intent.locationItem))
+                }
+
+                LocationStore.Intent.DismissLocationDetectionDialog -> {
+                    dispatch(Msg.LocationDetectionDialogMsg(value = null))
+                }
+
+                LocationStore.Intent.ConfirmDetectedLocation -> {
+                    val city = getState().city
+                    dispatch(Msg.LocationDetectionDialogMsg(value = null))
+                    if (city.isNotBlank()) {
+                        publish(
+                            LocationStore.Label.ConfirmLocation(
+                                location = Location(
+                                    city = city,
+                                    country = getState().country,
+                                ),
+                            ),
+                        )
+                    } else {
+                        Unit
+                    }
+                }
+
+                LocationStore.Intent.EnterLocationManually -> {
+                    dispatch(Msg.LocationDetectionDialogMsg(value = null))
+                    dispatch(Msg.Data(city = ""))
+                    dispatch(Msg.CloseIcon(isVisibleCloseIcon = false))
+                    dispatch(Msg.RequestAddressFieldFocusMsg(value = true))
+                }
+
+                is LocationStore.Intent.SetDetectingLocation -> {
+                    dispatch(Msg.DetectingLocationMsg(value = intent.value))
+                }
+
+                is LocationStore.Intent.ShowLocationDetectionDialog -> {
+                    dispatch(Msg.LocationDetectionDialogMsg(value = intent.dialog))
+                }
+
+                is LocationStore.Intent.RequestAddressFieldFocus -> {
+                    dispatch(Msg.RequestAddressFieldFocusMsg(value = intent.value))
                 }
             }
 

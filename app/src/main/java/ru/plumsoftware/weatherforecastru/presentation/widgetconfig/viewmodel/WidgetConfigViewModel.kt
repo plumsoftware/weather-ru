@@ -1,5 +1,6 @@
 package ru.plumsoftware.weatherforecastru.presentation.widgetconfig.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.labels
@@ -13,13 +14,15 @@ import ru.plumsoftware.weatherforecastru.presentation.widgetconfig.store.WidgetC
 
 class WidgetConfigViewModel(
     storeFactory: StoreFactory,
-    sharedPreferencesStorage: ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage,
+    sharedPreferencesStorage: SharedPreferencesStorage,
+    appContext: Context,
     private val output: (Output) -> Unit,
 ) : ViewModel() {
 
     private val widgetConfigStore = WidgetConfigStoreFactory(
         storeFactory = storeFactory,
-        sharedPreferencesStorage = sharedPreferencesStorage
+        sharedPreferencesStorage = sharedPreferencesStorage,
+        appContext = appContext,
     ).create()
 
     @OptIn(ExperimentalCoroutinesApi::class)

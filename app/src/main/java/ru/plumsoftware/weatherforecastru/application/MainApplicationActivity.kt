@@ -701,11 +701,7 @@ class MainApplicationActivity : ComponentActivity() {
                                             }
 
                                             SettingsViewModel.Output.OpenWidgetConfig -> {
-                                                if (checkReadStoragePermission()) {
-                                                    launcherReadExtStorage.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
-                                                } else {
-                                                    navController.navigate(route = Screens.WidgetConfig)
-                                                }
+                                                navController.navigate(route = Screens.WidgetConfig)
                                             }
                                         }
                                     },
@@ -783,6 +779,7 @@ class MainApplicationActivity : ComponentActivity() {
                                 widgetConfigViewModel = WidgetConfigViewModel(
                                     storeFactory = DefaultStoreFactory(),
                                     sharedPreferencesStorage = sharedPreferencesStorage,
+                                    appContext = applicationContext,
                                     output = { output ->
                                         when (output) {
                                             WidgetConfigViewModel.Output.BackStackClicked -> {

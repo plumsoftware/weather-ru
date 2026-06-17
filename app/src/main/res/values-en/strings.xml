@@ -21,6 +21,16 @@
     <string name="delete_location">Delete</string>
     <string name="cancel_delete_location">Cancel</string>
     <string name="delete_location_hint">Delete location</string>
+    <string name="detect_my_location">Detect my location</string>
+    <string name="location_detection_vpn_message">Turn off VPN to detect your location and try again.</string>
+    <string name="location_detection_success_message">Your location has been detected: %1$s</string>
+    <string name="location_detection_success_hint">If the city is incorrect, enter the address manually.</string>
+    <string name="location_detection_permission_denied">Location permission denied. Allow access in settings or enter the city manually.</string>
+    <string name="location_detection_disabled">Location services are disabled. Enable them in settings or enter the city manually.</string>
+    <string name="location_detection_unavailable">Could not detect your location. Check your internet connection and try again, or enter the city manually.</string>
+    <string name="location_enter_manually">Enter manually</string>
+    <string name="location_use_detected">Use this location</string>
+    <string name="ok">OK</string>
 
     <!--    Content-->
     <string name="more_icon_dewscription">Button with dropdown menu</string>
@@ -196,6 +206,17 @@
     <string name="color">Color</string>
     <string name="wallpaper_image_hint">Wallpaper image on phone</string>
     <string name="radius_settings">Setting the widget radius is available for Android OS version 12 and higher</string>
+    <string name="widget_preview_label">PREVIEW</string>
+    <string name="widget_corner_radius">Corner radius</string>
+    <string name="widget_background_color">Background color</string>
+    <string name="widget_opacity">Opacity</string>
+    <string name="widget_current_color">Current color</string>
+    <string name="widget_preset_white">White</string>
+    <string name="widget_preset_dark">Dark</string>
+    <string name="widget_preset_indigo">Indigo</string>
+    <string name="widget_preset_custom">Custom</string>
+    <string name="widget_radius_value">%1$ddp</string>
+    <string name="widget_opacity_value">%1$d%%</string>
 
     <!--    No connection-->
     <string name="refresh_icon_hint">Screen refresh icon button</string>

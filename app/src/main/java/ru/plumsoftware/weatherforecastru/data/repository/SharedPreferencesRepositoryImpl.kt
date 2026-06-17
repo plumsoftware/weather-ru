@@ -122,7 +122,11 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
             blue = sharedPreferences.getInt(
                 Constants.SharedPreferences.SHARED_PREF_APP_WIDGET_COLOR_BLUE,
                 255
-            )
+            ),
+            opacity = sharedPreferences.getFloat(
+                Constants.SharedPreferences.SHARED_PREF_APP_WIDGET_OPACITY,
+                1f
+            ),
         )
         logd("Widget color: ${widgetConfig.red}, ${widgetConfig.green}, ${widgetConfig.blue}")
         logd("Widget radius: ${widgetConfig.radius}")
@@ -210,6 +214,7 @@ class SharedPreferencesRepositoryImpl(private val context: Context) : SharedPref
                 .putInt(Constants.SharedPreferences.SHARED_PREF_APP_WIDGET_COLOR_RED, red)
                 .putInt(Constants.SharedPreferences.SHARED_PREF_APP_WIDGET_COLOR_GREEN, green)
                 .putInt(Constants.SharedPreferences.SHARED_PREF_APP_WIDGET_COLOR_BLUE, blue)
+                .putFloat(Constants.SharedPreferences.SHARED_PREF_APP_WIDGET_OPACITY, opacity)
                 .apply()
         }
     }

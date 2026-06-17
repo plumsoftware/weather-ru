@@ -1,11 +1,14 @@
 package ru.plumsoftware.weatherforecastru.widget.di
 
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
+import android.content.Context
 import ru.plumsoftware.weatherforecastru.data.storage.HttpClientStorage
 import ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage
+import ru.plumsoftware.weatherforecastru.messanging.WeatherNotificationDependencies
 
-object WidgetDI : KoinComponent {
-    val sharedPreferencesStorage by inject<ru.plumsoftware.weatherforecastru.data.storage.SharedPreferencesStorage>()
-    val httpClientStorage by inject<ru.plumsoftware.weatherforecastru.data.storage.HttpClientStorage> ()
+object WidgetDI {
+    fun sharedPreferencesStorage(context: Context): SharedPreferencesStorage =
+        WeatherNotificationDependencies.sharedPreferencesStorage(context.applicationContext)
+
+    fun httpClientStorage(context: Context): HttpClientStorage =
+        WeatherNotificationDependencies.httpClientStorage(context.applicationContext)
 }
