@@ -305,7 +305,6 @@ class MainApplicationActivity : ComponentActivity() {
             val context = LocalContext.current
             val sharedDesc = stringResource(id = R.string.share_description)
             val appOpenAdLoader: AppOpenAdLoader = AppOpenAdLoader(application)
-            val openAdsRequest = AdRequest.Builder(BuildConfig.OPEN_ADS_ID).build()
 
             analytics = Firebase.analytics
             isDarkTheme =
@@ -432,8 +431,9 @@ class MainApplicationActivity : ComponentActivity() {
             LaunchedEffect(Unit) {
                 coroutine.launch {
                     val launchCount = sharedPreferencesRepository.incrementLaunchCount()
-                    val shouldShowEntryAds = launchCount >= 3
-                    val shouldShowNativeAd = BuildConfig.showNativeAd.toBoolean()
+                    val shouldShowEntryAds = launchCount >= 3 && BuildConfig.OPEN_ADS_ID.isNotBlank()
+                    val shouldShowNativeAd = BuildConfig.showNativeAd.toBoolean() &&
+                        BuildConfig.NATIVE_ADS_ID.isNotBlank()
 
                     if (checkInternetConnection(context = context)) {
                         YandexAds.initialize(context) {
@@ -464,6 +464,7 @@ class MainApplicationActivity : ComponentActivity() {
                             }
 
                             myAppOpenAd?.setAdEventListener(appOpenAdEventListener)
+                            val openAdsRequest = AdRequest.Builder(BuildConfig.OPEN_ADS_ID).build()
                             appOpenAdLoader.loadAd(openAdsRequest, appOpenAdLoadListener)
 //                    endregion
                         }
