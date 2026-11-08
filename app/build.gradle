@@ -42,8 +42,8 @@ android {
             useSupportLibrary true
         }
 
-        buildConfigField "String", "OWM_API_KEY", "\"\${configValue("OWM_API_KEY")}\""
-        buildConfigField "String", "WEATHER_API", "\"\${configValue("WEATHER_API")}\""
+        buildConfigField "String", "OWM_API_KEY", "\"${configValue('OWM_API_KEY')}\""
+        buildConfigField "String", "WEATHER_API", "\"${configValue('WEATHER_API')}\""
     }
 
     flavorDimensions "store"
