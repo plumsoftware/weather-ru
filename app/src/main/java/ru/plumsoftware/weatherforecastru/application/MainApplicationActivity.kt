@@ -304,7 +304,10 @@ class MainApplicationActivity : ComponentActivity() {
             }
             val context = LocalContext.current
             val sharedDesc = stringResource(id = R.string.share_description)
-            val appOpenAdLoader: AppOpenAdLoader = AppOpenAdLoader(application)
+            val appOpenAdLoader = remember(context) { AppOpenAdLoader(application) }
+            val openAdsRequest = remember { AdRequest.Builder(BuildConfig.OPEN_ADS_ID).build() }
+            val nativeAdsLoader = remember(context) { NativeBulkAdLoader(context) }
+            val nativeAdsRequest = remember { AdRequest.Builder(BuildConfig.NATIVE_ADS_ID).build() }
 
             analytics = Firebase.analytics
             isDarkTheme =
@@ -428,70 +431,61 @@ class MainApplicationActivity : ComponentActivity() {
 //            endregion
 
 //            region::Coroutines
-            LaunchedEffect(Unit) {
-                coroutine.launch {
-                    val launchCount = sharedPreferencesRepository.incrementLaunchCount()
-                    val shouldShowEntryAds = launchCount >= 3 && BuildConfig.OPEN_ADS_ID.isNotBlank()
-                    val shouldShowNativeAd = BuildConfig.showNativeAd.toBoolean() &&
-                        BuildConfig.NATIVE_ADS_ID.isNotBlank()
+            LaunchedEffect(entryPermissionsActive) {
+                if (entryPermissionsActive) return@LaunchedEffect
 
-                    if (checkInternetConnection(context = context)) {
-                        YandexAds.initialize(context) {
-                            logd(message = "RSY initialized!")
-                        }
+                val launchCount = sharedPreferencesRepository.incrementLaunchCount()
+                val shouldShowEntryAds = launchCount >= 3 && BuildConfig.OPEN_ADS_ID.isNotBlank()
+                val shouldShowNativeAd = BuildConfig.showNativeAd.toBoolean() &&
+                    BuildConfig.NATIVE_ADS_ID.isNotBlank()
 
-                        if (shouldShowEntryAds || shouldShowNativeAd) {
-                            isAdsLoading.value = true
-                        } else {
-                            isAdsLoading.value = false
-                        }
+                if (!shouldShowEntryAds && !shouldShowNativeAd) {
+                    isAdsLoading.value = false
+                    return@LaunchedEffect
+                }
+                if (!checkInternetConnection(context = context)) {
+                    isAdsLoading.value = false
+                    return@LaunchedEffect
+                }
 
-                        if (shouldShowEntryAds) {
-//                    region::Open app ads
-                            val appOpenAdLoadListener = object : AppOpenAdLoadListener {
+                isAdsLoading.value = true
+                YandexAds.initialize(context) {
+                    logd(message = "RSY initialized!")
+                    if (shouldShowEntryAds) {
+                        appOpenAdLoader.loadAd(
+                            openAdsRequest,
+                            object : AppOpenAdLoadListener {
                                 override fun onAdLoaded(appOpenAd: AppOpenAd) {
-                                    // The ad was loaded successfully. Now you can show loaded ad.
                                     myAppOpenAd = appOpenAd
-                                    myAppOpenAd?.show(this@MainApplicationActivity)
+                                    appOpenAd.setAdEventListener(appOpenAdEventListener)
                                     isAdsLoading.value = false
+                                    appOpenAd.show(this@MainApplicationActivity)
                                 }
 
                                 override fun onAdFailedToLoad(adRequestError: AdRequestError) {
                                     isAdsLoading.value = false
-                                    // Ad failed to load with AdRequestError.
-                                    // Attempting to load a new ad from the onAdFailedToLoad() method is strongly discouraged.
                                 }
-                            }
+                            },
+                        )
+                    }
 
-                            myAppOpenAd?.setAdEventListener(appOpenAdEventListener)
-                            val openAdsRequest = AdRequest.Builder(BuildConfig.OPEN_ADS_ID).build()
-                            appOpenAdLoader.loadAd(openAdsRequest, appOpenAdLoadListener)
-//                    endregion
-                        }
-
-//                    region::Native ads
-                        if (shouldShowNativeAd) {
-                            val nativeAdsLoader = NativeBulkAdLoader(context)
-                            val nativeAdsRequest = AdRequest.Builder(BuildConfig.NATIVE_ADS_ID).build()
-                            nativeAdsLoader.loadAds(
-                                nativeAdsRequest,
-                                1,
-                                object : NativeBulkAdLoadListener {
-                                    override fun onAdsFailedToLoad(p0: AdRequestError) {
-                                        logd(p0.toString())
-                                        adsError.value = true
-                                        isAdsLoading.value = false
-                                    }
-
-                                    override fun onAdsLoaded(nativeAds: List<NativeAd>) {
-                                        list.value = nativeAds.toMutableList()
-                                        adsError.value = false
-                                        isAdsLoading.value = false
-                                    }
+                    if (shouldShowNativeAd) {
+                        nativeAdsLoader.loadAds(
+                            nativeAdsRequest,
+                            1,
+                            object : NativeBulkAdLoadListener {
+                                override fun onAdsFailedToLoad(error: AdRequestError) {
+                                    adsError.value = true
+                                    isAdsLoading.value = false
                                 }
-                            )
-                        }
-//                    endregion
+
+                                override fun onAdsLoaded(nativeAds: List<NativeAd>) {
+                                    list.value = nativeAds.take(1).toMutableList()
+                                    adsError.value = false
+                                    isAdsLoading.value = false
+                                }
+                            },
+                        )
                     }
                 }
             }
@@ -1041,7 +1035,7 @@ class MainApplicationActivity : ComponentActivity() {
 
     private fun clearAppOpenAd() {
         myAppOpenAd?.setAdEventListener(null)
-//        appOpenAd = null
+        myAppOpenAd = null
     }
 //    endregion
 
