@@ -17,16 +17,18 @@ android {
         localPropertiesFile.withInputStream { localProperties.load(it) }
     }
 
-    def requireLocalProperty = { String key ->
-        def value = localProperties.getProperty(key)?.trim()
-        if (!value) {
-            throw new GradleException(
-                "Missing '${key}' in local.properties. " +
-                    "Add it and run Build > Clean Project, then Rebuild Project."
-            )
-        }
-        value
+    // CI values are supplied through environment variables; Android Studio can
+    // continue using local.properties.
+    def configValue = { String key, String defaultValue = "" ->
+        def value = providers.gradleProperty(key).orNull
+        if (!value) value = System.getenv(key)
+        if (!value) value = localProperties.getProperty(key)
+        value?.trim() ?: defaultValue
     }
+
+    def releaseStorePassword = configValue("ANDROID_KEYSTORE_PASSWORD", null)
+    def releaseKeyAlias = configValue("ANDROID_KEY_ALIAS", null)
+    def releaseKeyPassword = configValue("ANDROID_KEY_PASSWORD", null)
 
     defaultConfig {
         applicationId "ru.plumsoftware.weatherforecastru"
@@ -40,14 +42,48 @@ android {
             useSupportLibrary true
         }
 
-        buildConfigField "String", "OWM_API_KEY", "\"${requireLocalProperty("OWM_API_KEY")}\""
-        buildConfigField "String", "WEATHER_API", "\"${requireLocalProperty("WEATHER_API")}\""
-        buildConfigField "String", "platform", "\"${requireLocalProperty("platform")}\""
-        buildConfigField "String", "showNativeAd", "\"${requireLocalProperty("showNativeAd")}\""
+        buildConfigField "String", "OWM_API_KEY", "\"\${configValue("OWM_API_KEY")}\""
+        buildConfigField "String", "WEATHER_API", "\"\${configValue("WEATHER_API")}\""
+    }
 
-        buildConfigField "String", "BANNER_ADS_ID", "\"${requireLocalProperty("BANNER_ADS_ID")}\""
-        buildConfigField "String", "OPEN_ADS_ID", "\"${requireLocalProperty("OPEN_ADS_ID")}\""
-        buildConfigField "String", "NATIVE_ADS_ID", "\"${requireLocalProperty("NATIVE_ADS_ID")}\""
+    flavorDimensions "store"
+
+    productFlavors {
+        rustore {
+            dimension "store"
+            buildConfigField "String", "platform", "\"rustore\""
+            buildConfigField "String", "showNativeAd", "\"true\""
+            buildConfigField "String", "BANNER_ADS_ID", "\"R-M-2999795-1\""
+            buildConfigField "String", "OPEN_ADS_ID", "\"R-M-2999795-3\""
+            buildConfigField "String", "NATIVE_ADS_ID", "\"R-M-2999795-2\""
+        }
+
+        huawei {
+            dimension "store"
+            buildConfigField "String", "platform", "\"huawei\""
+            buildConfigField "String", "showNativeAd", "\"false\""
+            buildConfigField "String", "BANNER_ADS_ID", "\"\""
+            buildConfigField "String", "OPEN_ADS_ID", "\"\""
+            buildConfigField "String", "NATIVE_ADS_ID", "\"\""
+        }
+
+        googlePlay {
+            dimension "store"
+            buildConfigField "String", "platform", "\"google_play\""
+            buildConfigField "String", "showNativeAd", "\"false\""
+            buildConfigField "String", "BANNER_ADS_ID", "\"\""
+            buildConfigField "String", "OPEN_ADS_ID", "\"\""
+            buildConfigField "String", "NATIVE_ADS_ID", "\"\""
+        }
+    }
+
+    signingConfigs {
+        release {
+            storeFile file("weatherforecast_keysafe_jetpack_compose.jks")
+            if (releaseStorePassword) storePassword releaseStorePassword
+            if (releaseKeyAlias) keyAlias releaseKeyAlias
+            if (releaseKeyPassword) keyPassword releaseKeyPassword
+        }
     }
 
     room {
@@ -58,7 +94,7 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.debug
+            signingConfig (releaseStorePassword && releaseKeyAlias && releaseKeyPassword ? signingConfigs.release : signingConfigs.debug)
         }
     }
 
