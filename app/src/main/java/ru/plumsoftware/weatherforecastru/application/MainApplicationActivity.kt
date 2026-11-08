@@ -435,8 +435,9 @@ class MainApplicationActivity : ComponentActivity() {
                 if (entryPermissionsActive) return@LaunchedEffect
 
                 val launchCount = sharedPreferencesRepository.incrementLaunchCount()
-                val shouldShowEntryAds = launchCount >= 3
-                val shouldShowNativeAd = BuildConfig.showNativeAd.toBoolean()
+                val shouldShowEntryAds = launchCount >= 3 && BuildConfig.OPEN_ADS_ID.isNotBlank()
+                val shouldShowNativeAd = BuildConfig.showNativeAd.toBoolean() &&
+                    BuildConfig.NATIVE_ADS_ID.isNotBlank()
 
                 if (!shouldShowEntryAds && !shouldShowNativeAd) {
                     isAdsLoading.value = false
@@ -449,6 +450,7 @@ class MainApplicationActivity : ComponentActivity() {
 
                 isAdsLoading.value = true
                 YandexAds.initialize(context) {
+                    logd(message = "RSY initialized!")
                     if (shouldShowEntryAds) {
                         appOpenAdLoader.loadAd(
                             openAdsRequest,
