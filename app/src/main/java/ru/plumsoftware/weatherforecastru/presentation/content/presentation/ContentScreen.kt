@@ -307,10 +307,7 @@ private fun ContentScreen(
                         (state.useOwmForCurrent && state.owmCode !in 300..599 ||
                             !state.useOwmForCurrent && state.weatherApiCode !in 300..599)
                     ) {
-                        NativeAdBanner(
-                            adsList = state.adsList,
-                            coroutine = coroutine,
-                        )
+                        NativeAdBanner(adsList = state.adsList)
                     }
                 }
 
@@ -475,54 +472,39 @@ private fun WeatherLoadingDialog() {
 @Composable
 private fun NativeAdBanner(
     adsList: List<NativeAd>,
-    coroutine: CoroutineScope,
 ) {
+    val nativeAd = adsList.firstOrNull() ?: return
+
     AndroidView(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = Dimens.screenPaddingH),
         factory = { context ->
             val themedContext = ContextThemeWrapper(context, R.style.Theme_Погода)
-            LayoutInflater.from(themedContext).inflate(R.layout.native_ads, null)
-        },
-        update = { view ->
-            val mNativeAdView = view.findViewById<NativeAdView>(R.id.nativeAdView)
-            val mediaView = view.findViewById<MediaView>(R.id.media)
-            val age = view.findViewById<TextView>(R.id.age)
-            val bodyView = view.findViewById<TextView>(R.id.tvAdvertiser)
-            val callToAction = view.findViewById<TextView>(R.id.btnVisitSite)
-            val domain = view.findViewById<TextView>(R.id.textViewDomain)
-            val favicon = view.findViewById<ImageView>(R.id.adsPromo)
-            val adsIcon = view.findViewById<ImageView>(R.id.adsIcon)
-            val imageViewFeedback = view.findViewById<ImageView>(R.id.imageViewFeedback)
-            val priceView = view.findViewById<TextView>(R.id.priceView)
-            val storeView = view.findViewById<TextView>(R.id.storeView)
-            val tvHeadline = view.findViewById<TextView>(R.id.tvHeadline)
-            val rating = view.findViewById<AdRatingView>(R.id.rating)
-            val warning = view.findViewById<TextView>(R.id.textViewWarning)
+            val view = LayoutInflater.from(themedContext).inflate(R.layout.native_ads, null)
+            val nativeAdView = view.findViewById<NativeAdView>(R.id.nativeAdView)
 
-            coroutine.launch {
-                for (nativeAd in adsList) {
-                    showAd(
-                        nativeAd,
-                        mNativeAdView,
-                        age,
-                        bodyView,
-                        callToAction,
-                        domain,
-                        favicon,
-                        adsIcon,
-                        imageViewFeedback,
-                        mediaView,
-                        priceView,
-                        rating,
-                        storeView,
-                        tvHeadline,
-                        warning,
-                    )
-                }
-            }
+            showAd(
+                nativeAd = nativeAd,
+                nativeAdView = nativeAdView,
+                age = view.findViewById(R.id.age),
+                body = view.findViewById(R.id.tvAdvertiser),
+                callToAction = view.findViewById(R.id.btnVisitSite),
+                domain = view.findViewById(R.id.textViewDomain),
+                favicon = view.findViewById(R.id.adsPromo),
+                icon = view.findViewById(R.id.adsIcon),
+                feedback = view.findViewById(R.id.imageViewFeedback),
+                media = view.findViewById(R.id.media),
+                price = view.findViewById(R.id.priceView),
+                rating = view.findViewById(R.id.rating),
+                sponsored = view.findViewById(R.id.storeView),
+                title = view.findViewById(R.id.tvHeadline),
+                warning = view.findViewById(R.id.textViewWarning),
+            )
+            view
         },
+        // Binding is performed once when this ad view is created, not on every recomposition.
+        update = {},
     )
 }
 
